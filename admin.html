@@ -154,6 +154,7 @@
                     <div class="editor-tabs">
                         <button class="tab-btn active" onclick="switchTab('mainPage')">메인 페이지</button>
                         <button class="tab-btn" onclick="switchTab('mainBanner')">메인 배너</button>
+                        <button class="tab-btn" onclick="switchTab('detailPageBanner')">상세페이지 배너</button>
                         <button class="tab-btn" onclick="switchTab('detailImages')">상세페이지 이미지</button>
                         <button class="tab-btn" onclick="switchTab('banner')">Step2 배너</button>
                         <button class="tab-btn" onclick="switchTab('hero')">상세 제목</button>
@@ -272,6 +273,48 @@
                                     <div class="toggle-switch">
                                         <input type="checkbox" id="step2MainBannerEnabled">
                                         <label for="step2MainBannerEnabled" class="switch">
+                                            <span class="slider"></span>
+                                        </label>
+                                        <span class="toggle-label">배너 표시</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detail Page Banner Management Editor -->
+                    <div class="tab-content" id="detailPageBannerTab">
+                        <div class="banner-management">
+                            <h4>상세페이지 배너 관리 (1페이지 신청버튼 위)</h4>
+                            <p style="color: #a0aec0; margin-bottom: 2rem;">"지금 바로 신청하기" 버튼 바로 위에 표시할 배너를 설정하세요.</p>
+                            
+                            <div class="banner-section">
+                                <div class="form-group">
+                                    <label>상세페이지 배너 이미지</label>
+                                    <div class="image-upload-section">
+                                        <input type="file" id="detailPageBannerImageUpload" accept="image/*" onchange="previewDetailPageBannerImage(event)">
+                                        <label for="detailPageBannerImageUpload" class="upload-btn">
+                                            <i class="fas fa-upload"></i> 이미지 업로드
+                                        </label>
+                                        <div class="image-info">
+                                            <small>권장 크기: 1200x300px (전체 화면폭), JPG/PNG 형식</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="image-preview" id="detailPageBannerImagePreview" style="display: none;">
+                                        <img id="detailPageBannerPreviewImage" src="" alt="상세페이지 배너 미리보기">
+                                        <div class="preview-actions">
+                                            <button type="button" onclick="removeDetailPageBannerImage()" class="remove-btn">
+                                                <i class="fas fa-trash"></i> 이미지 제거
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="detailPageBannerEnabled">
+                                        <label for="detailPageBannerEnabled" class="switch">
                                             <span class="slider"></span>
                                         </label>
                                         <span class="toggle-label">배너 표시</span>

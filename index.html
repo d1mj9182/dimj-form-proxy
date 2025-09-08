@@ -29,9 +29,18 @@
             <!-- Step 1: Landing Page -->
             <div class="step-content active" id="step1">
                 <!-- Main Banner for Step 1 -->
-                <div class="main-banner" id="step1MainBanner" style="display: none;">
+                <div class="main-banner" id="step1MainBanner">
                     <div class="banner-image-container">
-                        <img id="step1BannerImage" src="" alt="메인 배너" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img id="step1BannerImage" src="" alt="메인 배너" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                        <div class="banner-placeholder" id="step1BannerPlaceholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-image"></i>
+                                <h4>메인 배너 이미지를 추가해주세요</h4>
+                                <p>권장 사이즈: <strong>1200 × 400px</strong></p>
+                                <p>관리자 페이지 > 메인 배너 탭에서 업로드 가능합니다</p>
+                                <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="main-banner-overlay" id="step1BannerOverlay" style="display: none;"></div>
                 </div>
@@ -72,10 +81,35 @@
                 </div>
 
                 <!-- Detail Page Images Section -->
-                <div class="detail-images-section" id="detailImagesSection" style="display: none;">
+                <div class="detail-images-section" id="detailImagesSection">
                     <h3>📋 자세한 내용 확인하기</h3>
                     <div class="detail-images-grid" id="detailImagesGrid">
-                        <!-- Images will be loaded dynamically -->
+                        <div class="detail-images-placeholder" id="detailImagesPlaceholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-images"></i>
+                                <h4>상세 이미지를 추가해주세요</h4>
+                                <p>권장 사이즈: <strong>800 × 600px 이상</strong></p>
+                                <p>세로로 긴 이미지도 자동으로 최적화됩니다</p>
+                                <p>최대 3개까지 업로드 가능합니다</p>
+                                <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Page Banner -->
+                <div class="detail-page-banner" id="detailPageBanner">
+                    <div class="banner-image-container">
+                        <img id="detailPageBannerImage" src="" alt="상세페이지 배너" style="display: none;">
+                        <div class="banner-placeholder" id="detailPageBannerPlaceholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-image"></i>
+                                <h4>상세페이지 배너 이미지를 추가해주세요</h4>
+                                <p>권장 사이즈: <strong>1200 × 300px</strong></p>
+                                <p>관리자 페이지 > 상세페이지 배너 탭에서 업로드 가능합니다</p>
+                                <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -94,9 +128,18 @@
                 </div>
                 
                 <!-- Main Banner for Step 2 -->
-                <div class="main-banner" id="step2MainBanner" style="display: none;">
+                <div class="main-banner" id="step2MainBanner">
                     <div class="banner-image-container">
-                        <img id="step2BannerImage" src="" alt="메인 배너" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img id="step2BannerImage" src="" alt="메인 배너" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                        <div class="banner-placeholder" id="step2BannerPlaceholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-image"></i>
+                                <h4>메인 배너 이미지를 추가해주세요</h4>
+                                <p>권장 사이즈: <strong>1200 × 400px</strong></p>
+                                <p>관리자 페이지 > 메인 배너 탭에서 업로드 가능합니다</p>
+                                <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="main-banner-overlay" id="step2BannerOverlay" style="display: none;"></div>
                 </div>

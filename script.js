@@ -363,6 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMainPageContent();
     loadBannerContent();
     loadMainBannersContent();
+    loadDetailPageBannerContent();
     loadDetailImagesContent();
     setupClickHandlers();
     
@@ -1063,13 +1064,20 @@ function loadMainBannersContent() {
                 if (bannerElement && imageElement && bannerData && bannerData.enabled !== false && bannerData.imageData) {
                     // Set banner image
                     imageElement.src = bannerData.imageData;
+                    imageElement.style.display = 'block';
                     
-                    // Show the banner
-                    bannerElement.style.display = 'flex';
+                    // Hide placeholder and show image
+                    const placeholder = document.getElementById(`${stepName}BannerPlaceholder`);
+                    if (placeholder) placeholder.style.display = 'none';
+                    
                     console.log(`${stepName} main banner loaded with image`);
                 } else if (bannerElement) {
-                    // No image or banner disabled, hide it
-                    bannerElement.style.display = 'none';
+                    // No image, show placeholder
+                    const imageElement = document.getElementById(`${stepName}BannerImage`);
+                    const placeholder = document.getElementById(`${stepName}BannerPlaceholder`);
+                    
+                    if (imageElement) imageElement.style.display = 'none';
+                    if (placeholder) placeholder.style.display = 'flex';
                 }
             });
         } else {
@@ -1082,12 +1090,14 @@ function loadMainBannersContent() {
 }
 
 function hideMainBanners() {
-    // Hide banners if no images are set
-    const step1Banner = document.getElementById('step1MainBanner');
-    const step2Banner = document.getElementById('step2MainBanner');
-    
-    if (step1Banner) step1Banner.style.display = 'none';
-    if (step2Banner) step2Banner.style.display = 'none';
+    // Show placeholders when no images are set
+    ['step1', 'step2'].forEach(stepName => {
+        const imageElement = document.getElementById(`${stepName}BannerImage`);
+        const placeholder = document.getElementById(`${stepName}BannerPlaceholder`);
+        
+        if (imageElement) imageElement.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'flex';
+    });
 }
 
 // Load detail images content from admin settings
@@ -1125,10 +1135,29 @@ function loadDetailImagesContent() {
                 
                 if (hasImages) {
                     detailImagesGrid.innerHTML = imagesHTML;
-                    detailImagesSection.style.display = 'block';
-                    console.log('Detail images section loaded with', hasImages, 'images');
+                    
+                    // Hide placeholder
+                    const placeholder = document.getElementById('detailImagesPlaceholder');
+                    if (placeholder) placeholder.style.display = 'none';
+                    
+                    console.log('Detail images section loaded with images');
                 } else {
-                    detailImagesSection.style.display = 'none';
+                    // Show placeholder
+                    const placeholder = document.getElementById('detailImagesPlaceholder');
+                    if (placeholder) placeholder.style.display = 'flex';
+                    
+                    detailImagesGrid.innerHTML = `
+                        <div class="detail-images-placeholder" id="detailImagesPlaceholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-images"></i>
+                                <h4>상세 이미지를 추가해주세요</h4>
+                                <p>권장 사이즈: <strong>800 × 600px 이상</strong></p>
+                                <p>세로로 긴 이미지도 자동으로 최적화됩니다</p>
+                                <p>최대 3개까지 업로드 가능합니다</p>
+                                <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
+                            </div>
+                        </div>
+                    `;
                 }
             }
         } else {
@@ -1145,6 +1174,49 @@ function hideDetailImagesSection() {
     if (detailImagesSection) {
         detailImagesSection.style.display = 'none';
     }
+}
+
+// Load detail page banner content from admin settings
+function loadDetailPageBannerContent() {
+    const savedContent = localStorage.getItem('detailPageContent');
+    if (!savedContent) {
+        // Show placeholder if no saved content
+        showDetailPageBannerPlaceholder();
+        return;
+    }
+    
+    try {
+        const content = JSON.parse(savedContent);
+        if (content.detailPageBanner && content.detailPageBanner.enabled !== false && content.detailPageBanner.imageData) {
+            const bannerElement = document.getElementById('detailPageBanner');
+            const imageElement = document.getElementById('detailPageBannerImage');
+            const placeholder = document.getElementById('detailPageBannerPlaceholder');
+            
+            if (bannerElement && imageElement) {
+                // Set banner image
+                imageElement.src = content.detailPageBanner.imageData;
+                imageElement.style.display = 'block';
+                
+                // Hide placeholder
+                if (placeholder) placeholder.style.display = 'none';
+                
+                console.log('Detail page banner loaded with image');
+            }
+        } else {
+            showDetailPageBannerPlaceholder();
+        }
+    } catch (error) {
+        console.error('Error loading detail page banner content:', error);
+        showDetailPageBannerPlaceholder();
+    }
+}
+
+function showDetailPageBannerPlaceholder() {
+    const imageElement = document.getElementById('detailPageBannerImage');
+    const placeholder = document.getElementById('detailPageBannerPlaceholder');
+    
+    if (imageElement) imageElement.style.display = 'none';
+    if (placeholder) placeholder.style.display = 'flex';
 }
 
 
