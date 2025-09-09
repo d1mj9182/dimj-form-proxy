@@ -2164,82 +2164,213 @@ body {
     }
 }
 
-/* 추가 모바일 최적화 - 실무 수준 */
-@media (max-width: 768px) {
-    /* 메인 히어로 섹션 */
-    .landing-hero h1 {
-        font-size: 1.75rem !important;
-        line-height: 1.2 !important;
-        margin-bottom: 0.75rem !important;
-        word-break: keep-all;
+/* ===============================
+   실무급 모바일 반응형 재설계
+   =============================== */
+
+@media screen and (max-width: 768px) {
+    /* 기본 레이아웃 */
+    body {
+        font-size: 14px !important;
+        line-height: 1.5 !important;
     }
     
-    .hero-subtitle {
-        font-size: 1.1rem !important;
-        line-height: 1.3 !important;
-        margin-bottom: 0.4rem !important;
-    }
-    
-    .hero-note {
-        font-size: 0.8rem !important;
-        line-height: 1.3 !important;
-    }
-    
-    /* 컨테이너 여백 최적화 */
     .container {
-        padding: 1rem !important;
+        max-width: 100% !important;
+        padding: 0.75rem !important;
+        margin: 0 !important;
     }
     
     .main-content {
-        padding: 1.5rem !important;
-        margin-bottom: 1.5rem !important;
-    }
-    
-    /* 폼 섹션 */
-    .form-section h2 {
-        font-size: 1.3rem !important;
+        padding: 1rem !important;
         margin-bottom: 1rem !important;
+        border-radius: 1rem !important;
     }
     
-    /* 통계 카드 그리드 */
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 0.75rem !important;
-    }
-    
-    .stat-card {
-        padding: 0.75rem !important;
-    }
-    
-    .stat-number {
-        font-size: 1.5rem !important;
-    }
-}
-
-@media (max-width: 480px) {
-    /* 극소형 화면 최적화 */
-    .landing-hero h1 {
-        font-size: 1.5rem !important;
+    /* 메인 히어로 섹션 완전 재설계 */
+    .landing-hero {
+        padding: 1.5rem 1rem !important;
         text-align: center !important;
+    }
+    
+    .landing-hero h1 {
+        font-size: 1.6rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 0.75rem !important;
+        word-break: keep-all !important;
+        font-weight: 700 !important;
     }
     
     .hero-subtitle {
         font-size: 1rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 0.5rem !important;
+        font-weight: 500 !important;
+    }
+    
+    .hero-note {
+        font-size: 0.8rem !important;
+        line-height: 1.4 !important;
+        opacity: 0.9 !important;
+    }
+    
+    /* 폼 섹션 */
+    .form-section {
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .form-section h2 {
+        font-size: 1.2rem !important;
+        margin-bottom: 1rem !important;
         text-align: center !important;
+        font-weight: 600 !important;
+    }
+    
+    /* 입력 필드 */
+    .form-group {
+        margin-bottom: 1rem !important;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 1rem !important;
+        padding: 0.75rem !important;
+        border-radius: 0.5rem !important;
+        border: 2px solid #e2e8f0 !important;
+        width: 100% !important;
+    }
+    
+    /* 통계 카드 완전 재설계 */
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .stat-card {
+        padding: 0.75rem 0.5rem !important;
+        border-radius: 0.75rem !important;
+        text-align: center !important;
+    }
+    
+    .stat-content p {
+        font-size: 0.7rem !important;
+        margin-bottom: 0.25rem !important;
+        font-weight: 600 !important;
+    }
+    
+    .stat-number {
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+    }
+    
+    .stat-unit {
+        font-size: 0.8rem !important;
+    }
+    
+    .stat-icon {
+        font-size: 1.2rem !important;
+    }
+    
+    /* 서비스 선택 완전 재설계 */
+    .service-item {
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .service-item label {
+        padding: 0.75rem !important;
+        font-size: 0.85rem !important;
+        line-height: 1.3 !important;
+        border-radius: 0.5rem !important;
+        display: flex !important;
+        align-items: flex-start !important;
+    }
+    
+    .service-item input[type="checkbox"] {
+        width: 1.1rem !important;
+        height: 1.1rem !important;
+        margin-right: 0.75rem !important;
+        margin-top: 0.1rem !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .service-item label span {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        line-height: 1.3 !important;
+    }
+    
+    /* 통신사 선택 완전 재설계 */
+    .provider-selection {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem !important;
+    }
+    
+    .provider-item label {
+        padding: 0.6rem 0.4rem !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        min-height: 40px !important;
+        border-radius: 0.5rem !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* CTA 버튼 */
+    .cta-button {
+        padding: 1rem !important;
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+        border-radius: 0.75rem !important;
+        margin-top: 1rem !important;
+    }
+    
+    /* 네비게이션 버튼 */
+    .nav-buttons {
+        gap: 0.75rem !important;
+        margin-top: 1.5rem !important;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem !important;
+        font-size: 0.9rem !important;
+        border-radius: 0.5rem !important;
+        font-weight: 600 !important;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    /* 극소형 화면 전용 */
+    .container {
+        padding: 0.5rem !important;
+    }
+    
+    .main-content {
+        padding: 0.75rem !important;
+        border-radius: 0.75rem !important;
+    }
+    
+    .landing-hero h1 {
+        font-size: 1.4rem !important;
+        line-height: 1.2 !important;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.9rem !important;
     }
     
     .hero-note {
         font-size: 0.75rem !important;
-        text-align: center !important;
-    }
-    
-    .container {
-        padding: 0.75rem !important;
-    }
-    
-    .main-content {
-        padding: 1rem !important;
-        margin-bottom: 1rem !important;
     }
     
     /* 통계 카드를 세로로 */
@@ -2248,9 +2379,104 @@ body {
         gap: 0.5rem !important;
     }
     
-    /* 피처 그리드도 세로로 */
-    .features-grid {
+    .stat-card {
+        padding: 1rem !important;
+    }
+    
+    /* 통신사 선택을 세로로 */
+    .provider-selection {
         grid-template-columns: 1fr !important;
+    }
+    
+    .provider-item label {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.9rem !important;
+        min-height: 45px !important;
+    }
+    
+    /* 폼 그룹 간격 줄이기 */
+    .form-group {
+        margin-bottom: 0.75rem !important;
+    }
+}
+
+/* Step 2 상담현황 보드 모바일 최적화 */
+@media screen and (max-width: 768px) {
+    .status-board {
+        padding: 1rem !important;
+        margin: 1rem 0 !important;
+        border-radius: 1rem !important;
+    }
+    
+    .status-board h2 {
+        font-size: 1.3rem !important;
+        margin-bottom: 1rem !important;
+        text-align: center !important;
+    }
+    
+    .consultation-list {
+        max-height: 300px !important;
+        overflow-y: auto !important;
+    }
+    
+    .consultation-item {
+        padding: 0.75rem !important;
+        margin-bottom: 0.5rem !important;
+        border-radius: 0.5rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .consultation-item strong {
+        font-size: 0.85rem !important;
+    }
+    
+    .consultation-item .status {
+        font-size: 0.7rem !important;
+        padding: 0.2rem 0.5rem !important;
+        border-radius: 0.3rem !important;
+    }
+    
+    .status-footer {
+        margin-top: 1rem !important;
+        padding-top: 1rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    .status-legend {
+        gap: 1rem !important;
+    }
+    
+    .legend-item {
+        font-size: 0.7rem !important;
+    }
+    
+    .legend-dot {
+        width: 8px !important;
+        height: 8px !important;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .status-board {
+        padding: 0.75rem !important;
+    }
+    
+    .status-board h2 {
+        font-size: 1.1rem !important;
+    }
+    
+    .consultation-item {
+        padding: 0.5rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    .consultation-item strong {
+        font-size: 0.8rem !important;
+    }
+    
+    .status-legend {
+        flex-direction: column !important;
         gap: 0.5rem !important;
+        align-items: flex-start !important;
     }
 }

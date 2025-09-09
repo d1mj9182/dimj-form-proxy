@@ -993,6 +993,10 @@ function previewMainBannerImage(event, stepName) {
         
         // Auto-save to localStorage immediately
         localStorage.setItem('detailPageContent', JSON.stringify(pageContent));
+        
+        // Update enabled checkbox automatically
+        const enabledCheckbox = document.getElementById(`${stepName}MainBannerEnabled`);
+        if (enabledCheckbox) enabledCheckbox.checked = true;
     };
     reader.readAsDataURL(file);
 }
@@ -1092,6 +1096,10 @@ function previewDetailImage(event, imageNumber) {
         
         // Auto-save to localStorage immediately
         localStorage.setItem('detailPageContent', JSON.stringify(pageContent));
+        
+        // Update enabled checkbox automatically
+        const enabledCheckbox = document.getElementById('detailImagesEnabled');
+        if (enabledCheckbox) enabledCheckbox.checked = true;
     };
     reader.readAsDataURL(file);
 }
