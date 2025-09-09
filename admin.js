@@ -989,6 +989,10 @@ function previewMainBannerImage(event, stepName) {
         pageContent.mainBanners = pageContent.mainBanners || {};
         pageContent.mainBanners[stepName] = pageContent.mainBanners[stepName] || {};
         pageContent.mainBanners[stepName].imageData = e.target.result;
+        pageContent.mainBanners[stepName].enabled = true; // Auto-enable when image is uploaded
+        
+        // Auto-save to localStorage immediately
+        localStorage.setItem('detailPageContent', JSON.stringify(pageContent));
     };
     reader.readAsDataURL(file);
 }
@@ -1080,10 +1084,14 @@ function previewDetailImage(event, imageNumber) {
         
         // Save image data to localStorage
         pageContent.detailImages = pageContent.detailImages || {};
+        pageContent.detailImages.enabled = true; // Auto-enable when image is uploaded
         pageContent.detailImages[`image${imageNumber}`] = {
             imageData: e.target.result,
             caption: document.getElementById(`detailCaption${imageNumber}`).value || ''
         };
+        
+        // Auto-save to localStorage immediately
+        localStorage.setItem('detailPageContent', JSON.stringify(pageContent));
     };
     reader.readAsDataURL(file);
 }

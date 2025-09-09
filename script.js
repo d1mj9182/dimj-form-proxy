@@ -1061,10 +1061,11 @@ function loadMainBannersContent() {
                 const bannerElement = document.getElementById(`${stepName}MainBanner`);
                 const imageElement = document.getElementById(`${stepName}BannerImage`);
                 
-                if (bannerElement && imageElement && bannerData && bannerData.enabled !== false && bannerData.imageData) {
+                if (bannerElement && imageElement && bannerData && bannerData.imageData) {
                     // Set banner image
                     imageElement.src = bannerData.imageData;
                     imageElement.style.display = 'block';
+                    bannerElement.style.display = 'flex'; // Show banner section
                     
                     // Hide placeholder and show image
                     const placeholder = document.getElementById(`${stepName}BannerPlaceholder`);
