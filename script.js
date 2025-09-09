@@ -1105,8 +1105,8 @@ function hideMainBanners() {
 function loadDetailImagesContent() {
     const savedContent = localStorage.getItem('detailPageContent');
     if (!savedContent) {
-        // Hide detail images section if no saved content
-        hideDetailImagesSection();
+        // Show placeholder even if no saved content
+        showDetailImagesPlaceholder();
         return;
     }
     
@@ -1161,11 +1161,31 @@ function loadDetailImagesContent() {
                 }
             }
         } else {
-            hideDetailImagesSection();
+            showDetailImagesPlaceholder();
         }
     } catch (error) {
         console.error('Error loading detail images content:', error);
-        hideDetailImagesSection();
+        showDetailImagesPlaceholder();
+    }
+}
+
+function showDetailImagesPlaceholder() {
+    const detailImagesSection = document.getElementById('detailImagesSection');
+    const detailImagesGrid = document.getElementById('detailImagesGrid');
+    
+    if (detailImagesSection && detailImagesGrid) {
+        detailImagesSection.style.display = 'block';
+        detailImagesGrid.innerHTML = `
+            <div class="detail-images-placeholder" id="detailImagesPlaceholder">
+                <div class="placeholder-content">
+                    <i class="fas fa-images"></i>
+                    <h4>A4 5장 분량 상세페이지를 추가해주세요</h4>
+                    <p>권장 사이즈: <strong>1050 × 2970px (A4 5장 세로 연결)</strong></p>
+                    <p>JPG/PNG 형식, 1개 파일로 업로드</p>
+                    <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
+                </div>
+            </div>
+        `;
     }
 }
 
