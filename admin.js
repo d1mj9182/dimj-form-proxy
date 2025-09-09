@@ -280,10 +280,15 @@ function updateStats() {
         !app.status || app.status === 'pending'
     );
     
+    // Get today's visitors count
+    const visitors = JSON.parse(localStorage.getItem('dailyVisitors') || '{}');
+    const todayVisitors = visitors[today] || 0;
+    
     document.getElementById('totalApplications').textContent = allApplications.length;
     document.getElementById('todayApplications').textContent = todayApps.length;
     document.getElementById('pendingApplications').textContent = pendingApps.length;
     document.getElementById('blockedIPs').textContent = adminState.blockedIPs.length;
+    document.getElementById('todayVisitors').textContent = todayVisitors;
 }
 
 // Control functions
@@ -508,9 +513,6 @@ function loadTabContent(tabName) {
             loadMainBannerSettings();
             break;
             
-        case 'detailPageBanner':
-            loadDetailPageBannerSettings();
-            break;
             
         case 'banner':
             loadBannerSettings();
@@ -694,7 +696,6 @@ function saveDetailPageContent() {
         // Save banner settings
         saveBannerSettings();
         saveMainBannerSettings();
-        saveDetailPageBannerSettings();
         saveDetailImagesSettings();
         
         // Save to localStorage
@@ -1116,7 +1117,7 @@ function loadDetailImagesSettings() {
             }
             
             // Load images
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 1; i <= 6; i++) {
                 const imageData = content.detailImages[`image${i}`];
                 if (imageData) {
                     const imagePreview = document.getElementById(`detailImage${i}Preview`);
@@ -1151,7 +1152,7 @@ function saveDetailImagesSettings() {
     }
     
     // Save captions for existing images
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 6; i++) {
         const captionInput = document.getElementById(`detailCaption${i}`);
         if (captionInput && pageContent.detailImages[`image${i}`]) {
             pageContent.detailImages[`image${i}`].caption = captionInput.value || '';
@@ -1164,83 +1165,10 @@ function saveDetailImagesSettings() {
     console.log('Detail images settings saved:', pageContent.detailImages);
 }
 
-// Detail Page Banner Management Functions
-function previewDetailPageBannerImage(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const imagePreview = document.getElementById('detailPageBannerImagePreview');
-        const previewImage = document.getElementById('detailPageBannerPreviewImage');
-        
-        previewImage.src = e.target.result;
-        imagePreview.style.display = 'block';
-        
-        // Save image data to localStorage
-        pageContent.detailPageBanner = pageContent.detailPageBanner || {};
-        pageContent.detailPageBanner.imageData = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
 
-function removeDetailPageBannerImage() {
-    const imagePreview = document.getElementById('detailPageBannerImagePreview');
-    const imageUpload = document.getElementById('detailPageBannerImageUpload');
-    
-    imagePreview.style.display = 'none';
-    imageUpload.value = '';
-    
-    // Remove image data from storage
-    if (pageContent.detailPageBanner) {
-        pageContent.detailPageBanner.imageData = null;
-    }
-}
-
-function loadDetailPageBannerSettings() {
-    const savedContent = localStorage.getItem('detailPageContent');
-    if (!savedContent) return;
-    
-    try {
-        const content = JSON.parse(savedContent);
-        if (content.detailPageBanner) {
-            // Load enabled state
-            const enabledInput = document.getElementById('detailPageBannerEnabled');
-            if (enabledInput && typeof content.detailPageBanner.enabled === 'boolean') {
-                enabledInput.checked = content.detailPageBanner.enabled;
-            }
-            
-            // Load banner image
-            if (content.detailPageBanner.imageData) {
-                const imagePreview = document.getElementById('detailPageBannerImagePreview');
-                const previewImage = document.getElementById('detailPageBannerPreviewImage');
-                
-                if (imagePreview && previewImage) {
-                    previewImage.src = content.detailPageBanner.imageData;
-                    imagePreview.style.display = 'block';
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Error loading detail page banner settings:', error);
-    }
-}
-
-function saveDetailPageBannerSettings() {
-    // Initialize detail page banner object if it doesn't exist
-    if (!pageContent.detailPageBanner) {
-        pageContent.detailPageBanner = {};
-    }
-    
-    const enabledInput = document.getElementById('detailPageBannerEnabled');
-    if (enabledInput) {
-        pageContent.detailPageBanner.enabled = enabledInput.checked;
-    }
-    
-    // Save to localStorage
-    localStorage.setItem('detailPageContent', JSON.stringify(pageContent));
-    
-    console.log('Detail page banner settings saved:', pageContent.detailPageBanner);
+// Go to main page function
+function goToMainPage() {
+    window.open('index.html', '_blank');
 }
 
 // Make functions globally accessible
@@ -1255,7 +1183,4 @@ window.previewDetailImage = previewDetailImage;
 window.removeDetailImage = removeDetailImage;
 window.loadDetailImagesSettings = loadDetailImagesSettings;
 window.saveDetailImagesSettings = saveDetailImagesSettings;
-window.previewDetailPageBannerImage = previewDetailPageBannerImage;
-window.removeDetailPageBannerImage = removeDetailPageBannerImage;
-window.loadDetailPageBannerSettings = loadDetailPageBannerSettings;
-window.saveDetailPageBannerSettings = saveDetailPageBannerSettings;
+window.goToMainPage = goToMainPage;

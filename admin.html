@@ -15,6 +15,9 @@
                 <h1><i class="fas fa-shield-alt"></i> 당일민족 관리자</h1>
             </div>
             <div class="header-right">
+                <button class="main-page-btn" onclick="goToMainPage()">
+                    <i class="fas fa-home"></i> 메인페이지
+                </button>
                 <span class="admin-user">관리자</span>
                 <button class="logout-btn" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> 로그아웃
@@ -80,6 +83,16 @@
                     <div class="stat-content">
                         <h3 id="blockedIPs">0</h3>
                         <p>차단된 IP</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="todayVisitors">0</h3>
+                        <p>오늘 방문자</p>
                     </div>
                 </div>
             </div>
@@ -154,8 +167,7 @@
                     <div class="editor-tabs">
                         <button class="tab-btn active" onclick="switchTab('mainPage')">메인 페이지</button>
                         <button class="tab-btn" onclick="switchTab('mainBanner')">메인 배너</button>
-                        <button class="tab-btn" onclick="switchTab('detailPageBanner')">상세페이지 배너</button>
-                        <button class="tab-btn" onclick="switchTab('detailImages')">상세페이지 이미지</button>
+                        <button class="tab-btn" onclick="switchTab('detailImages')">상세페이지 (이미지)</button>
                         <button class="tab-btn" onclick="switchTab('banner')">Step2 배너</button>
                         <button class="tab-btn" onclick="switchTab('hero')">상세 제목</button>
                         <button class="tab-btn" onclick="switchTab('loss')">손해 계산</button>
@@ -282,53 +294,12 @@
                         </div>
                     </div>
 
-                    <!-- Detail Page Banner Management Editor -->
-                    <div class="tab-content" id="detailPageBannerTab">
-                        <div class="banner-management">
-                            <h4>상세페이지 배너 관리 (1페이지 신청버튼 위)</h4>
-                            <p style="color: #a0aec0; margin-bottom: 2rem;">"지금 바로 신청하기" 버튼 바로 위에 표시할 배너를 설정하세요.</p>
-                            
-                            <div class="banner-section">
-                                <div class="form-group">
-                                    <label>상세페이지 배너 이미지</label>
-                                    <div class="image-upload-section">
-                                        <input type="file" id="detailPageBannerImageUpload" accept="image/*" onchange="previewDetailPageBannerImage(event)">
-                                        <label for="detailPageBannerImageUpload" class="upload-btn">
-                                            <i class="fas fa-upload"></i> 이미지 업로드
-                                        </label>
-                                        <div class="image-info">
-                                            <small>권장 크기: 1200x300px (전체 화면폭), JPG/PNG 형식</small>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="image-preview" id="detailPageBannerImagePreview" style="display: none;">
-                                        <img id="detailPageBannerPreviewImage" src="" alt="상세페이지 배너 미리보기">
-                                        <div class="preview-actions">
-                                            <button type="button" onclick="removeDetailPageBannerImage()" class="remove-btn">
-                                                <i class="fas fa-trash"></i> 이미지 제거
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="toggle-switch">
-                                        <input type="checkbox" id="detailPageBannerEnabled">
-                                        <label for="detailPageBannerEnabled" class="switch">
-                                            <span class="slider"></span>
-                                        </label>
-                                        <span class="toggle-label">배너 표시</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     
                     <!-- Detail Images Management Editor -->
                     <div class="tab-content" id="detailImagesTab">
                         <div class="banner-management">
-                            <h4>1페이지 상세페이지 이미지 관리</h4>
-                            <p style="color: #a0aec0; margin-bottom: 2rem;">1페이지에 표시할 상세 설명 이미지들을 업로드하세요. (최대 6개)</p>
+                            <h4>📋 상세페이지 - 모든 이미지 관리 (1페이지 중간 영역)</h4>
+                            <p style="color: #a0aec0; margin-bottom: 2rem;">1페이지 중간 영역에 표시할 상세 설명 이미지들을 업로드하세요. 개수 제한 없이 모든 이미지를 추가할 수 있습니다.</p>
                             
                             <div class="detail-images-manager">
                                 <div class="images-upload-grid">
@@ -409,6 +380,84 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    <div class="image-slot" data-slot="4">
+                                        <div class="form-group">
+                                            <label>이미지 4</label>
+                                            <div class="image-upload-section">
+                                                <input type="file" id="detailImage4Upload" accept="image/*" onchange="previewDetailImage(event, 4)">
+                                                <label for="detailImage4Upload" class="upload-btn">
+                                                    <i class="fas fa-upload"></i> 이미지 업로드
+                                                </label>
+                                            </div>
+                                            
+                                            <div class="image-preview" id="detailImage4Preview" style="display: none;">
+                                                <img id="detailPreview4" src="" alt="상세 이미지 미리보기">
+                                                <div class="preview-actions">
+                                                    <button type="button" onclick="removeDetailImage(4)" class="remove-btn">
+                                                        <i class="fas fa-trash"></i> 제거
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>이미지 설명</label>
+                                                <input type="text" id="detailCaption4" placeholder="이미지 설명 (선택사항)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="image-slot" data-slot="5">
+                                        <div class="form-group">
+                                            <label>이미지 5</label>
+                                            <div class="image-upload-section">
+                                                <input type="file" id="detailImage5Upload" accept="image/*" onchange="previewDetailImage(event, 5)">
+                                                <label for="detailImage5Upload" class="upload-btn">
+                                                    <i class="fas fa-upload"></i> 이미지 업로드
+                                                </label>
+                                            </div>
+                                            
+                                            <div class="image-preview" id="detailImage5Preview" style="display: none;">
+                                                <img id="detailPreview5" src="" alt="상세 이미지 미리보기">
+                                                <div class="preview-actions">
+                                                    <button type="button" onclick="removeDetailImage(5)" class="remove-btn">
+                                                        <i class="fas fa-trash"></i> 제거
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>이미지 설명</label>
+                                                <input type="text" id="detailCaption5" placeholder="이미지 설명 (선택사항)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="image-slot" data-slot="6">
+                                        <div class="form-group">
+                                            <label>이미지 6</label>
+                                            <div class="image-upload-section">
+                                                <input type="file" id="detailImage6Upload" accept="image/*" onchange="previewDetailImage(event, 6)">
+                                                <label for="detailImage6Upload" class="upload-btn">
+                                                    <i class="fas fa-upload"></i> 이미지 업로드
+                                                </label>
+                                            </div>
+                                            
+                                            <div class="image-preview" id="detailImage6Preview" style="display: none;">
+                                                <img id="detailPreview6" src="" alt="상세 이미지 미리보기">
+                                                <div class="preview-actions">
+                                                    <button type="button" onclick="removeDetailImage(6)" class="remove-btn">
+                                                        <i class="fas fa-trash"></i> 제거
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>이미지 설명</label>
+                                                <input type="text" id="detailCaption6" placeholder="이미지 설명 (선택사항)">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div class="form-group">
@@ -428,7 +477,7 @@
                     <!-- Banner Management Editor -->
                     <div class="tab-content" id="bannerTab">
                         <div class="banner-management">
-                            <h4>Step 2 페이지 배너 관리</h4>
+                            <h4>🎯 상세페이지3 - Step2 배너 관리 (2페이지 하단)</h4>
                             
                             <div class="form-group">
                                 <label>배너 제목</label>

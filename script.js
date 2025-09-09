@@ -340,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Check URL hash for direct step access
     checkURLHash();
+    trackVisitor();
     
     // Phone number formatting
     const phoneInput = document.getElementById('phone');
@@ -363,7 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMainPageContent();
     loadBannerContent();
     loadMainBannersContent();
-    loadDetailPageBannerContent();
     loadDetailImagesContent();
     setupClickHandlers();
     
@@ -1120,7 +1120,7 @@ function loadDetailImagesContent() {
                 let hasImages = false;
                 let imagesHTML = '';
                 
-                for (let i = 1; i <= 3; i++) {
+                for (let i = 1; i <= 6; i++) {
                     const imageData = content.detailImages[`image${i}`];
                     if (imageData && imageData.imageData) {
                         hasImages = true;
@@ -1219,6 +1219,33 @@ function showDetailPageBannerPlaceholder() {
     if (placeholder) placeholder.style.display = 'flex';
 }
 
+// Track visitor function
+function trackVisitor() {
+    const today = new Date().toISOString().split('T')[0];
+    const visitors = JSON.parse(localStorage.getItem('dailyVisitors') || '{}');
+    
+    // Check if this is a new visit for today
+    const lastVisit = localStorage.getItem('lastVisitDate');
+    if (lastVisit !== today) {
+        // New visit for today
+        visitors[today] = (visitors[today] || 0) + 1;
+        localStorage.setItem('dailyVisitors', JSON.stringify(visitors));
+        localStorage.setItem('lastVisitDate', today);
+        
+        // Clean up old visitor data (keep only last 30 days)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        Object.keys(visitors).forEach(date => {
+            if (new Date(date) < thirtyDaysAgo) {
+                delete visitors[date];
+            }
+        });
+        
+        localStorage.setItem('dailyVisitors', JSON.stringify(visitors));
+        console.log('New visitor tracked for', today);
+    }
+}
 
 // Make functions globally accessible
 window.nextStep = nextStep;
