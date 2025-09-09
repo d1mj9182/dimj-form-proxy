@@ -131,7 +131,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0,0,0,0); /* 투명하게 변경 - 어두운 오버레이 제거 */
     pointer-events: none;
     z-index: 1;
 }
@@ -174,7 +174,13 @@ body {
 /* Responsive Main Banner */
 @media (max-width: 768px) {
     .main-banner {
-        height: 200px;
+        height: 300px !important; /* 모바일에서도 적절한 높이 유지 */
+        display: block !important; /* 항상 표시 */
+    }
+    
+    .banner-image-container {
+        height: 100%;
+        width: 100%;
     }
     
     .main-banner-content h1 {
@@ -188,7 +194,12 @@ body {
 
 @media (max-width: 480px) {
     .main-banner {
-        height: 150px;
+        height: 200px !important; /* 작은 화면에서 적절한 높이 */
+        display: block !important; /* 항상 표시 */
+    }
+    
+    .banner-image-container img {
+        object-fit: cover !important;
     }
     
     .main-banner-content h1 {
@@ -537,13 +548,44 @@ body {
 
 /* Responsive Detail Images */
 @media (max-width: 768px) {
+    .detail-images-section {
+        display: block !important; /* 모바일에서도 항상 표시 */
+        padding: 1.5rem !important;
+        margin: 1.5rem 0 !important;
+    }
+    
     .detail-images-grid {
-        grid-template-columns: 1fr;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
         gap: 1rem;
     }
     
+    .detail-image-single {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .detail-image-single img {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+    }
+    
     .detail-image-item img {
-        height: 150px;
+        height: auto;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .detail-images-section {
+        padding: 1rem !important;
+        margin: 1rem 0 !important;
+    }
+    
+    .detail-images-section h3 {
+        font-size: 1.2rem !important;
     }
 }
 

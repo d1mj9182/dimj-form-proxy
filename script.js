@@ -1065,7 +1065,7 @@ function loadMainBannersContent() {
                     // Set banner image
                     imageElement.src = bannerData.imageData;
                     imageElement.style.display = 'block';
-                    bannerElement.style.display = 'flex'; // Show banner section
+                    bannerElement.style.display = 'block'; // Show banner section on all devices
                     
                     // Hide placeholder and show image
                     const placeholder = document.getElementById(`${stepName}BannerPlaceholder`);
