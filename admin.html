@@ -299,22 +299,25 @@
                     <div class="tab-content" id="detailImagesTab">
                         <div class="banner-management">
                             <h4>📋 상세페이지 - 모든 이미지 관리 (1페이지 중간 영역)</h4>
-                            <p style="color: #a0aec0; margin-bottom: 2rem;">1페이지 중간 영역에 표시할 상세 설명 이미지들을 업로드하세요. 개수 제한 없이 모든 이미지를 추가할 수 있습니다.</p>
+                            <p style="color: #a0aec0; margin-bottom: 2rem;">1페이지 중간 영역에 표시할 A4 5장 분량의 상세 설명 이미지를 업로드하세요. (권장 사이즈: 1050×2970px)</p>
                             
                             <div class="detail-images-manager">
                                 <div class="images-upload-grid">
                                     <div class="image-slot" data-slot="1">
                                         <div class="form-group">
-                                            <label>이미지 1</label>
+                                            <label>상세페이지 이미지 (A4 5장 분량)</label>
                                             <div class="image-upload-section">
                                                 <input type="file" id="detailImage1Upload" accept="image/*" onchange="previewDetailImage(event, 1)">
                                                 <label for="detailImage1Upload" class="upload-btn">
-                                                    <i class="fas fa-upload"></i> 이미지 업로드
+                                                    <i class="fas fa-upload"></i> 상세페이지 이미지 업로드
                                                 </label>
+                                                <div class="image-info">
+                                                    <small>권장 크기: 1050×2970px (A4 5장 세로 연결), JPG/PNG 형식</small>
+                                                </div>
                                             </div>
                                             
                                             <div class="image-preview" id="detailImage1Preview" style="display: none;">
-                                                <img id="detailPreview1" src="" alt="상세 이미지 미리보기">
+                                                <img id="detailPreview1" src="" alt="상세페이지 이미지 미리보기" style="max-height: 400px; width: auto;">
                                                 <div class="preview-actions">
                                                     <button type="button" onclick="removeDetailImage(1)" class="remove-btn">
                                                         <i class="fas fa-trash"></i> 제거
@@ -324,137 +327,7 @@
                                             
                                             <div class="form-group">
                                                 <label>이미지 설명</label>
-                                                <input type="text" id="detailCaption1" placeholder="이미지 설명 (선택사항)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="image-slot" data-slot="2">
-                                        <div class="form-group">
-                                            <label>이미지 2</label>
-                                            <div class="image-upload-section">
-                                                <input type="file" id="detailImage2Upload" accept="image/*" onchange="previewDetailImage(event, 2)">
-                                                <label for="detailImage2Upload" class="upload-btn">
-                                                    <i class="fas fa-upload"></i> 이미지 업로드
-                                                </label>
-                                            </div>
-                                            
-                                            <div class="image-preview" id="detailImage2Preview" style="display: none;">
-                                                <img id="detailPreview2" src="" alt="상세 이미지 미리보기">
-                                                <div class="preview-actions">
-                                                    <button type="button" onclick="removeDetailImage(2)" class="remove-btn">
-                                                        <i class="fas fa-trash"></i> 제거
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label>이미지 설명</label>
-                                                <input type="text" id="detailCaption2" placeholder="이미지 설명 (선택사항)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="image-slot" data-slot="3">
-                                        <div class="form-group">
-                                            <label>이미지 3</label>
-                                            <div class="image-upload-section">
-                                                <input type="file" id="detailImage3Upload" accept="image/*" onchange="previewDetailImage(event, 3)">
-                                                <label for="detailImage3Upload" class="upload-btn">
-                                                    <i class="fas fa-upload"></i> 이미지 업로드
-                                                </label>
-                                            </div>
-                                            
-                                            <div class="image-preview" id="detailImage3Preview" style="display: none;">
-                                                <img id="detailPreview3" src="" alt="상세 이미지 미리보기">
-                                                <div class="preview-actions">
-                                                    <button type="button" onclick="removeDetailImage(3)" class="remove-btn">
-                                                        <i class="fas fa-trash"></i> 제거
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label>이미지 설명</label>
-                                                <input type="text" id="detailCaption3" placeholder="이미지 설명 (선택사항)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="image-slot" data-slot="4">
-                                        <div class="form-group">
-                                            <label>이미지 4</label>
-                                            <div class="image-upload-section">
-                                                <input type="file" id="detailImage4Upload" accept="image/*" onchange="previewDetailImage(event, 4)">
-                                                <label for="detailImage4Upload" class="upload-btn">
-                                                    <i class="fas fa-upload"></i> 이미지 업로드
-                                                </label>
-                                            </div>
-                                            
-                                            <div class="image-preview" id="detailImage4Preview" style="display: none;">
-                                                <img id="detailPreview4" src="" alt="상세 이미지 미리보기">
-                                                <div class="preview-actions">
-                                                    <button type="button" onclick="removeDetailImage(4)" class="remove-btn">
-                                                        <i class="fas fa-trash"></i> 제거
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label>이미지 설명</label>
-                                                <input type="text" id="detailCaption4" placeholder="이미지 설명 (선택사항)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="image-slot" data-slot="5">
-                                        <div class="form-group">
-                                            <label>이미지 5</label>
-                                            <div class="image-upload-section">
-                                                <input type="file" id="detailImage5Upload" accept="image/*" onchange="previewDetailImage(event, 5)">
-                                                <label for="detailImage5Upload" class="upload-btn">
-                                                    <i class="fas fa-upload"></i> 이미지 업로드
-                                                </label>
-                                            </div>
-                                            
-                                            <div class="image-preview" id="detailImage5Preview" style="display: none;">
-                                                <img id="detailPreview5" src="" alt="상세 이미지 미리보기">
-                                                <div class="preview-actions">
-                                                    <button type="button" onclick="removeDetailImage(5)" class="remove-btn">
-                                                        <i class="fas fa-trash"></i> 제거
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label>이미지 설명</label>
-                                                <input type="text" id="detailCaption5" placeholder="이미지 설명 (선택사항)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="image-slot" data-slot="6">
-                                        <div class="form-group">
-                                            <label>이미지 6</label>
-                                            <div class="image-upload-section">
-                                                <input type="file" id="detailImage6Upload" accept="image/*" onchange="previewDetailImage(event, 6)">
-                                                <label for="detailImage6Upload" class="upload-btn">
-                                                    <i class="fas fa-upload"></i> 이미지 업로드
-                                                </label>
-                                            </div>
-                                            
-                                            <div class="image-preview" id="detailImage6Preview" style="display: none;">
-                                                <img id="detailPreview6" src="" alt="상세 이미지 미리보기">
-                                                <div class="preview-actions">
-                                                    <button type="button" onclick="removeDetailImage(6)" class="remove-btn">
-                                                        <i class="fas fa-trash"></i> 제거
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label>이미지 설명</label>
-                                                <input type="text" id="detailCaption6" placeholder="이미지 설명 (선택사항)">
+                                                <input type="text" id="detailCaption1" placeholder="상세페이지 설명 (선택사항)">
                                             </div>
                                         </div>
                                     </div>

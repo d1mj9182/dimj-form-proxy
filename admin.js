@@ -1116,22 +1116,20 @@ function loadDetailImagesSettings() {
                 enabledInput.checked = content.detailImages.enabled;
             }
             
-            // Load images
-            for (let i = 1; i <= 6; i++) {
-                const imageData = content.detailImages[`image${i}`];
-                if (imageData) {
-                    const imagePreview = document.getElementById(`detailImage${i}Preview`);
-                    const previewImage = document.getElementById(`detailPreview${i}`);
-                    const captionInput = document.getElementById(`detailCaption${i}`);
-                    
-                    if (imagePreview && previewImage) {
-                        previewImage.src = imageData.imageData;
-                        imagePreview.style.display = 'block';
-                    }
-                    
-                    if (captionInput && imageData.caption) {
-                        captionInput.value = imageData.caption;
-                    }
+            // Load image (only 1 image now)
+            const imageData = content.detailImages.image1;
+            if (imageData) {
+                const imagePreview = document.getElementById('detailImage1Preview');
+                const previewImage = document.getElementById('detailPreview1');
+                const captionInput = document.getElementById('detailCaption1');
+                
+                if (imagePreview && previewImage) {
+                    previewImage.src = imageData.imageData;
+                    imagePreview.style.display = 'block';
+                }
+                
+                if (captionInput && imageData.caption) {
+                    captionInput.value = imageData.caption;
                 }
             }
         }
@@ -1151,12 +1149,10 @@ function saveDetailImagesSettings() {
         pageContent.detailImages.enabled = enabledInput.checked;
     }
     
-    // Save captions for existing images
-    for (let i = 1; i <= 6; i++) {
-        const captionInput = document.getElementById(`detailCaption${i}`);
-        if (captionInput && pageContent.detailImages[`image${i}`]) {
-            pageContent.detailImages[`image${i}`].caption = captionInput.value || '';
-        }
+    // Save caption for the single image
+    const captionInput = document.getElementById('detailCaption1');
+    if (captionInput && pageContent.detailImages.image1) {
+        pageContent.detailImages.image1.caption = captionInput.value || '';
     }
     
     // Save to localStorage

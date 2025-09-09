@@ -1116,33 +1116,33 @@ function loadDetailImagesContent() {
             const detailImagesGrid = document.getElementById('detailImagesGrid');
             
             if (detailImagesSection && detailImagesGrid) {
-                // Check if we have any images
+                // Check if we have the detail image
                 let hasImages = false;
                 let imagesHTML = '';
                 
-                for (let i = 1; i <= 6; i++) {
-                    const imageData = content.detailImages[`image${i}`];
-                    if (imageData && imageData.imageData) {
-                        hasImages = true;
-                        imagesHTML += `
-                            <div class="detail-image-item">
-                                <img src="${imageData.imageData}" alt="상세 이미지 ${i}" loading="lazy">
-                                ${imageData.caption ? `<p class="image-caption">${imageData.caption}</p>` : ''}
-                            </div>
-                        `;
-                    }
+                const imageData = content.detailImages.image1;
+                if (imageData && imageData.imageData) {
+                    hasImages = true;
+                    imagesHTML = `
+                        <div class="detail-image-single">
+                            <img src="${imageData.imageData}" alt="상세페이지" loading="lazy" style="width: 100%; height: auto; max-width: 1050px; margin: 0 auto; display: block;">
+                            ${imageData.caption ? `<p class="image-caption" style="text-align: center; margin-top: 1rem; color: #64748b;">${imageData.caption}</p>` : ''}
+                        </div>
+                    `;
                 }
                 
                 if (hasImages) {
                     detailImagesGrid.innerHTML = imagesHTML;
+                    detailImagesSection.style.display = 'block';
                     
                     // Hide placeholder
                     const placeholder = document.getElementById('detailImagesPlaceholder');
                     if (placeholder) placeholder.style.display = 'none';
                     
-                    console.log('Detail images section loaded with images');
+                    console.log('Detail images section loaded with single A4 image');
                 } else {
                     // Show placeholder
+                    detailImagesSection.style.display = 'block';
                     const placeholder = document.getElementById('detailImagesPlaceholder');
                     if (placeholder) placeholder.style.display = 'flex';
                     
@@ -1150,10 +1150,9 @@ function loadDetailImagesContent() {
                         <div class="detail-images-placeholder" id="detailImagesPlaceholder">
                             <div class="placeholder-content">
                                 <i class="fas fa-images"></i>
-                                <h4>상세 이미지를 추가해주세요</h4>
-                                <p>권장 사이즈: <strong>800 × 600px 이상</strong></p>
-                                <p>세로로 긴 이미지도 자동으로 최적화됩니다</p>
-                                <p>최대 3개까지 업로드 가능합니다</p>
+                                <h4>A4 5장 분량 상세페이지를 추가해주세요</h4>
+                                <p>권장 사이즈: <strong>1050 × 2970px (A4 5장 세로 연결)</strong></p>
+                                <p>JPG/PNG 형식, 1개 파일로 업로드</p>
                                 <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
                             </div>
                         </div>
