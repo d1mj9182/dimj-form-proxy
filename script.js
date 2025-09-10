@@ -1595,5 +1595,39 @@ document.addEventListener('click', function(e) {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closePrivacyModal();
+        closeFraudWarning();
+    }
+});
+
+// 부정클릭 방지 기능
+function showFraudWarning() {
+    const modal = document.getElementById('fraudWarningModal');
+    const warningText = document.getElementById('fraudWarningText');
+    
+    // localStorage에서 관리자가 설정한 경고문 가져오기
+    const adminContent = JSON.parse(localStorage.getItem('adminContent') || '{}');
+    if (adminContent.fraudWarningMessage) {
+        warningText.textContent = adminContent.fraudWarningMessage;
+    }
+    
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeFraudWarning() {
+    const modal = document.getElementById('fraudWarningModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// 부정클릭 경고 모달 외부 클릭시 닫기
+document.addEventListener('click', function(e) {
+    const fraudModal = document.getElementById('fraudWarningModal');
+    if (fraudModal && e.target === fraudModal) {
+        closeFraudWarning();
     }
 });

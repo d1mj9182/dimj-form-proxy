@@ -485,11 +485,18 @@ let pageContent = {
 function switchTab(tabName) {
     // Remove active class from all tabs and content
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+    });
     
     // Add active class to clicked tab and corresponding content
     event.target.classList.add('active');
-    document.getElementById(tabName + 'Tab').classList.add('active');
+    const targetTab = document.getElementById(tabName + 'Tab');
+    if (targetTab) {
+        targetTab.classList.add('active');
+        targetTab.style.display = 'block';
+    }
     
     // Load content for the selected tab
     loadTabContent(tabName);
@@ -566,6 +573,21 @@ function loadTabContent(tabName) {
             });
             break;
             
+        case 'fraudWarning':
+            const fraudWarningMessage = document.getElementById('fraudWarningMessage');
+            if (fraudWarningMessage) {
+                const savedContent = localStorage.getItem('adminContent');
+                if (savedContent) {
+                    const content = JSON.parse(savedContent);
+                    if (content.fraudWarningMessage) {
+                        fraudWarningMessage.value = content.fraudWarningMessage;
+                    }
+                } else if (pageContent.fraudWarningMessage) {
+                    fraudWarningMessage.value = pageContent.fraudWarningMessage;
+                }
+            }
+            break;
+            
         case 'detailImages':
             loadDetailImagesSettings();
             break;
@@ -625,6 +647,7 @@ function saveDetailPageContent() {
         const warningContent = document.getElementById('warningContent');
         const cashRewardAmount = document.getElementById('cashRewardAmount');
         const totalLossAmount = document.getElementById('totalLossAmount');
+        const fraudWarningMessage = document.getElementById('fraudWarningMessage');
         
         if (mainHeroTitle && mainHeroSubtitle && mainHeroNote && warningTitle && warningContent) {
             pageContent.mainPage.heroTitle = mainHeroTitle.value;
@@ -698,8 +721,18 @@ function saveDetailPageContent() {
         saveMainBannerSettings();
         saveDetailImagesSettings();
         
+        // Save fraud warning message
+        if (fraudWarningMessage) {
+            pageContent.fraudWarningMessage = fraudWarningMessage.value;
+        }
+        
         // Save to localStorage
         localStorage.setItem('detailPageContent', JSON.stringify(pageContent));
+        
+        // Also save to adminContent for the main site
+        const adminContent = JSON.parse(localStorage.getItem('adminContent') || '{}');
+        adminContent.fraudWarningMessage = fraudWarningMessage ? fraudWarningMessage.value : '부정클릭은 법적 처벌 대상입니다. 정당한 목적으로만 서비스를 이용해 주세요.';
+        localStorage.setItem('adminContent', JSON.stringify(adminContent));
         
         // Show success message
         alert('상세 페이지 내용이 저장되었습니다!');

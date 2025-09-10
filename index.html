@@ -519,6 +519,34 @@
         </div>
     </div>
 
+    <!-- 부정클릭 방지 버튼 -->
+    <button id="fraudPreventionBtn" class="fraud-prevention-btn" onclick="showFraudWarning()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span class="fraud-btn-text">부정클릭 방지</span>
+    </button>
+
+    <!-- 부정클릭 경고 모달 -->
+    <div id="fraudWarningModal" class="fraud-warning-modal">
+        <div class="fraud-warning-content">
+            <div class="fraud-warning-header">
+                <h2>⚠️ 경고</h2>
+                <button class="modal-close-btn" onclick="closeFraudWarning()">×</button>
+            </div>
+            <div class="fraud-warning-body">
+                <p id="fraudWarningText">부정클릭은 법적 처벌 대상입니다. 정당한 목적으로만 서비스를 이용해 주세요.</p>
+            </div>
+            <div class="fraud-warning-footer">
+                <button type="button" class="modal-confirm-btn" onclick="closeFraudWarning()">
+                    확인
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
