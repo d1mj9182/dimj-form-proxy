@@ -1553,3 +1553,47 @@ function showDailyLimitMessage(count, limit) {
         }
     }, 5000);
 }
+
+// Privacy Modal Functions
+function showPrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closePrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function agreePrivacy() {
+    const checkbox = document.getElementById('privacyAgree');
+    if (checkbox) {
+        checkbox.checked = true;
+        
+        // Trigger change event to update form validation
+        const event = new Event('change');
+        checkbox.dispatchEvent(event);
+    }
+    closePrivacyModal();
+}
+
+// Close modal when clicking outside of content
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('privacyModal');
+    if (modal && e.target === modal) {
+        closePrivacyModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePrivacyModal();
+    }
+});

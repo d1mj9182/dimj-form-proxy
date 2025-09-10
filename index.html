@@ -345,7 +345,7 @@
                         <i class="fas fa-exclamation-circle"></i>
                         <div>
                             <p><strong>⏰ 한정 특가 진행 중!</strong></p>
-                            <p>지금 신청하면 최대 140만원 현금사은품 + 당일설치 가능</p>
+                            <p>지금 신청하면 최대 120만원 현금사은품 + 당일설치 가능</p>
                         </div>
                     </div>
 
@@ -392,8 +392,25 @@
                             </div>
                         </div>
 
+                        <!-- 개인정보 동의 섹션 -->
+                        <div class="privacy-agreement-section">
+                            <div class="privacy-checkbox-wrapper">
+                                <input type="checkbox" id="privacyAgree" name="privacyAgree" required>
+                                <label for="privacyAgree">
+                                    <span class="checkbox-text">개인정보 수집 및 이용에 동의합니다</span>
+                                    <span class="required-mark">(필수)</span>
+                                </label>
+                                <button type="button" class="privacy-detail-btn" onclick="showPrivacyModal()">
+                                    약관보기
+                                </button>
+                            </div>
+                            <div class="privacy-notice">
+                                <small>※ 개인정보는 서비스 제공 목적으로만 사용되며, 관련 법령에 따라 안전하게 관리됩니다.</small>
+                            </div>
+                        </div>
+
                         <button type="submit" class="submit-button" id="submitButton" disabled>
-                            🎉 지금 바로 신청하고 140만원 받기 <i class="fas fa-chevron-right"></i>
+                            🎉 지금 바로 신청하고 120만원 받기 <i class="fas fa-chevron-right"></i>
                         </button>
                     </form>
                 </div>
@@ -454,6 +471,53 @@
     <button id="topButton" class="top-button" onclick="scrollToTop()">
         <i class="fas fa-chevron-up"></i>
     </button>
+
+    <!-- 개인정보 약관 모달 -->
+    <div class="privacy-modal" id="privacyModal">
+        <div class="privacy-modal-content">
+            <div class="privacy-modal-header">
+                <h2>개인정보 수집 및 이용 동의</h2>
+                <button type="button" class="modal-close-btn" onclick="closePrivacyModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="privacy-modal-body">
+                <h3>1. 개인정보 수집 목적</h3>
+                <ul>
+                    <li>통신서비스 가입 상담 및 안내</li>
+                    <li>맞춤형 서비스 제공 및 요금제 추천</li>
+                    <li>고객 문의사항 처리 및 A/S 서비스 제공</li>
+                </ul>
+
+                <h3>2. 수집하는 개인정보 항목</h3>
+                <ul>
+                    <li>필수항목: 성명, 연락처, 주소, 생년월일</li>
+                    <li>선택항목: 이메일, 현재 사용 중인 통신사 정보</li>
+                </ul>
+
+                <h3>3. 개인정보 보유 및 이용기간</h3>
+                <ul>
+                    <li>서비스 제공 완료 후 3년간 보관</li>
+                    <li>단, 관계법령에 따라 보관이 필요한 경우 해당 기간 동안 보관</li>
+                </ul>
+
+                <h3>4. 개인정보 제3자 제공</h3>
+                <ul>
+                    <li>통신사: 서비스 가입 처리를 위한 최소한의 정보 제공</li>
+                    <li>설치기사: 설치 서비스 제공을 위한 연락처 및 주소 정보</li>
+                </ul>
+
+                <h3>5. 동의 거부 권리</h3>
+                <p>귀하는 개인정보 수집 및 이용에 대한 동의를 거부할 권리가 있습니다. 
+                다만, 필수항목에 대한 동의를 거부할 경우 서비스 이용이 제한될 수 있습니다.</p>
+            </div>
+            <div class="privacy-modal-footer">
+                <button type="button" class="modal-confirm-btn" onclick="agreePrivacy()">
+                    동의하고 닫기
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
