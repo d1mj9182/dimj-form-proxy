@@ -173,22 +173,59 @@ body {
 
 /* Responsive Main Banner */
 @media (max-width: 768px) {
+    /* 1페이지 메인배너 좌우 꽉 차게 */
     .main-banner {
-        height: 300px !important; /* 모바일에서도 적절한 높이 유지 */
-        display: block !important; /* 항상 표시 */
+        height: 280px !important;
+        display: block !important;
+        width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
     }
     
     .banner-image-container {
-        height: 100%;
-        width: 100%;
+        height: 100% !important;
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .banner-image-container img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+    
+    .main-banner-content {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+        padding: 1rem !important;
+        z-index: 2 !important;
     }
     
     .main-banner-content h1 {
-        font-size: 2rem;
+        font-size: 1.6rem !important;
+        margin-bottom: 0.5rem !important;
+        color: white !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.7) !important;
+        line-height: 1.3 !important;
     }
     
     .main-banner-content p {
-        font-size: 1rem;
+        font-size: 0.9rem !important;
+        color: white !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.7) !important;
+        line-height: 1.4 !important;
     }
 }
 
@@ -2361,24 +2398,34 @@ body {
         line-height: 1.3 !important;
     }
     
-    /* 통신사 선택 모바일 최적화 - 더 작게 */
+    /* 통신사 선택 모바일 최적화 - 초소형 가로 배치 */
     .provider-selection {
-        grid-template-columns: 1fr 1fr 1fr !important;
-        gap: 0.3rem !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.2rem !important;
         padding: 0 0.25rem !important;
+        justify-content: space-between !important;
+    }
+    
+    .provider-item {
+        flex: 0 1 calc(33.33% - 0.15rem) !important;
+        min-width: calc(33.33% - 0.15rem) !important;
     }
     
     .provider-item label {
-        padding: 0.5rem 0.2rem !important;
-        font-size: 0.7rem !important;
+        padding: 0.3rem 0.1rem !important;
+        font-size: 0.6rem !important;
         font-weight: 500 !important;
-        min-height: 35px !important;
-        border-radius: 0.4rem !important;
+        min-height: 28px !important;
+        border-radius: 0.3rem !important;
         text-align: center !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        line-height: 1.1 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
     
     /* CTA 버튼 완전 재설계 */
@@ -2602,7 +2649,7 @@ body {
         left: 0 !important;
         right: 0 !important;
         margin: 0 !important;
-        padding: 1rem 0.5rem !important;
+        padding: 0.75rem 0.25rem !important;
         border-radius: 0 !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
@@ -2610,28 +2657,29 @@ body {
     }
     
     .status-board h2 {
-        font-size: 1rem !important;
-        margin-bottom: 0.5rem !important;
+        font-size: 0.9rem !important;
+        margin-bottom: 0.4rem !important;
         text-align: center !important;
         color: white !important;
         font-weight: 600 !important;
         padding: 0 0.25rem !important;
+        line-height: 1.2 !important;
     }
     
-    /* 통계 카드 그리드 - 콤팩트한 크기 */
+    /* 통계 카드 그리드 - 가로 4열 배치 초소형 */
     .status-stats {
         display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 0.3rem !important;
-        margin-bottom: 1rem !important;
+        grid-template-columns: 1fr 1fr 1fr 1fr !important;
+        gap: 0.2rem !important;
+        margin-bottom: 0.75rem !important;
         width: 100% !important;
         padding: 0 0.25rem !important;
     }
     
     .stat-card {
-        padding: 0.4rem 0.2rem !important;
-        border-radius: 0.4rem !important;
-        min-height: 50px !important;
+        padding: 0.3rem 0.1rem !important;
+        border-radius: 0.3rem !important;
+        min-height: 40px !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
@@ -2647,23 +2695,25 @@ body {
     }
     
     .stat-content p {
-        font-size: 0.65rem !important;
+        font-size: 0.55rem !important;
         margin: 0 !important;
-        margin-bottom: 0.1rem !important;
+        margin-bottom: 0.05rem !important;
         font-weight: 500 !important;
         white-space: nowrap !important;
-        line-height: 1.1 !important;
+        line-height: 1 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
     
     .stat-number {
-        font-size: 0.9rem !important;
+        font-size: 0.75rem !important;
         font-weight: 600 !important;
         line-height: 1 !important;
     }
     
     .stat-unit {
-        font-size: 0.6rem !important;
-        margin-left: 0.1rem !important;
+        font-size: 0.5rem !important;
+        margin-left: 0.05rem !important;
     }
     
     .stat-icon {
@@ -3213,5 +3263,48 @@ body {
         padding: 0.8rem !important;
         font-size: 0.95rem !important;
         min-height: 45px !important;
+    }
+    
+    /* 모바일 글자 깨짐 방지 및 가독성 개선 */
+    * {
+        word-wrap: break-word !important;
+        word-break: keep-all !important;
+        line-height: 1.4 !important;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        word-break: keep-all !important;
+        line-height: 1.3 !important;
+    }
+    
+    p, span, div {
+        word-break: keep-all !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* 입력 필드 및 레이블 최적화 */
+    label {
+        font-size: 0.85rem !important;
+        line-height: 1.3 !important;
+        word-break: keep-all !important;
+    }
+    
+    input, select, textarea {
+        font-size: 0.9rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    /* 버튼 텍스트 최적화 */
+    button {
+        word-break: keep-all !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* 서비스 선택 버튼 텍스트 최적화 */
+    .service-item label {
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+        word-break: keep-all !important;
+        text-align: center !important;
     }
 }
