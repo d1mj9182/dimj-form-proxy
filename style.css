@@ -3463,10 +3463,14 @@ body {
 
 .fraud-warning-body p {
     font-size: 1.1rem;
-    line-height: 1.6;
+    line-height: 1.8;
     color: #333;
     margin: 0;
     text-align: center;
+    word-break: keep-all;
+    white-space: pre-wrap;
+    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.02em;
 }
 
 .fraud-warning-footer {
@@ -3511,5 +3515,20 @@ body {
     
     .fraud-warning-content {
         max-width: 90%;
+        margin: 1rem;
+    }
+    
+    .fraud-warning-body {
+        padding: 1.5rem 1rem;
+    }
+    
+    .fraud-warning-body p {
+        font-size: 1rem;
+        line-height: 1.7;
+        padding: 0 0.5rem;
+    }
+    
+    .fraud-warning-header h2 {
+        font-size: 1.3rem;
     }
 }
