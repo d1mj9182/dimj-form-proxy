@@ -3112,6 +3112,40 @@ body {
         box-sizing: border-box !important;
     }
     
+    /* 버튼 모바일 최적화 */
+    .next-btn, .prev-btn, .submit-btn {
+        width: calc(100% - 1rem) !important;
+        margin: 0.5rem !important;
+        padding: 1rem 1.5rem !important;
+        font-size: 1rem !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* 입력 필드 모바일 최적화 */
+    input[type="text"], input[type="tel"], select {
+        width: 100% !important;
+        padding: 0.75rem !important;
+        margin: 0.25rem 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* 네비게이션 버튼 모바일 최적화 */
+    .nav-buttons {
+        padding: 0 0.5rem !important;
+        gap: 0.5rem !important;
+    }
+    
+    /* 모바일 컨텐츠 영역 전체 활용 */
+    .step-content {
+        padding: 0 0.5rem !important;
+        margin: 0 !important;
+    }
+    
+    .form-group {
+        margin: 0.75rem 0 !important;
+        padding: 0 !important;
+    }
+    
     .form-step {
         overflow-x: hidden !important;
         max-width: 100% !important;
