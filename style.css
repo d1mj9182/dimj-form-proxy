@@ -2716,25 +2716,31 @@ body {
         line-height: 1.2 !important;
     }
     
-    /* 통계 카드 그리드 - 가로 4열 배치 초소형 */
-    .status-stats {
+    /* 통계 카드 그리드 - 모바일 3열 배치 */
+    .status-stats, .stats-grid {
         display: grid !important;
-        grid-template-columns: 1fr 1fr 1fr 1fr !important;
-        gap: 0.2rem !important;
-        margin-bottom: 0.75rem !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.15rem !important;
+        margin-bottom: 0.5rem !important;
         width: 100% !important;
-        padding: 0 0.25rem !important;
+        padding: 0 0.2rem !important;
+    }
+    
+    /* 4번째 카드를 새로운 줄에 배치 */
+    .stat-card:nth-child(4) {
+        grid-column: 1 / 2 !important;
     }
     
     .stat-card {
-        padding: 0.3rem 0.1rem !important;
-        border-radius: 0.3rem !important;
-        min-height: 40px !important;
+        padding: 0.25rem 0.1rem !important;
+        border-radius: 0.25rem !important;
+        min-height: 45px !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
         text-align: center !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
     }
     
     .stat-content {
@@ -2745,25 +2751,40 @@ body {
     }
     
     .stat-content p {
-        font-size: 0.55rem !important;
+        font-size: 0.6rem !important;
         margin: 0 !important;
-        margin-bottom: 0.05rem !important;
+        margin-bottom: 0.1rem !important;
         font-weight: 500 !important;
         white-space: nowrap !important;
         line-height: 1 !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        color: rgba(255,255,255,0.9) !important;
     }
     
     .stat-number {
-        font-size: 0.75rem !important;
-        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        font-weight: 700 !important;
         line-height: 1 !important;
+        color: white !important;
     }
     
     .stat-unit {
-        font-size: 0.5rem !important;
-        margin-left: 0.05rem !important;
+        font-size: 0.55rem !important;
+        margin-left: 0.1rem !important;
+        color: rgba(255,255,255,0.8) !important;
+    }
+    
+    .stat-icon {
+        font-size: 0.8rem !important;
+        margin-top: 0.15rem !important;
+        opacity: 0.7 !important;
+    }
+    
+    .stat-icon i {
+        font-size: 0.8rem !important;
+    }
+    
+    .stat-indicator {
+        display: none !important; /* 모바일에서는 인디케이터 숨김 */
     }
     
     .stat-icon {
