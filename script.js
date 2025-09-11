@@ -1631,3 +1631,82 @@ document.addEventListener('click', function(e) {
         closeFraudWarning();
     }
 });
+
+// Status Board Data Management
+function loadStatusBoardData() {
+    // Default data
+    const defaultData = {
+        waitingConsultation: 5,
+        consultingNow: 8,
+        completedConsultations: 23,
+        installReservation: 15,
+        installCompleted: 12,
+        cashReward: 1200
+    };
+    
+    // Load from localStorage or use default
+    const savedData = localStorage.getItem('statusBoardData');
+    const statusData = savedData ? JSON.parse(savedData) : defaultData;
+    
+    // Update UI elements with the data
+    updateStatusBoardUI(statusData);
+    
+    return statusData;
+}
+
+function updateStatusBoardUI(data) {
+    // Update statistics in the status board
+    const statMappings = {
+        'waitingConsultation': 'waitingConsultation',
+        'consultingNow': 'consultingNow', 
+        'completedConsultations': 'completedConsultations',
+        'installReservation': 'installReservation',
+        'installCompleted': 'installCompleted',
+        'cashReward': 'cashReward'
+    };
+    
+    // Update stat numbers
+    Object.keys(statMappings).forEach(key => {
+        const element = document.getElementById(key);
+        if (element && data[key] !== undefined) {
+            element.textContent = data[key];
+        }
+    });
+    
+    // Update today applications (first stat card)
+    const todayApplications = document.getElementById('todayApplications');
+    if (todayApplications && data.completedConsultations) {
+        // Calculate dynamic "today applications" based on completed consultations + waiting + consulting
+        const dynamicToday = (data.completedConsultations || 0) + 
+                           (data.waitingConsultation || 0) + 
+                           (data.consultingNow || 0);
+        todayApplications.textContent = dynamicToday;
+    }
+}
+
+// Initialize status board on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadStatusBoardData();
+    
+    // Refresh data every 30 seconds to check for updates
+    setInterval(() => {
+        loadStatusBoardData();
+    }, 30000);
+    
+    // Check for hash in URL to auto-scroll to status section
+    if (window.location.hash === '#status') {
+        setTimeout(() => {
+            const statusSection = document.querySelector('.stats-section');
+            if (statusSection) {
+                statusSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 100);
+    }
+});
+
+// Add event listener for storage changes (when admin updates data)
+window.addEventListener('storage', function(e) {
+    if (e.key === 'statusBoardData') {
+        loadStatusBoardData();
+    }
+});

@@ -1242,3 +1242,124 @@ window.removeDetailImage = removeDetailImage;
 window.loadDetailImagesSettings = loadDetailImagesSettings;
 window.saveDetailImagesSettings = saveDetailImagesSettings;
 window.goToMainPage = goToMainPage;
+
+// Status Board Management
+let statusBoardData = {
+    waitingConsultation: 5,
+    consultingNow: 8,
+    completedConsultations: 23,
+    installReservation: 15,
+    installCompleted: 12,
+    cashReward: 1200
+};
+
+// Load status board data from localStorage
+function loadStatusBoardData() {
+    const saved = localStorage.getItem('statusBoardData');
+    if (saved) {
+        statusBoardData = JSON.parse(saved);
+    }
+    
+    // Update form fields with current data
+    const fields = ['waitingConsultation', 'consultingNow', 'completedConsultations', 
+                   'installReservation', 'installCompleted', 'cashReward'];
+    
+    fields.forEach(field => {
+        const input = document.getElementById(field);
+        if (input) {
+            input.value = statusBoardData[field] || 0;
+        }
+    });
+}
+
+// Save status board data to localStorage
+function saveStatusBoardData() {
+    const fields = ['waitingConsultation', 'consultingNow', 'completedConsultations', 
+                   'installReservation', 'installCompleted', 'cashReward'];
+    
+    fields.forEach(field => {
+        const input = document.getElementById(field);
+        if (input) {
+            statusBoardData[field] = parseInt(input.value) || 0;
+        }
+    });
+    
+    localStorage.setItem('statusBoardData', JSON.stringify(statusBoardData));
+    
+    // Show success message
+    showNotification('현황판 데이터가 저장되었습니다!', 'success');
+}
+
+// Preview status board in new window
+function previewStatusBoard() {
+    // First save current data
+    saveStatusBoardData();
+    
+    // Open main page to see the changes
+    window.open('index.html#status', '_blank');
+    
+    showNotification('새 창에서 현황판을 확인하세요!', 'info');
+}
+
+// Load status board data when switching to that tab
+function switchTab(tabName) {
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    // Remove active class from all tab buttons
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    const selectedTab = document.getElementById(tabName + 'Tab');
+    if (selectedTab) {
+        selectedTab.style.display = 'block';
+    }
+    
+    // Add active class to clicked tab button
+    event.target.classList.add('active');
+    
+    // Load data if switching to status board tab
+    if (tabName === 'statusBoard') {
+        loadStatusBoardData();
+    }
+}
+
+// Notification system
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(n => n.remove());
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+        ${message}
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Initialize status board when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadStatusBoardData();
+});
+
+// Make functions globally accessible
+window.loadStatusBoardData = loadStatusBoardData;
+window.saveStatusBoardData = saveStatusBoardData;
+window.previewStatusBoard = previewStatusBoard;
+window.switchTab = switchTab;
