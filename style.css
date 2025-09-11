@@ -99,7 +99,10 @@ body {
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
-    height: 580px;
+    min-height: 50vh;
+    max-height: 70vh;
+    height: auto;
+    aspect-ratio: 16/9;
     background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
     display: flex;
     align-items: center;
@@ -204,7 +207,10 @@ body {
     /* 1페이지 메인배너 화면 전체 꽉 차게 */
     .main-banner {
         width: 100vw !important;
-        height: 280px !important;
+        min-height: 40vh !important;
+        max-height: 60vh !important;
+        height: auto !important;
+        aspect-ratio: 16/9 !important;
         position: relative !important;
         left: 50% !important;
         right: 50% !important;
@@ -294,8 +300,11 @@ body {
 
 @media (max-width: 480px) {
     .main-banner {
-        height: 200px !important; /* 작은 화면에서 적절한 높이 */
-        display: block !important; /* 항상 표시 */
+        min-height: 35vh !important;
+        max-height: 50vh !important;
+        height: auto !important;
+        aspect-ratio: 4/3 !important;
+        display: block !important;
     }
     
     .banner-image-container img {
@@ -303,11 +312,11 @@ body {
     }
     
     .main-banner-content h1 {
-        font-size: 1.5rem;
+        font-size: 1.4rem !important;
     }
     
     .main-banner-content p {
-        font-size: 0.9rem;
+        font-size: 0.85rem !important;
     }
 }
 
