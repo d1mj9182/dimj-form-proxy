@@ -1657,32 +1657,21 @@ function loadStatusBoardData() {
 }
 
 function updateStatusBoardUI(data) {
-    // Update statistics in the status board with color coding
+    // Update statistics in the status board
     const statMappings = {
-        'waitingConsultation': { id: 'waitingConsultation', color: 'orange' },
-        'consultingNow': { id: 'consultingNow', color: 'blue' }, 
-        'completedConsultations': { id: 'completedConsultations', color: 'green' },
-        'installReservation': { id: 'installReservation', color: 'purple' },
-        'installCompleted': { id: 'installCompleted', color: 'success' },
-        'cashReward': { id: 'cashReward', color: 'gold' }
+        'waitingConsultation': 'waitingConsultation',
+        'consultingNow': 'consultingNow', 
+        'completedConsultations': 'completedConsultations',
+        'installReservation': 'installReservation',
+        'installCompleted': 'installCompleted',
+        'cashReward': 'cashReward'
     };
     
-    // Update stat numbers and apply color coding
+    // Update stat numbers
     Object.keys(statMappings).forEach(key => {
-        const mapping = statMappings[key];
-        const element = document.getElementById(mapping.id);
-        const parentCard = element ? element.closest('.stat-card') : null;
-        
+        const element = document.getElementById(key);
         if (element && data[key] !== undefined) {
             element.textContent = data[key];
-            
-            // Apply color coding to the parent card
-            if (parentCard) {
-                // Remove existing color classes
-                parentCard.classList.remove('stat-orange', 'stat-blue', 'stat-green', 'stat-purple', 'stat-success', 'stat-gold');
-                // Add new color class
-                parentCard.classList.add(`stat-${mapping.color}`);
-            }
         }
     });
     
@@ -1697,25 +1686,8 @@ function updateStatusBoardUI(data) {
                            (data.installCompleted || 0);
         todayApplications.textContent = dynamicToday;
     }
-    
-    // Update consultation list items with status colors
-    updateConsultationListColors();
 }
 
-// Update consultation list colors based on status
-function updateConsultationListColors() {
-    const consultationItems = document.querySelectorAll('.consultation-item');
-    
-    consultationItems.forEach((item, index) => {
-        // Remove existing status classes
-        item.classList.remove('status-waiting', 'status-consulting', 'status-completed', 'status-reserved', 'status-installed');
-        
-        // Add status class based on index (simulating different statuses)
-        const statusClasses = ['status-waiting', 'status-consulting', 'status-completed', 'status-reserved', 'status-installed'];
-        const randomStatus = statusClasses[index % statusClasses.length];
-        item.classList.add(randomStatus);
-    });
-}
 
 // Initialize status board on page load
 document.addEventListener('DOMContentLoaded', function() {
