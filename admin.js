@@ -639,6 +639,22 @@ function loadDetailPageContent() {
 
 function saveDetailPageContent() {
     try {
+        // Load existing content first to preserve banner settings
+        const existingSavedContent = localStorage.getItem('detailPageContent');
+        if (existingSavedContent) {
+            const existingContent = JSON.parse(existingSavedContent);
+            // Preserve banner settings if they exist
+            if (existingContent.banner) {
+                pageContent.banner = existingContent.banner;
+            }
+            if (existingContent.mainBanners) {
+                pageContent.mainBanners = existingContent.mainBanners;
+            }
+            if (existingContent.detailImages) {
+                pageContent.detailImages = existingContent.detailImages;
+            }
+        }
+        
         // Collect main page data
         const mainHeroTitle = document.getElementById('mainHeroTitle');
         const mainHeroSubtitle = document.getElementById('mainHeroSubtitle');
@@ -716,10 +732,7 @@ function saveDetailPageContent() {
             }
         }
         
-        // Save banner settings
-        saveBannerSettings();
-        saveMainBannerSettings();
-        saveDetailImagesSettings();
+        // Don't call save functions here - they're already preserved from existing content
         
         // Save fraud warning message
         if (fraudWarningMessage) {
