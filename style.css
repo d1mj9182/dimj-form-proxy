@@ -3731,6 +3731,14 @@ body {
 }
 
 
+/* Consultation status text styling only */
+.consultation-status {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0.2rem 0;
+    opacity: 0.9;
+}
+
 /* Admin page dropdown and input styles */
 .status-dropdown {
     padding: 0.5rem;
