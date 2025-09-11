@@ -543,114 +543,24 @@ function renderConsultationList() {
     const consultationList = document.getElementById('consultationList');
     if (!consultationList) return;
     
-    // Get real application data from localStorage
-    const applications = getRealApplications();
-    
-    // Show only the most recent 4 applications
-    const recentApplications = applications.slice(0, 4);
-    
-    consultationList.innerHTML = recentApplications.map((app, index) => {
-        const statusInfo = getStatusInfo(app.consultationStatus || 'waiting');
-        const serviceName = getCleanServiceName(app.service);
-        
-        return `
-        <div class="consultation-item ${index === 0 ? 'new' : ''}">
+    consultationList.innerHTML = realTimeData.recentConsultations.map((consultation, index) => `
+        <div class="consultation-item ${consultation.color} ${index === 0 ? 'new' : ''}">
             <div class="consultation-left">
-                <div class="consultation-dot"></div>
+                <div class="consultation-dot ${consultation.color}"></div>
                 <div class="consultation-info">
-                    <h4 class="consultation-name">${app.name} 고객님</h4>
-                    <p class="consultation-service">${serviceName}</p>
-                    <p class="consultation-status">${statusInfo.text}</p>
-                    <p class="consultation-date">신청일: ${formatApplicationDate(app.timestamp)}</p>
+                    <h4 class="consultation-name ${consultation.color}">${consultation.name} 고객님</h4>
+                    <p class="consultation-service">${consultation.service} ${consultation.status}</p>
+                    <p class="consultation-date">신청일: ${formatDate(consultation.date)}</p>
                 </div>
             </div>
             <div class="consultation-right">
-                <p class="consultation-amount">현금 ${app.giftAmount || 0}만원</p>
-                <p class="consultation-time">${getTimeAgo(app.timestamp)}</p>
+                <p class="consultation-amount ${consultation.color}">현금 ${consultation.amount}만원</p>
+                <p class="consultation-time">${consultation.time}</p>
             </div>
         </div>
     `).join('');
 }
 
-// Get real applications from localStorage
-function getRealApplications() {
-    const applications = [];
-    
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('application_')) {
-            try {
-                const data = JSON.parse(localStorage.getItem(key));
-                applications.push({
-                    id: key.replace('application_', ''),
-                    ...data
-                });
-            } catch (error) {
-                console.error('Error parsing application data:', error);
-            }
-        }
-    }
-    
-    // Sort by timestamp (newest first)
-    return applications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-}
-
-// Get status information for color coding
-function getStatusInfo(status) {
-    switch (status) {
-        case 'waiting':
-            return { text: '상담 대기', colorClass: 'status-waiting' };
-        case 'consulting':
-            return { text: '상담 중', colorClass: 'status-consulting' };
-        case 'consultation_completed':
-            return { text: '상담 완료', colorClass: 'status-completed' };
-        case 'install_reserved':
-            return { text: '설치 예약', colorClass: 'status-reserved' };
-        case 'install_completed':
-            return { text: '설치 완료', colorClass: 'status-installed' };
-        default:
-            return { text: '상담 대기', colorClass: 'status-waiting' };
-    }
-}
-
-// Clean service name display
-function getCleanServiceName(service) {
-    if (!service) return '서비스 미선택';
-    
-    // Replace + with proper separator and clean up
-    return service
-        .replace(/\+/g, ' + ')
-        .replace(/거전렌탈/g, '거전렌탈')
-        .replace(/인터넷/g, '인터넷')
-        .replace(/가전렌탈/g, '가전렌탈')
-        .trim();
-}
-
-// Format application date
-function formatApplicationDate(timestamp) {
-    return new Date(timestamp).toLocaleString('ko-KR', {
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
-// Get time ago string
-function getTimeAgo(timestamp) {
-    const now = new Date();
-    const applicationTime = new Date(timestamp);
-    const diffMinutes = Math.floor((now - applicationTime) / (1000 * 60));
-    
-    if (diffMinutes < 1) return '방금 전';
-    if (diffMinutes < 60) return `${diffMinutes}분 전`;
-    
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) return `${diffHours}시간 전`;
-    
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}일 전`;
-}
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -740,9 +650,7 @@ async function submitToAirtable(data) {
             preference: data.preference || '빠른 시간에 연락드립니다',
             timestamp: new Date().toISOString(),
             ip: antiSpam.userIP,
-            status: 'pending', // pending, contacted, completed
-            consultationStatus: 'waiting', // waiting, consulting, consultation_completed, install_reserved, install_completed
-            giftAmount: 0 // 사은품 금액 (만원 단위)
+            status: 'pending' // pending, contacted, completed
         };
         
         // Save to localStorage for admin panel
@@ -1725,113 +1633,3 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Status Board Data Management
-function loadStatusBoardData() {
-    // Default data
-    const defaultData = {
-        waitingConsultation: 5,
-        consultingNow: 8,
-        completedConsultations: 23,
-        installReservation: 15,
-        installCompleted: 12,
-        cashReward: 1200
-    };
-    
-    // Load from localStorage or use default
-    const savedData = localStorage.getItem('statusBoardData');
-    const statusData = savedData ? JSON.parse(savedData) : defaultData;
-    
-    // Update UI elements with the data
-    updateStatusBoardUI(statusData);
-    
-    return statusData;
-}
-
-function updateStatusBoardUI(data) {
-    // Update statistics in the status board
-    const statMappings = {
-        'waitingConsultation': 'waitingConsultation',
-        'consultingNow': 'consultingNow', 
-        'completedConsultations': 'completedConsultations',
-        'installReservation': 'installReservation',
-        'installCompleted': 'installCompleted',
-        'cashReward': 'cashReward'
-    };
-    
-    // Update stat numbers
-    Object.keys(statMappings).forEach(key => {
-        const element = document.getElementById(key);
-        if (element && data[key] !== undefined) {
-            element.textContent = data[key];
-        }
-    });
-    
-    // Update today applications (first stat card)
-    const todayApplications = document.getElementById('todayApplications');
-    if (todayApplications && data.completedConsultations !== undefined) {
-        // Calculate dynamic "today applications" based on all status counts
-        const dynamicToday = (data.completedConsultations || 0) + 
-                           (data.waitingConsultation || 0) + 
-                           (data.consultingNow || 0) +
-                           (data.installReservation || 0) +
-                           (data.installCompleted || 0);
-        todayApplications.textContent = dynamicToday;
-    }
-    
-    // Update status footer legend with real data
-    updateStatusLegend(data);
-}
-
-// Update status legend at the bottom
-function updateStatusLegend(data) {
-    // 상담 가능 = 상담 대기 + 상담 완료 (상담 가능한 상태)
-    const consultationAvailable = document.getElementById('consultationAvailable');
-    if (consultationAvailable) {
-        const availableCount = (data.waitingConsultation || 0) + (data.completedConsultations || 0);
-        consultationAvailable.textContent = availableCount;
-    }
-    
-    // 상담 진행중 = 상담 중
-    const consultationProgress = document.getElementById('consultationProgress');
-    if (consultationProgress) {
-        consultationProgress.textContent = data.consultingNow || 0;
-    }
-    
-    // 계약 완료 = 설치 예약 + 설치 완료
-    const contractCompleted = document.getElementById('contractCompleted');
-    if (contractCompleted) {
-        const completedCount = (data.installReservation || 0) + (data.installCompleted || 0);
-        contractCompleted.textContent = completedCount;
-    }
-}
-
-
-// Initialize status board on page load
-document.addEventListener('DOMContentLoaded', function() {
-    loadStatusBoardData();
-    renderConsultationList(); // Load real consultation list
-    
-    // Refresh data every 30 seconds to check for updates
-    setInterval(() => {
-        loadStatusBoardData();
-        renderConsultationList(); // Update consultation list too
-    }, 30000);
-    
-    // Check for hash in URL to auto-scroll to status section
-    if (window.location.hash === '#status') {
-        setTimeout(() => {
-            const statusSection = document.querySelector('.stats-section');
-            if (statusSection) {
-                statusSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        }, 100);
-    }
-});
-
-// Add event listener for storage changes (when admin updates data)
-window.addEventListener('storage', function(e) {
-    if (e.key === 'statusBoardData' || e.key.startsWith('application_')) {
-        loadStatusBoardData();
-        renderConsultationList(); // Update consultation list when applications change
-    }
-});

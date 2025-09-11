@@ -189,7 +189,7 @@ function renderApplicationsTable(applications) {
     if (applications.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="11" style="text-align: center; color: #64748b; padding: 2rem;">
+                <td colspan="10" style="text-align: center; color: #64748b; padding: 2rem;">
                     신청 내역이 없습니다.
                 </td>
             </tr>
@@ -197,11 +197,7 @@ function renderApplicationsTable(applications) {
         return;
     }
     
-    tbody.innerHTML = applications.map(app => {
-        const currentStatus = app.consultationStatus || 'waiting';
-        const giftAmount = app.giftAmount || 0;
-        
-        return `
+    tbody.innerHTML = applications.map(app => `
         <tr>
             <td>${app.id}</td>
             <td>${app.name}</td>
@@ -211,32 +207,17 @@ function renderApplicationsTable(applications) {
             <td>${app.preference || '빠른 시간'}</td>
             <td>${formatDate(app.timestamp)}</td>
             <td>${app.ip ? app.ip.substring(0, 12) + '...' : '-'}</td>
+            <td><span class="status-badge status-${app.status || 'pending'}">${getStatusText(app.status)}</span></td>
             <td>
-                <select class="status-dropdown" onchange="updateConsultationStatus('${app.id}', this.value)" data-status="${currentStatus}">
-                    <option value="waiting" ${currentStatus === 'waiting' ? 'selected' : ''}>상담 대기</option>
-                    <option value="consulting" ${currentStatus === 'consulting' ? 'selected' : ''}>상담 중</option>
-                    <option value="consultation_completed" ${currentStatus === 'consultation_completed' ? 'selected' : ''}>상담 완료</option>
-                    <option value="install_reserved" ${currentStatus === 'install_reserved' ? 'selected' : ''}>설치 예약</option>
-                    <option value="install_completed" ${currentStatus === 'install_completed' ? 'selected' : ''}>설치 완료</option>
-                </select>
-            </td>
-            <td>
-                <input type="number" class="gift-amount-input" value="${giftAmount}" 
-                       onchange="updateGiftAmount('${app.id}', this.value)" 
-                       placeholder="0" min="0">
-                <span class="gift-unit">만원</span>
-            </td>
-            <td>
+                <button class="action-btn" onclick="updateStatus('${app.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
                 <button class="action-btn delete" onclick="deleteApplication('${app.id}')">
                     <i class="fas fa-trash"></i>
                 </button>
             </td>
         </tr>
-        `;
-    }).join('');
-    
-    // After rendering, update the status board
-    updateStatusBoard();
+    `).join('');
 }
 
 function getStatusText(status) {
@@ -1262,116 +1243,3 @@ window.loadDetailImagesSettings = loadDetailImagesSettings;
 window.saveDetailImagesSettings = saveDetailImagesSettings;
 window.goToMainPage = goToMainPage;
 
-// Consultation Status Management
-function updateConsultationStatus(appId, newStatus) {
-    const key = `application_${appId}`;
-    const applicationData = JSON.parse(localStorage.getItem(key));
-    
-    if (applicationData) {
-        applicationData.consultationStatus = newStatus;
-        localStorage.setItem(key, JSON.stringify(applicationData));
-        
-        // Update the status board
-        updateStatusBoard();
-        
-        showNotification(`상태가 ${getConsultationStatusText(newStatus)}(으)로 변경되었습니다.`, 'success');
-    }
-}
-
-function updateGiftAmount(appId, amount) {
-    const key = `application_${appId}`;
-    const applicationData = JSON.parse(localStorage.getItem(key));
-    
-    if (applicationData) {
-        applicationData.giftAmount = parseInt(amount) || 0;
-        localStorage.setItem(key, JSON.stringify(applicationData));
-        
-        // Update the status board (for total gift amount)
-        updateStatusBoard();
-        
-        showNotification(`사은품 금액이 ${amount}만원으로 설정되었습니다.`, 'success');
-    }
-}
-
-function getConsultationStatusText(status) {
-    switch (status) {
-        case 'waiting': return '상담 대기';
-        case 'consulting': return '상담 중';
-        case 'consultation_completed': return '상담 완료';
-        case 'install_reserved': return '설치 예약';
-        case 'install_completed': return '설치 완료';
-        default: return '상담 대기';
-    }
-}
-
-// Calculate status board data based on applications
-function updateStatusBoard() {
-    const applications = getAllApplications();
-    
-    const statusCounts = {
-        waitingConsultation: 0,
-        consultingNow: 0,
-        completedConsultations: 0,
-        installReservation: 0,
-        installCompleted: 0,
-        cashReward: 0
-    };
-    
-    applications.forEach(app => {
-        const status = app.consultationStatus || 'waiting';
-        const giftAmount = app.giftAmount || 0;
-        
-        switch (status) {
-            case 'waiting':
-                statusCounts.waitingConsultation++;
-                break;
-            case 'consulting':
-                statusCounts.consultingNow++;
-                break;
-            case 'consultation_completed':
-                statusCounts.completedConsultations++;
-                break;
-            case 'install_reserved':
-                statusCounts.installReservation++;
-                break;
-            case 'install_completed':
-                statusCounts.installCompleted++;
-                break;
-        }
-        
-        // Add gift amount to total
-        statusCounts.cashReward += giftAmount;
-    });
-    
-    // Save to localStorage for main page to use
-    localStorage.setItem('statusBoardData', JSON.stringify(statusCounts));
-    
-    return statusCounts;
-}
-
-// Notification system
-function showNotification(message, type = 'info') {
-    // Remove existing notifications
-    const existingNotifications = document.querySelectorAll('.notification');
-    existingNotifications.forEach(n => n.remove());
-    
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
-        ${message}
-    `;
-    
-    // Add to page
-    document.body.appendChild(notification);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
-
-// Make functions globally accessible
-window.updateConsultationStatus = updateConsultationStatus;
-window.updateGiftAmount = updateGiftAmount;
