@@ -189,7 +189,7 @@ function renderApplicationsTable(applications) {
     if (applications.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="10" style="text-align: center; color: #64748b; padding: 2rem;">
+                <td colspan="11" style="text-align: center; color: #64748b; padding: 2rem;">
                     신청 내역이 없습니다.
                 </td>
             </tr>
@@ -197,7 +197,11 @@ function renderApplicationsTable(applications) {
         return;
     }
     
-    tbody.innerHTML = applications.map(app => `
+    tbody.innerHTML = applications.map(app => {
+        const currentStatus = app.consultationStatus || 'waiting';
+        const giftAmount = app.giftAmount || 0;
+        
+        return `
         <tr>
             <td>${app.id}</td>
             <td>${app.name}</td>
@@ -207,17 +211,32 @@ function renderApplicationsTable(applications) {
             <td>${app.preference || '빠른 시간'}</td>
             <td>${formatDate(app.timestamp)}</td>
             <td>${app.ip ? app.ip.substring(0, 12) + '...' : '-'}</td>
-            <td><span class="status-badge status-${app.status || 'pending'}">${getStatusText(app.status)}</span></td>
             <td>
-                <button class="action-btn" onclick="updateStatus('${app.id}')">
-                    <i class="fas fa-edit"></i>
-                </button>
+                <select class="status-dropdown" onchange="updateConsultationStatus('${app.id}', this.value)" data-status="${currentStatus}">
+                    <option value="waiting" ${currentStatus === 'waiting' ? 'selected' : ''}>상담 대기</option>
+                    <option value="consulting" ${currentStatus === 'consulting' ? 'selected' : ''}>상담 중</option>
+                    <option value="consultation_completed" ${currentStatus === 'consultation_completed' ? 'selected' : ''}>상담 완료</option>
+                    <option value="install_reserved" ${currentStatus === 'install_reserved' ? 'selected' : ''}>설치 예약</option>
+                    <option value="install_completed" ${currentStatus === 'install_completed' ? 'selected' : ''}>설치 완료</option>
+                </select>
+            </td>
+            <td>
+                <input type="number" class="gift-amount-input" value="${giftAmount}" 
+                       onchange="updateGiftAmount('${app.id}', this.value)" 
+                       placeholder="0" min="0">
+                <span class="gift-unit">만원</span>
+            </td>
+            <td>
                 <button class="action-btn delete" onclick="deleteApplication('${app.id}')">
                     <i class="fas fa-trash"></i>
                 </button>
             </td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
+    
+    // After rendering, update the status board
+    updateStatusBoard();
 }
 
 function getStatusText(status) {
@@ -1243,91 +1262,91 @@ window.loadDetailImagesSettings = loadDetailImagesSettings;
 window.saveDetailImagesSettings = saveDetailImagesSettings;
 window.goToMainPage = goToMainPage;
 
-// Status Board Management
-let statusBoardData = {
-    waitingConsultation: 5,
-    consultingNow: 8,
-    completedConsultations: 23,
-    installReservation: 15,
-    installCompleted: 12,
-    cashReward: 1200
-};
-
-// Load status board data from localStorage
-function loadStatusBoardData() {
-    const saved = localStorage.getItem('statusBoardData');
-    if (saved) {
-        statusBoardData = JSON.parse(saved);
+// Consultation Status Management
+function updateConsultationStatus(appId, newStatus) {
+    const key = `application_${appId}`;
+    const applicationData = JSON.parse(localStorage.getItem(key));
+    
+    if (applicationData) {
+        applicationData.consultationStatus = newStatus;
+        localStorage.setItem(key, JSON.stringify(applicationData));
+        
+        // Update the status board
+        updateStatusBoard();
+        
+        showNotification(`상태가 ${getConsultationStatusText(newStatus)}(으)로 변경되었습니다.`, 'success');
     }
+}
+
+function updateGiftAmount(appId, amount) {
+    const key = `application_${appId}`;
+    const applicationData = JSON.parse(localStorage.getItem(key));
     
-    // Update form fields with current data
-    const fields = ['waitingConsultation', 'consultingNow', 'completedConsultations', 
-                   'installReservation', 'installCompleted', 'cashReward'];
+    if (applicationData) {
+        applicationData.giftAmount = parseInt(amount) || 0;
+        localStorage.setItem(key, JSON.stringify(applicationData));
+        
+        // Update the status board (for total gift amount)
+        updateStatusBoard();
+        
+        showNotification(`사은품 금액이 ${amount}만원으로 설정되었습니다.`, 'success');
+    }
+}
+
+function getConsultationStatusText(status) {
+    switch (status) {
+        case 'waiting': return '상담 대기';
+        case 'consulting': return '상담 중';
+        case 'consultation_completed': return '상담 완료';
+        case 'install_reserved': return '설치 예약';
+        case 'install_completed': return '설치 완료';
+        default: return '상담 대기';
+    }
+}
+
+// Calculate status board data based on applications
+function updateStatusBoard() {
+    const applications = getAllApplications();
     
-    fields.forEach(field => {
-        const input = document.getElementById(field);
-        if (input) {
-            input.value = statusBoardData[field] || 0;
+    const statusCounts = {
+        waitingConsultation: 0,
+        consultingNow: 0,
+        completedConsultations: 0,
+        installReservation: 0,
+        installCompleted: 0,
+        cashReward: 0
+    };
+    
+    applications.forEach(app => {
+        const status = app.consultationStatus || 'waiting';
+        const giftAmount = app.giftAmount || 0;
+        
+        switch (status) {
+            case 'waiting':
+                statusCounts.waitingConsultation++;
+                break;
+            case 'consulting':
+                statusCounts.consultingNow++;
+                break;
+            case 'consultation_completed':
+                statusCounts.completedConsultations++;
+                break;
+            case 'install_reserved':
+                statusCounts.installReservation++;
+                break;
+            case 'install_completed':
+                statusCounts.installCompleted++;
+                break;
         }
-    });
-}
-
-// Save status board data to localStorage
-function saveStatusBoardData() {
-    const fields = ['waitingConsultation', 'consultingNow', 'completedConsultations', 
-                   'installReservation', 'installCompleted', 'cashReward'];
-    
-    fields.forEach(field => {
-        const input = document.getElementById(field);
-        if (input) {
-            statusBoardData[field] = parseInt(input.value) || 0;
-        }
+        
+        // Add gift amount to total
+        statusCounts.cashReward += giftAmount;
     });
     
-    localStorage.setItem('statusBoardData', JSON.stringify(statusBoardData));
+    // Save to localStorage for main page to use
+    localStorage.setItem('statusBoardData', JSON.stringify(statusCounts));
     
-    // Show success message
-    showNotification('현황판 데이터가 저장되었습니다!', 'success');
-}
-
-// Preview status board in new window
-function previewStatusBoard() {
-    // First save current data
-    saveStatusBoardData();
-    
-    // Open main page to see the changes
-    window.open('index.html#status', '_blank');
-    
-    showNotification('새 창에서 현황판을 확인하세요!', 'info');
-}
-
-// Load status board data when switching to that tab
-function switchTab(tabName) {
-    // Hide all tab contents
-    const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(content => {
-        content.style.display = 'none';
-    });
-    
-    // Remove active class from all tab buttons
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    tabButtons.forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Show selected tab content
-    const selectedTab = document.getElementById(tabName + 'Tab');
-    if (selectedTab) {
-        selectedTab.style.display = 'block';
-    }
-    
-    // Add active class to clicked tab button
-    event.target.classList.add('active');
-    
-    // Load data if switching to status board tab
-    if (tabName === 'statusBoard') {
-        loadStatusBoardData();
-    }
+    return statusCounts;
 }
 
 // Notification system
@@ -1353,13 +1372,6 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Initialize status board when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    loadStatusBoardData();
-});
-
 // Make functions globally accessible
-window.loadStatusBoardData = loadStatusBoardData;
-window.saveStatusBoardData = saveStatusBoardData;
-window.previewStatusBoard = previewStatusBoard;
-window.switchTab = switchTab;
+window.updateConsultationStatus = updateConsultationStatus;
+window.updateGiftAmount = updateGiftAmount;

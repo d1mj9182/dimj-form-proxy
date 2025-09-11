@@ -649,7 +649,9 @@ async function submitToAirtable(data) {
             preference: data.preference || '빠른 시간에 연락드립니다',
             timestamp: new Date().toISOString(),
             ip: antiSpam.userIP,
-            status: 'pending' // pending, contacted, completed
+            status: 'pending', // pending, contacted, completed
+            consultationStatus: 'waiting', // waiting, consulting, consultation_completed, install_reserved, install_completed
+            giftAmount: 0 // 사은품 금액 (만원 단위)
         };
         
         // Save to localStorage for admin panel
@@ -1655,33 +1657,64 @@ function loadStatusBoardData() {
 }
 
 function updateStatusBoardUI(data) {
-    // Update statistics in the status board
+    // Update statistics in the status board with color coding
     const statMappings = {
-        'waitingConsultation': 'waitingConsultation',
-        'consultingNow': 'consultingNow', 
-        'completedConsultations': 'completedConsultations',
-        'installReservation': 'installReservation',
-        'installCompleted': 'installCompleted',
-        'cashReward': 'cashReward'
+        'waitingConsultation': { id: 'waitingConsultation', color: 'orange' },
+        'consultingNow': { id: 'consultingNow', color: 'blue' }, 
+        'completedConsultations': { id: 'completedConsultations', color: 'green' },
+        'installReservation': { id: 'installReservation', color: 'purple' },
+        'installCompleted': { id: 'installCompleted', color: 'success' },
+        'cashReward': { id: 'cashReward', color: 'gold' }
     };
     
-    // Update stat numbers
+    // Update stat numbers and apply color coding
     Object.keys(statMappings).forEach(key => {
-        const element = document.getElementById(key);
+        const mapping = statMappings[key];
+        const element = document.getElementById(mapping.id);
+        const parentCard = element ? element.closest('.stat-card') : null;
+        
         if (element && data[key] !== undefined) {
             element.textContent = data[key];
+            
+            // Apply color coding to the parent card
+            if (parentCard) {
+                // Remove existing color classes
+                parentCard.classList.remove('stat-orange', 'stat-blue', 'stat-green', 'stat-purple', 'stat-success', 'stat-gold');
+                // Add new color class
+                parentCard.classList.add(`stat-${mapping.color}`);
+            }
         }
     });
     
     // Update today applications (first stat card)
     const todayApplications = document.getElementById('todayApplications');
-    if (todayApplications && data.completedConsultations) {
-        // Calculate dynamic "today applications" based on completed consultations + waiting + consulting
+    if (todayApplications && data.completedConsultations !== undefined) {
+        // Calculate dynamic "today applications" based on all status counts
         const dynamicToday = (data.completedConsultations || 0) + 
                            (data.waitingConsultation || 0) + 
-                           (data.consultingNow || 0);
+                           (data.consultingNow || 0) +
+                           (data.installReservation || 0) +
+                           (data.installCompleted || 0);
         todayApplications.textContent = dynamicToday;
     }
+    
+    // Update consultation list items with status colors
+    updateConsultationListColors();
+}
+
+// Update consultation list colors based on status
+function updateConsultationListColors() {
+    const consultationItems = document.querySelectorAll('.consultation-item');
+    
+    consultationItems.forEach((item, index) => {
+        // Remove existing status classes
+        item.classList.remove('status-waiting', 'status-consulting', 'status-completed', 'status-reserved', 'status-installed');
+        
+        // Add status class based on index (simulating different statuses)
+        const statusClasses = ['status-waiting', 'status-consulting', 'status-completed', 'status-reserved', 'status-installed'];
+        const randomStatus = statusClasses[index % statusClasses.length];
+        item.classList.add(randomStatus);
+    });
 }
 
 // Initialize status board on page load
