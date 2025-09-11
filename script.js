@@ -1778,6 +1778,31 @@ function updateStatusBoardUI(data) {
         todayApplications.textContent = dynamicToday;
     }
     
+    // Update status footer legend with real data
+    updateStatusLegend(data);
+}
+
+// Update status legend at the bottom
+function updateStatusLegend(data) {
+    // 상담 가능 = 상담 대기 + 상담 완료 (상담 가능한 상태)
+    const consultationAvailable = document.getElementById('consultationAvailable');
+    if (consultationAvailable) {
+        const availableCount = (data.waitingConsultation || 0) + (data.completedConsultations || 0);
+        consultationAvailable.textContent = availableCount;
+    }
+    
+    // 상담 진행중 = 상담 중
+    const consultationProgress = document.getElementById('consultationProgress');
+    if (consultationProgress) {
+        consultationProgress.textContent = data.consultingNow || 0;
+    }
+    
+    // 계약 완료 = 설치 예약 + 설치 완료
+    const contractCompleted = document.getElementById('contractCompleted');
+    if (contractCompleted) {
+        const completedCount = (data.installReservation || 0) + (data.installCompleted || 0);
+        contractCompleted.textContent = completedCount;
+    }
 }
 
 
