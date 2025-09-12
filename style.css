@@ -1364,6 +1364,40 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
+/* 선택된 버튼만 - 그라데이션 */
+button.selected,
+button.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+  color: white !important;
+  border: none !important;
+}
+
+/* 선택된 버튼 호버 */
+button.selected:hover,
+button.active:hover {
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+}
+
+/* 기타 서비스 3개 버튼 */
+button:contains("가전렌탈"),
+button:contains("유심"),
+button:contains("CCTV") {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+  color: white !important;
+  border: none !important;
+}
+
+/* 선택 안 된 버튼 */
+button:not(.selected):not(.active) {
+  background: white;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+button:not(.selected):not(.active):hover {
+  background: #f5f5f5;
+}
+
 
 @media (max-width: 360px) {
     .telecom-btn {
