@@ -1273,6 +1273,19 @@ body {
     }
 }
 
+/* Icon buttons styling */
+.telecom-btn i {
+    margin-right: 4px;
+    font-size: 0.9em;
+}
+
+@media (max-width: 360px) {
+    .telecom-btn i {
+        margin-right: 2px;
+        font-size: 0.8em;
+    }
+}
+
 /* Urgent Notice */
 .urgent-notice {
     background: #fef2f2;
