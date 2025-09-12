@@ -1601,11 +1601,27 @@ function initializeTelecomButtons() {
         
         allServiceButtons.forEach(btn => {
             btn.addEventListener('click', function() {
-                // Toggle selected class
-                this.classList.toggle('selected');
-                
-                // Find the grid this button belongs to
+                const buttonText = this.textContent.trim();
                 const currentGrid = this.closest('.telecom-grid');
+                
+                // IPTV추가 버튼은 복수 선택 가능 (토글)
+                if (buttonText.includes('IPTV추가')) {
+                    this.classList.toggle('selected');
+                } else {
+                    // 다른 주요 서비스 버튼들은 라디오 버튼 방식 (하나만 선택)
+                    if (this.closest('.service-category').querySelector('.category-title').textContent.includes('주요 서비스')) {
+                        // 주요 서비스 내 다른 버튼들 선택 해제 (IPTV추가 제외)
+                        Array.from(currentGrid.querySelectorAll('.telecom-btn')).forEach(b => {
+                            if (!b.textContent.trim().includes('IPTV추가')) {
+                                b.classList.remove('selected');
+                            }
+                        });
+                        this.classList.add('selected');
+                    } else {
+                        // 기타 서비스는 토글
+                        this.classList.toggle('selected');
+                    }
+                }
                 
                 // Check if any button in this grid is selected
                 const hasSelection = Array.from(currentGrid.querySelectorAll('.telecom-btn'))
