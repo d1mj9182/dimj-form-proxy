@@ -1556,33 +1556,95 @@ function showDailyLimitMessage(count, limit) {
     }, 5000);
 }
 
-// 모든 버튼에 그라데이션 효과 적용
+// Telecom Button Functionality
 function initializeTelecomButtons() {
-    // 주요 서비스 토글
-    document.querySelectorAll('.main-service button').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.classList.toggle('active');
-        });
-    });
-
-    // 통신사 선택 (라디오 버튼 방식)
-    document.querySelectorAll('.telecom-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            // 통신사 버튼인지 확인
-            if (this.closest('.service-category') && this.closest('.service-category').textContent.includes('신청 통신사')) {
-                // 통신사 버튼들만 선택 해제
-                document.querySelectorAll('.telecom-btn').forEach(b => {
-                    if (b.closest('.service-category') && b.closest('.service-category').textContent.includes('신청 통신사')) {
-                        b.classList.remove('selected');
-                    }
-                });
+    // Initialize telecom provider buttons (radio behavior) 
+    // Target provider section specifically
+    const providerSection = document.querySelector('.provider-selection, .telecom-grid:first-of-type');
+    if (providerSection) {
+        const telecomProviderBtns = providerSection.querySelectorAll('.telecom-btn');
+        const providerGrid = providerSection.querySelector('.telecom-grid');
+        
+        telecomProviderBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove selected class from all provider buttons
+                telecomProviderBtns.forEach(b => b.classList.remove('selected'));
+                // Add selected class to clicked button
                 this.classList.add('selected');
-            } else {
-                // 다른 서비스 버튼들은 토글
-                this.classList.toggle('selected');
-            }
+                
+                // Add/remove has-selection class for dimming effect
+                if (providerGrid) {
+                    providerGrid.classList.add('has-selection');
+                }
+                
+                // Update form data
+                formData.provider = this.textContent.trim();
+                validateForm();
+                console.log('Provider selected:', formData.provider);
+            });
         });
-    });
+    }
+    
+    // Initialize service buttons (checkbox behavior) - both main and additional services
+    // Target all service buttons except provider buttons
+    const serviceSection = document.querySelector('.service-selection');
+    if (serviceSection) {
+        const serviceButtons = serviceSection.querySelectorAll('.telecom-btn:not(.telecom-grid:first-of-type .telecom-btn)');
+        
+        // Get all service buttons (main services + additional services)
+        const allServiceButtons = Array.from(serviceSection.querySelectorAll('.telecom-grid .telecom-btn'))
+            .filter(btn => !btn.closest('.service-category').textContent.includes('신청 통신사'));
+        
+        // Get all telecom grids for services
+        const serviceGrids = Array.from(serviceSection.querySelectorAll('.telecom-grid'))
+            .filter(grid => !grid.closest('.service-category').textContent.includes('신청 통신사'));
+        
+        allServiceButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Toggle selected class
+                this.classList.toggle('selected');
+                
+                // Find the grid this button belongs to
+                const currentGrid = this.closest('.telecom-grid');
+                
+                // Check if any button in this grid is selected
+                const hasSelection = Array.from(currentGrid.querySelectorAll('.telecom-btn'))
+                    .some(b => b.classList.contains('selected'));
+                
+                // Add/remove has-selection class for dimming effect
+                if (hasSelection) {
+                    currentGrid.classList.add('has-selection');
+                } else {
+                    currentGrid.classList.remove('has-selection');
+                }
+                
+                // Update form data for services
+                const selectedServices = Array.from(allServiceButtons)
+                    .filter(b => b.classList.contains('selected'))
+                    .map(b => {
+                        const text = b.textContent.trim();
+                        // Remove icon (everything before the last space)
+                        return text.includes(' ') ? text.split(' ').pop() : text;
+                    })
+                    .join(',');
+                
+                formData.service = selectedServices;
+                validateForm();
+                console.log('Services selected:', formData.service);
+            });
+        });
+    }
+    
+    // Fallback: initialize all telecom buttons if specific sections not found
+    if (!providerSection && !serviceSection) {
+        const allTelecomBtns = document.querySelectorAll('.telecom-btn');
+        allTelecomBtns.forEach((btn, index) => {
+            btn.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                console.log('Button clicked:', this.textContent.trim());
+            });
+        });
+    }
 }
 
 // Privacy Modal Functions
