@@ -1245,33 +1245,33 @@ body {
     margin: 20px 0;
 }
 
-/* 모든 버튼 기본 상태 (선택 안됨) */
-.service-select button,
-.telecom-btn,
-button[type="button"] {
-  background: white !important;
-  color: #333 !important;
-  border: 1px solid #ddd !important;
-  padding: 12px 20px;
-  border-radius: 4px;
-  cursor: pointer;
+/* 색상 한 개만 사용 */
+:root {
+  --main-blue: #5B7FDE;
 }
 
-/* 모든 버튼 선택됨/활성화 상태 */
-.service-select button.active,
-.telecom-btn.selected,
-button[type="button"].active,
-.service-btn {
-  background: #5B7FDE !important;
-  color: white !important;
-  border: 1px solid #5B7FDE !important;
+/* 모든 버튼 기본 (선택 안 됨) */
+button {
+  background: white;
+  color: #333;
+  border: 1px solid #ddd;
 }
 
-/* 기타 서비스는 항상 파란색 */
-.other-services button {
-  background: #5B7FDE !important;
+/* 선택됨 = 무조건 이 색상 */
+.selected,
+.active,
+button[aria-selected="true"],
+button[data-selected="true"] {
+  background: var(--main-blue) !important;
   color: white !important;
-  border: 1px solid #5B7FDE !important;
+  border: 1px solid var(--main-blue) !important;
+}
+
+/* 기타 서비스 3개는 항상 파란색 */
+.service-category:last-child .telecom-btn {
+  background: var(--main-blue) !important;
+  color: white !important;
+  border: 1px solid var(--main-blue) !important;
 }
 
 

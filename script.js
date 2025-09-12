@@ -1556,28 +1556,24 @@ function showDailyLimitMessage(count, limit) {
     }, 5000);
 }
 
-// 새로운 버튼 기능
+// 모든 버튼 통일된 기능
 function initializeTelecomButtons() {
-    // 주요 서비스 클릭
-    document.querySelectorAll('.service-select button').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.classList.toggle('active');
-        });
-    });
-
-    // 통신사 클릭
-    document.querySelectorAll('.telecom-btn').forEach(btn => {
+    // 모든 클릭 이벤트 동일하게
+    document.querySelectorAll('button').forEach(btn => {
+        btn.style.transition = 'all 0.2s';
+        
         btn.addEventListener('click', function() {
             // 통신사 버튼인지 확인 (신청 통신사 섹션)
-            if (this.closest('.service-category').textContent.includes('신청 통신사')) {
-                document.querySelectorAll('.telecom-btn').forEach(b => {
-                    if (b.closest('.service-category').textContent.includes('신청 통신사')) {
+            if (this.closest('.service-category') && this.closest('.service-category').textContent.includes('신청 통신사')) {
+                // 통신사는 라디오 버튼 방식
+                document.querySelectorAll('button').forEach(b => {
+                    if (b.closest('.service-category') && b.closest('.service-category').textContent.includes('신청 통신사')) {
                         b.classList.remove('selected');
                     }
                 });
                 this.classList.add('selected');
             } else {
-                // 서비스 버튼은 토글
+                // 다른 버튼들은 토글
                 this.classList.toggle('selected');
             }
         });
