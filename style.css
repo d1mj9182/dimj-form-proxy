@@ -1364,9 +1364,12 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* 모든 지정된 버튼들 활성화 시 통일된 강화된 효과 */
-.service-category:nth-child(2) .telecom-btn.selected,
-.service-category:nth-child(3) .telecom-btn.selected {
+/* 모든 지정된 버튼들 활성화 시 통일된 강화된 효과 - 더 강력한 선택자 */
+.telecom-btn.selected,
+.service-category .telecom-btn.selected,
+.telecom-grid .telecom-btn.selected,
+button.selected.telecom-btn,
+[class*="telecom-btn"].selected {
     background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%) !important;
     border: 3px solid #ff4757 !important;
     color: white !important;
@@ -1379,8 +1382,11 @@ body {
 }
 
 /* 모든 지정된 버튼들 호버 시 더 강한 효과 */
-.service-category:nth-child(2) .telecom-btn.selected:hover,
-.service-category:nth-child(3) .telecom-btn.selected:hover {
+.telecom-btn.selected:hover,
+.service-category .telecom-btn.selected:hover,
+.telecom-grid .telecom-btn.selected:hover,
+button.selected.telecom-btn:hover,
+[class*="telecom-btn"].selected:hover {
     background: linear-gradient(135deg, #ff5252, #ff7979) !important;
     transform: translateY(-6px) scale(1.2) !important;
     box-shadow: 0 25px 50px rgba(255, 107, 107, 1) !important;
@@ -1388,11 +1394,31 @@ body {
 }
 
 /* 선택되지 않은 버튼들을 더 흐리게 */
-.service-category:nth-child(2).has-selection .telecom-btn:not(.selected),
-.service-category:nth-child(3).has-selection .telecom-btn:not(.selected) {
+.telecom-grid.has-selection .telecom-btn:not(.selected),
+.service-category.has-selection .telecom-btn:not(.selected) {
     opacity: 0.3 !important;
     filter: grayscale(100%) brightness(0.5) !important;
     transform: scale(0.95) !important;
+}
+
+/* 기존 telecom-btn 스타일을 오버라이드하여 새로운 그라데이션 효과 강제 적용 */
+.telecom-btn.selected {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%) !important;
+    border: 3px solid #ff4757 !important;
+    color: white !important;
+    font-weight: bold !important;
+    transform: translateY(-5px) scale(1.15) !important;
+    box-shadow: 0 20px 40px rgba(255, 107, 107, 0.8) !important;
+    border-radius: 8px !important;
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+.telecom-btn.selected:hover {
+    background: linear-gradient(135deg, #ff5252, #ff7979) !important;
+    transform: translateY(-6px) scale(1.2) !important;
+    box-shadow: 0 25px 50px rgba(255, 107, 107, 1) !important;
+    border-color: #ff3742 !important;
 }
 
 
