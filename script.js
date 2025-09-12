@@ -366,6 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMainBannersContent();
     loadDetailImagesContent();
     setupClickHandlers();
+    initializeTelecomButtons();
     
     // Add entrance animations with delay
     setTimeout(addEntranceAnimations, 100);
@@ -1553,6 +1554,67 @@ function showDailyLimitMessage(count, limit) {
             message.parentNode.removeChild(message);
         }
     }, 5000);
+}
+
+// Telecom Button Functionality
+function initializeTelecomButtons() {
+    // Initialize telecom provider buttons (radio behavior) 
+    // Target provider section specifically
+    const providerSection = document.querySelector('.provider-selection, .telecom-grid:first-of-type');
+    if (providerSection) {
+        const telecomProviderBtns = providerSection.querySelectorAll('.telecom-btn');
+        telecomProviderBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove selected class from all provider buttons
+                telecomProviderBtns.forEach(b => b.classList.remove('selected'));
+                // Add selected class to clicked button
+                this.classList.add('selected');
+                
+                // Update form data
+                formData.provider = this.textContent.trim();
+                validateForm();
+                console.log('Provider selected:', formData.provider);
+            });
+        });
+    }
+    
+    // Initialize additional service buttons (checkbox behavior)
+    // Target service section specifically
+    const serviceSection = document.querySelector('.additional-services, .service-selection');
+    if (serviceSection) {
+        const serviceButtons = serviceSection.querySelectorAll('.telecom-btn');
+        serviceButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Toggle selected class
+                this.classList.toggle('selected');
+                
+                // Update form data for services
+                const selectedServices = Array.from(serviceButtons)
+                    .filter(b => b.classList.contains('selected'))
+                    .map(b => {
+                        const text = b.textContent.trim();
+                        // Remove icon (everything before the last space)
+                        return text.includes(' ') ? text.split(' ').pop() : text;
+                    })
+                    .join(',');
+                
+                formData.service = selectedServices;
+                validateForm();
+                console.log('Services selected:', formData.service);
+            });
+        });
+    }
+    
+    // Fallback: initialize all telecom buttons if specific sections not found
+    if (!providerSection && !serviceSection) {
+        const allTelecomBtns = document.querySelectorAll('.telecom-btn');
+        allTelecomBtns.forEach((btn, index) => {
+            btn.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                console.log('Button clicked:', this.textContent.trim());
+            });
+        });
+    }
 }
 
 // Privacy Modal Functions

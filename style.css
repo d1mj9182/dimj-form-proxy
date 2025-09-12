@@ -1260,10 +1260,36 @@ body {
 .telecom-btn:hover {
     background: #f5f5f5;
     border-color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .telecom-btn:active {
-    transform: scale(0.98);
+    transform: scale(0.98) translateY(-1px);
+}
+
+.telecom-btn.selected {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    border-color: #3b82f6;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.telecom-btn.selected:hover {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(59, 130, 246, 0.5);
+}
+
+.telecom-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.telecom-btn:focus:not(:hover) {
+    background: #f8fafc;
+    border-color: #3b82f6;
 }
 
 @media (max-width: 360px) {
