@@ -1245,43 +1245,53 @@ body {
     margin: 20px 0;
 }
 
-.telecom-btn {
-    padding: 12px 4px;
-    font-size: 13px;
-    border: 1px solid #ddd;
-    background: white;
-    border-radius: 4px;
-    cursor: pointer;
-    white-space: nowrap;
-    min-width: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
+.telecom-btn,
+.telecom-grid .telecom-btn,
+.service-category .telecom-btn {
+    padding: 12px 4px !important;
+    font-size: 13px !important;
+    border: 1px solid #ddd !important;
+    background: white !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    min-width: 0 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
-.telecom-btn:hover {
-    background: #f5f5f5;
-    border-color: #333;
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+.telecom-btn:hover,
+.telecom-grid .telecom-btn:hover,
+.service-category .telecom-btn:hover {
+    background: #f5f5f5 !important;
+    border-color: #333 !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
 }
 
-.telecom-btn:active {
-    transform: scale(0.98) translateY(-1px);
+.telecom-btn:active,
+.telecom-grid .telecom-btn:active,
+.service-category .telecom-btn:active {
+    transform: scale(0.98) translateY(-1px) !important;
 }
 
-.telecom-btn.selected {
+.telecom-btn.selected,
+.telecom-grid .telecom-btn.selected,
+.service-category .telecom-btn.selected {
     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
     border-color: #3b82f6 !important;
     color: white !important;
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
+    transform: translateY(-3px) scale(1.05) !important;
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5) !important;
 }
 
-.telecom-btn.selected:hover {
+.telecom-btn.selected:hover,
+.telecom-grid .telecom-btn.selected:hover,
+.service-category .telecom-btn.selected:hover {
     background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
-    transform: translateY(-4px) scale(1.08);
-    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.6);
+    transform: translateY(-4px) scale(1.08) !important;
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.6) !important;
 }
 
 .telecom-btn:focus {
@@ -1295,7 +1305,9 @@ body {
 }
 
 /* Ripple effect for telecom buttons */
-.telecom-btn::before {
+.telecom-btn::before,
+.telecom-grid .telecom-btn::before,
+.service-category .telecom-btn::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -1308,14 +1320,18 @@ body {
     transform: translate(-50%, -50%);
 }
 
-.telecom-btn:active::before {
+.telecom-btn:active::before,
+.telecom-grid .telecom-btn:active::before,
+.service-category .telecom-btn:active::before {
     width: 300px;
     height: 300px;
     top: 50%;
     left: 50%;
 }
 
-.telecom-btn.selected::before {
+.telecom-btn.selected::before,
+.telecom-grid .telecom-btn.selected::before,
+.service-category .telecom-btn.selected::before {
     background: rgba(255, 255, 255, 0.3);
 }
 
