@@ -1245,33 +1245,123 @@ body {
     margin: 20px 0;
 }
 
-/* 색상 한 개만 사용 */
-:root {
-  --main-blue: #5B7FDE;
+.telecom-btn,
+.telecom-grid .telecom-btn,
+.service-category .telecom-btn {
+    padding: 12px 4px !important;
+    font-size: 13px !important;
+    border: 1px solid #ddd !important;
+    background: white !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    min-width: 0 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
-/* 모든 버튼 기본 (선택 안 됨) */
-button {
-  background: white;
-  color: #333;
-  border: 1px solid #ddd;
+.telecom-btn:hover,
+.telecom-grid .telecom-btn:hover,
+.service-category .telecom-btn:hover {
+    background: #f5f5f5 !important;
+    border-color: #333 !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* 선택됨 = 무조건 이 색상 */
-.selected,
-.active,
-button[aria-selected="true"],
-button[data-selected="true"] {
-  background: var(--main-blue) !important;
-  color: white !important;
-  border: 1px solid var(--main-blue) !important;
+.telecom-btn:active,
+.telecom-grid .telecom-btn:active,
+.service-category .telecom-btn:active {
+    transform: scale(0.98) translateY(-1px) !important;
 }
 
-/* 기타 서비스 3개는 항상 파란색 */
-.service-category:last-child .telecom-btn {
-  background: var(--main-blue) !important;
-  color: white !important;
-  border: 1px solid var(--main-blue) !important;
+.telecom-btn.selected,
+.telecom-grid .telecom-btn.selected,
+.service-category .telecom-btn.selected {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+    border-color: #3b82f6 !important;
+    color: white !important;
+    transform: translateY(-3px) scale(1.05) !important;
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5) !important;
+}
+
+.telecom-btn.selected:hover,
+.telecom-grid .telecom-btn.selected:hover,
+.service-category .telecom-btn.selected:hover {
+    background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+    transform: translateY(-4px) scale(1.08) !important;
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.6) !important;
+}
+
+.telecom-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.telecom-btn:focus:not(:hover) {
+    background: #f8fafc;
+    border-color: #3b82f6;
+}
+
+/* Button selection overlay effect */
+.telecom-grid.has-selection {
+    position: relative;
+}
+
+.telecom-grid.has-selection::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+.telecom-grid.has-selection .telecom-btn:not(.selected) {
+    opacity: 0.6;
+    filter: brightness(0.8) saturate(0.7);
+    transition: all 0.3s ease;
+}
+
+.telecom-grid.has-selection .telecom-btn.selected {
+    z-index: 10;
+    position: relative;
+}
+
+/* Ripple effect for telecom buttons */
+.telecom-btn::before,
+.telecom-grid .telecom-btn::before,
+.service-category .telecom-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+    transform: translate(-50%, -50%);
+}
+
+.telecom-btn:active::before,
+.telecom-grid .telecom-btn:active::before,
+.service-category .telecom-btn:active::before {
+    width: 300px;
+    height: 300px;
+    top: 50%;
+    left: 50%;
+}
+
+.telecom-btn.selected::before,
+.telecom-grid .telecom-btn.selected::before,
+.service-category .telecom-btn.selected::before {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 
