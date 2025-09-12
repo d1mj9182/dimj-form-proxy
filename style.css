@@ -1236,6 +1236,43 @@ body {
     color: #1f2937;
 }
 
+/* New Telecom Grid */
+.telecom-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 0 10px;
+    margin: 20px 0;
+}
+
+.telecom-btn {
+    padding: 12px 4px;
+    font-size: 13px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 0;
+    transition: all 0.2s;
+}
+
+.telecom-btn:hover {
+    background: #f5f5f5;
+    border-color: #333;
+}
+
+.telecom-btn:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 360px) {
+    .telecom-btn {
+        font-size: 11px;
+        padding: 10px 2px;
+    }
+}
+
 /* Urgent Notice */
 .urgent-notice {
     background: #fef2f2;
