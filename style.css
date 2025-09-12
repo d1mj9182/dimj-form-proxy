@@ -1254,14 +1254,16 @@ body {
     cursor: pointer;
     white-space: nowrap;
     min-width: 0;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
 }
 
 .telecom-btn:hover {
     background: #f5f5f5;
     border-color: #333;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .telecom-btn:active {
@@ -1272,14 +1274,14 @@ body {
     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
     border-color: #3b82f6 !important;
     color: white !important;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
 }
 
 .telecom-btn.selected:hover {
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(59, 130, 246, 0.5);
+    background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.6);
 }
 
 .telecom-btn:focus {
@@ -1290,6 +1292,31 @@ body {
 .telecom-btn:focus:not(:hover) {
     background: #f8fafc;
     border-color: #3b82f6;
+}
+
+/* Ripple effect for telecom buttons */
+.telecom-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+    transform: translate(-50%, -50%);
+}
+
+.telecom-btn:active::before {
+    width: 300px;
+    height: 300px;
+    top: 50%;
+    left: 50%;
+}
+
+.telecom-btn.selected::before {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 360px) {
