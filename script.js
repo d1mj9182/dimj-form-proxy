@@ -1563,12 +1563,19 @@ function initializeTelecomButtons() {
     const providerSection = document.querySelector('.provider-selection, .telecom-grid:first-of-type');
     if (providerSection) {
         const telecomProviderBtns = providerSection.querySelectorAll('.telecom-btn');
+        const providerGrid = providerSection.querySelector('.telecom-grid');
+        
         telecomProviderBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 // Remove selected class from all provider buttons
                 telecomProviderBtns.forEach(b => b.classList.remove('selected'));
                 // Add selected class to clicked button
                 this.classList.add('selected');
+                
+                // Add/remove has-selection class for dimming effect
+                if (providerGrid) {
+                    providerGrid.classList.add('has-selection');
+                }
                 
                 // Update form data
                 formData.provider = this.textContent.trim();
@@ -1588,10 +1595,28 @@ function initializeTelecomButtons() {
         const allServiceButtons = Array.from(serviceSection.querySelectorAll('.telecom-grid .telecom-btn'))
             .filter(btn => !btn.closest('.service-category').textContent.includes('신청 통신사'));
         
+        // Get all telecom grids for services
+        const serviceGrids = Array.from(serviceSection.querySelectorAll('.telecom-grid'))
+            .filter(grid => !grid.closest('.service-category').textContent.includes('신청 통신사'));
+        
         allServiceButtons.forEach(btn => {
             btn.addEventListener('click', function() {
                 // Toggle selected class
                 this.classList.toggle('selected');
+                
+                // Find the grid this button belongs to
+                const currentGrid = this.closest('.telecom-grid');
+                
+                // Check if any button in this grid is selected
+                const hasSelection = Array.from(currentGrid.querySelectorAll('.telecom-btn'))
+                    .some(b => b.classList.contains('selected'));
+                
+                // Add/remove has-selection class for dimming effect
+                if (hasSelection) {
+                    currentGrid.classList.add('has-selection');
+                } else {
+                    currentGrid.classList.remove('has-selection');
+                }
                 
                 // Update form data for services
                 const selectedServices = Array.from(allServiceButtons)

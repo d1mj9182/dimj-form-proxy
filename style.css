@@ -1335,6 +1335,35 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
+/* Button selection overlay effect */
+.telecom-grid.has-selection {
+    position: relative;
+}
+
+.telecom-grid.has-selection::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+.telecom-grid.has-selection .telecom-btn:not(.selected) {
+    opacity: 0.6;
+    filter: brightness(0.8) saturate(0.7);
+    transition: all 0.3s ease;
+}
+
+.telecom-grid.has-selection .telecom-btn.selected {
+    z-index: 10;
+    position: relative;
+}
+
 @media (max-width: 360px) {
     .telecom-btn {
         font-size: 11px;
