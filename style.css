@@ -1151,41 +1151,6 @@ body {
     .service-category:last-child {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 0.3rem;
-    }
-    
-    .service-category:last-child .service-item {
-        margin: 0;
-        width: 100%;
-    }
-    
-    .service-item label {
-        padding: 0.4rem 0.2rem;
-        font-size: 0.7rem;
-        line-height: 1.1;
-        text-align: center;
-        flex-direction: column;
-        min-height: 48px;
-        justify-content: center;
-    }
-    
-    .service-item input[type="checkbox"] {
-        width: 0.9rem;
-        height: 0.9rem;
-        margin: 0 0 0.2rem 0;
-    }
-    
-    .service-item label i {
-        margin: 0 0 0.15rem 0;
-        font-size: 0.9rem;
-        width: auto;
-    }
-}
-
-@media (max-width: 480px) {
-    /* 기타 서비스 3개 배치 더 소형화 */
-    .service-category:last-child {
-        grid-template-columns: repeat(3, 1fr);
         gap: 0.25rem;
     }
     
@@ -1195,12 +1160,15 @@ body {
     }
     
     .service-item label {
-        padding: 0.3rem 0.15rem;
-        font-size: 0.65rem;
+        padding: 0.35rem 0.15rem;
+        font-size: 0.6rem;
         line-height: 1.0;
-        min-height: 42px;
+        text-align: center;
         flex-direction: column;
+        min-height: 40px;
         justify-content: center;
+        align-items: center;
+        border-radius: 0.4rem;
     }
     
     .service-item input[type="checkbox"] {
@@ -1210,8 +1178,44 @@ body {
     }
     
     .service-item label i {
-        font-size: 0.8rem;
         margin: 0 0 0.1rem 0;
+        font-size: 0.8rem;
+        width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    /* 기타 서비스 3개 배치 더 소형화 */
+    .service-category:last-child {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.2rem;
+    }
+    
+    .service-category:last-child .service-item {
+        margin: 0;
+        width: 100%;
+    }
+    
+    .service-item label {
+        padding: 0.25rem 0.1rem;
+        font-size: 0.55rem;
+        line-height: 0.9;
+        min-height: 36px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 0.3rem;
+    }
+    
+    .service-item input[type="checkbox"] {
+        width: 0.7rem;
+        height: 0.7rem;
+        margin: 0 0 0.1rem 0;
+    }
+    
+    .service-item label i {
+        font-size: 0.7rem;
+        margin: 0 0 0.08rem 0;
     }
 }
 
@@ -1607,30 +1611,11 @@ body {
 @media (max-width: 768px) {
     .provider-selection {
         grid-template-columns: repeat(3, 1fr);
-        gap: 0.3rem;
-    }
-    
-    .provider-item label {
-        padding: 0.4rem 0.2rem;
-        font-size: 0.65rem;
-        min-height: 36px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-align: center;
-        line-height: 1.1;
-        font-weight: 600;
-    }
-}
-
-@media (max-width: 480px) {
-    .provider-selection {
-        grid-template-columns: repeat(3, 1fr);
         gap: 0.25rem;
     }
     
     .provider-item label {
-        padding: 0.35rem 0.1rem;
+        padding: 0.35rem 0.15rem;
         font-size: 0.6rem;
         min-height: 32px;
         white-space: nowrap;
@@ -1639,6 +1624,27 @@ body {
         text-align: center;
         line-height: 1.0;
         font-weight: 600;
+        border-radius: 0.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .provider-selection {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.2rem;
+    }
+    
+    .provider-item label {
+        padding: 0.3rem 0.05rem;
+        font-size: 0.55rem;
+        min-height: 28px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        line-height: 0.9;
+        font-weight: 600;
+        border-radius: 0.3rem;
     }
 }
 
