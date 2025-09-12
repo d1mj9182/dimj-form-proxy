@@ -1578,18 +1578,23 @@ function initializeTelecomButtons() {
         });
     }
     
-    // Initialize additional service buttons (checkbox behavior)
-    // Target service section specifically
-    const serviceSection = document.querySelector('.additional-services, .service-selection');
+    // Initialize service buttons (checkbox behavior) - both main and additional services
+    // Target all service buttons except provider buttons
+    const serviceSection = document.querySelector('.service-selection');
     if (serviceSection) {
-        const serviceButtons = serviceSection.querySelectorAll('.telecom-btn');
-        serviceButtons.forEach(btn => {
+        const serviceButtons = serviceSection.querySelectorAll('.telecom-btn:not(.telecom-grid:first-of-type .telecom-btn)');
+        
+        // Get all service buttons (main services + additional services)
+        const allServiceButtons = Array.from(serviceSection.querySelectorAll('.telecom-grid .telecom-btn'))
+            .filter(btn => !btn.closest('.service-category').textContent.includes('신청 통신사'));
+        
+        allServiceButtons.forEach(btn => {
             btn.addEventListener('click', function() {
                 // Toggle selected class
                 this.classList.toggle('selected');
                 
                 // Update form data for services
-                const selectedServices = Array.from(serviceButtons)
+                const selectedServices = Array.from(allServiceButtons)
                     .filter(b => b.classList.contains('selected'))
                     .map(b => {
                         const text = b.textContent.trim();
