@@ -1245,123 +1245,56 @@ body {
     margin: 20px 0;
 }
 
+/* 모든 버튼 기본 상태 */
+button,
 .telecom-btn,
-.telecom-grid .telecom-btn,
-.service-category .telecom-btn {
-    padding: 12px 4px !important;
-    font-size: 13px !important;
-    border: 1px solid #ddd !important;
-    background: white !important;
-    border-radius: 4px !important;
-    cursor: pointer !important;
-    white-space: nowrap !important;
-    min-width: 0 !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    position: relative !important;
-    overflow: hidden !important;
+.service-btn,
+input[type="radio"] + label,
+input[type="checkbox"] + label {
+  background: white;
+  color: #333;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.telecom-btn:hover,
-.telecom-grid .telecom-btn:hover,
-.service-category .telecom-btn:hover {
-    background: #f5f5f5 !important;
-    border-color: #333 !important;
-    transform: translateY(-3px) scale(1.02) !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+/* 모든 버튼 호버 */
+button:hover:not(.selected):not(.active),
+.telecom-btn:hover:not(.selected),
+input[type="radio"] + label:hover:not(.selected) {
+  background: #f5f5f5;
 }
 
-.telecom-btn:active,
-.telecom-grid .telecom-btn:active,
-.service-category .telecom-btn:active {
-    transform: scale(0.98) translateY(-1px) !important;
+/* 선택된 상태 - 그라데이션 (주요서비스, 통신사) */
+.selected,
+.active,
+input[type="radio"]:checked + label,
+input[type="checkbox"]:checked + label,
+.telecom-btn.selected {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+  color: white !important;
+  border: none !important;
 }
 
-.telecom-btn.selected,
-.telecom-grid .telecom-btn.selected,
-.service-category .telecom-btn.selected {
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
-    border-color: #3b82f6 !important;
-    color: white !important;
-    transform: translateY(-3px) scale(1.05) !important;
-    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5) !important;
+/* 선택된 상태 호버 */
+.selected:hover,
+.active:hover,
+input[type="radio"]:checked + label:hover,
+.telecom-btn.selected:hover {
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
 }
 
-.telecom-btn.selected:hover,
-.telecom-grid .telecom-btn.selected:hover,
-.service-category .telecom-btn.selected:hover {
-    background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
-    transform: translateY(-4px) scale(1.08) !important;
-    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.6) !important;
+/* 기타 서비스 버튼도 동일한 그라데이션 */
+.other-services button,
+.service-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+  color: white !important;
+  border: none !important;
 }
 
-.telecom-btn:focus {
-    outline: 2px solid #3b82f6;
-    outline-offset: 2px;
-}
-
-.telecom-btn:focus:not(:hover) {
-    background: #f8fafc;
-    border-color: #3b82f6;
-}
-
-/* Button selection overlay effect */
-.telecom-grid.has-selection {
-    position: relative;
-}
-
-.telecom-grid.has-selection::before {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background: rgba(59, 130, 246, 0.1);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    z-index: -1;
-}
-
-.telecom-grid.has-selection .telecom-btn:not(.selected) {
-    opacity: 0.6;
-    filter: brightness(0.8) saturate(0.7);
-    transition: all 0.3s ease;
-}
-
-.telecom-grid.has-selection .telecom-btn.selected {
-    z-index: 10;
-    position: relative;
-}
-
-/* Ripple effect for telecom buttons */
-.telecom-btn::before,
-.telecom-grid .telecom-btn::before,
-.service-category .telecom-btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
-    transform: translate(-50%, -50%);
-}
-
-.telecom-btn:active::before,
-.telecom-grid .telecom-btn:active::before,
-.service-category .telecom-btn:active::before {
-    width: 300px;
-    height: 300px;
-    top: 50%;
-    left: 50%;
-}
-
-.telecom-btn.selected::before,
-.telecom-grid .telecom-btn.selected::before,
-.service-category .telecom-btn.selected::before {
-    background: rgba(255, 255, 255, 0.3);
+.other-services button:hover,
+.service-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
 }
 
 
