@@ -1364,7 +1364,7 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* 주요 서비스와 통신사 버튼들 활성화 시 강화된 효과 */
+/* 모든 지정된 버튼들 활성화 시 통일된 강화된 효과 */
 .service-category:nth-child(2) .telecom-btn.selected,
 .service-category:nth-child(3) .telecom-btn.selected {
     background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%) !important;
@@ -1378,20 +1378,7 @@ body {
     z-index: 100 !important;
 }
 
-/* 주요 서비스와 통신사 버튼들 선택 시 애니메이션 효과 */
-.service-category:nth-child(2) .telecom-btn.selected::after,
-.service-category:nth-child(3) .telecom-btn.selected::after {
-    content: '✓' !important;
-    position: absolute !important;
-    right: 8px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    font-size: 16px !important;
-    font-weight: bold !important;
-    color: white !important;
-}
-
-/* 주요 서비스와 통신사 버튼들 호버 시 더 강한 효과 */
+/* 모든 지정된 버튼들 호버 시 더 강한 효과 */
 .service-category:nth-child(2) .telecom-btn.selected:hover,
 .service-category:nth-child(3) .telecom-btn.selected:hover {
     background: linear-gradient(135deg, #ff5252, #ff7979) !important;
