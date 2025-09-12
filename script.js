@@ -1559,9 +1559,13 @@ function showDailyLimitMessage(count, limit) {
 // Telecom Button Functionality
 function initializeTelecomButtons() {
     // Initialize telecom provider buttons (radio behavior) 
-    // Target provider section specifically
-    const providerSection = document.querySelector('.provider-selection, .telecom-grid:first-of-type');
-    if (providerSection) {
+    // Target provider section specifically by finding the section with "신청 통신사" text
+    const providerSections = Array.from(document.querySelectorAll('.service-category')).filter(section => 
+        section.textContent.includes('신청 통신사')
+    );
+    
+    if (providerSections.length > 0) {
+        const providerSection = providerSections[0];
         const telecomProviderBtns = providerSection.querySelectorAll('.telecom-btn');
         const providerGrid = providerSection.querySelector('.telecom-grid');
         
@@ -1653,7 +1657,7 @@ function initializeTelecomButtons() {
     }
     
     // Fallback: initialize all telecom buttons if specific sections not found
-    if (!providerSection && !serviceSection) {
+    if (providerSections.length === 0 && !serviceSection) {
         const allTelecomBtns = document.querySelectorAll('.telecom-btn');
         allTelecomBtns.forEach((btn, index) => {
             btn.addEventListener('click', function() {
