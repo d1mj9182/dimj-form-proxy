@@ -634,59 +634,101 @@ function handleFormSubmit(e) {
     displaySubmittedInfo();
 }
 
-// Data Storage (localStorage + Airtable simulation)
+// 에어테이블 설정은 airtable-config.js에서 불러옴
+
+// Data Storage (localStorage + Airtable)
 async function submitToAirtable(data) {
     try {
         console.log('Submitting application:', data);
-        
+
         // Generate unique ID for application
         const applicationId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-        
-        // Prepare application data
-        const applicationData = {
-            name: data.name,
-            phone: data.phone,
-            service: data.service,
-            provider: data.provider,
-            preference: data.preference || '빠른 시간에 연락드립니다',
-            timestamp: new Date().toISOString(),
-            ip: antiSpam.userIP,
-            status: 'pending' // pending, contacted, completed
+
+        // 선택된 서비스들을 수집
+        const selectedServices = getSelectedServices();
+        const selectedProvider = getSelectedProvider();
+
+        // 에어테이블용 데이터 준비
+        const airtableData = {
+            fields: {
+                '이름': data.name,
+                '연락처': data.phone,
+                '주요서비스': selectedServices.main || '',
+                '통신사': selectedProvider || '',
+                '기타서비스': selectedServices.additional.join(', ') || '',
+                '상담희망시간': data.preference || '빠른 시간에 연락드립니다',
+                '접수일시': new Date().toISOString(),
+                'IP주소': antiSpam.userIP || 'Unknown',
+                '상태': '접수완료',
+                'ID': applicationId
+            }
         };
-        
-        // Save to localStorage for admin panel
-        localStorage.setItem(`application_${applicationId}`, JSON.stringify(applicationData));
-        
-        // Simulate API call to actual service
-        const response = await fetch('/api/airtable-proxy', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                fields: {
-                    ID: applicationId,
-                    Name: data.name,
-                    Phone: data.phone,
-                    Service: data.service,
-                    Provider: data.provider,
-                    Preference: data.preference || '빠른 시간에 연락드립니다',
-                    Timestamp: applicationData.timestamp,
-                    IP: antiSpam.userIP
+
+        // 로컬 스토리지에 백업 저장
+        const localData = {
+            ...airtableData.fields,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(`application_${applicationId}`, JSON.stringify(localData));
+
+        // 에어테이블 API 호출
+        if (AIRTABLE_CONFIG.baseId && AIRTABLE_CONFIG.baseId !== 'YOUR_BASE_ID') {
+            try {
+                const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(airtableData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`에어테이블 API 오류: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
                 }
-            })
-        }).catch(() => {
-            // If external API fails, that's okay - we still have localStorage
-            console.log('External API unavailable, data saved locally');
-            return { ok: true };
-        });
-        
+
+                const result = await response.json();
+                console.log('에어테이블 전송 성공:', result);
+            } catch (apiError) {
+                console.error('에어테이블 API 오류:', apiError);
+                // API 오류가 발생해도 로컬 저장소에는 저장되므로 계속 진행
+                console.log('로컬 저장소에만 저장됨');
+            }
+        } else {
+            console.log('에어테이블 설정이 완료되지 않음. 로컬 저장소만 사용.');
+        }
+
         console.log('Application submitted successfully:', applicationId);
-        
+
     } catch (error) {
         console.error('Submission error:', error);
         throw error;
     }
+}
+
+// 선택된 서비스 수집
+function getSelectedServices() {
+    const mainService = document.querySelector('.main-service-btn.selected')?.textContent.trim() || '';
+    const additionalServices = [];
+
+    // 기타 서비스 수집 (가전렌탈, 유심, CCTV)
+    document.querySelectorAll('.service-category:last-child .telecom-btn.selected').forEach(btn => {
+        const text = btn.textContent.trim();
+        additionalServices.push(text);
+    });
+
+    return {
+        main: mainService,
+        additional: additionalServices
+    };
+}
+
+// 선택된 통신사 수집
+function getSelectedProvider() {
+    const providerSection = document.querySelector('.service-category:nth-child(2)');
+    const providerBtn = providerSection?.querySelector('.telecom-btn.selected');
+    return providerBtn ? providerBtn.textContent.trim() : '';
 }
 
 function displaySubmittedInfo() {
