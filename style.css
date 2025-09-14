@@ -918,71 +918,42 @@ body {
 }
 
 /* Step 2: Status Board */
-/* 실시간 상담현황 컨테이너 */
-.status-board,
-.status-section,
-.realtime-status,
-.consultation-status {
-    width: 100%;
-    max-width: 1200px;  /* 배너와 동일한 최대 너비 */
-    margin: 20px auto;
-    padding: 40px 20px;
+.status-board {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     color: white;
+    padding: 2rem;
     border-radius: 1.5rem;
+    margin-bottom: 2rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     border: 1px solid #374151;
 }
 
-/* 내부 콘텐츠 정렬 */
-.status-container {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-/* 숫자 카드 그리드 */
-.status-numbers,
-.status-grid {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    max-width: 100%;  /* 부모 너비에 맞춤 */
-}
-
-/* 데스크톱만 - 1024px 이상에서만 적용 */
-@media (min-width: 1024px) {
-    /* 배너 컨테이너 측정 */
-    .banner-container,
-    .main-banner {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    /* 실시간 상담현황도 동일하게 */
-    .status-board,
-    .status-section,
-    .consultation-status,
-    .realtime-status {
+/* 데스크톱 1024px 이상에서만 */
+@media screen and (min-width: 1024px) {
+    /* 실시간 상담현황 섹션 찾아서 강제 적용 */
+    section:nth-of-type(2),
+    .container > div:nth-child(2),
+    div:has(> h2:contains("실시간")),
+    div:has(> .target-icon),
+    [class*="status"],
+    [class*="consultation"] {
         max-width: 1200px !important;
-        width: 100% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        width: 90% !important;
+        margin: 40px auto !important;
         padding: 40px 20px !important;
+        box-sizing: border-box !important;
     }
 
-    /* 내부 컨테이너도 제한 */
-    .status-wrapper,
-    .status-container {
-        max-width: 100% !important;
+    /* 배너와 동일한 컨테이너 너비 */
+    .main-content > section:nth-child(2) {
+        max-width: 1200px !important;
+        margin: 0 auto !important;
     }
 }
 
-/* 모바일은 절대 건드리지 마 */
-@media (max-width: 1023px) {
-    /* 변경 없음 - 기존 모바일 스타일 유지 */
+/* 1024px 미만은 변경 없음 */
+@media screen and (max-width: 1023px) {
+    /* 모바일 스타일 유지 */
 }
 
 .status-header {
