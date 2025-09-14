@@ -950,22 +950,39 @@ body {
     max-width: 100%;  /* 부모 너비에 맞춤 */
 }
 
-/* 데스크톱에서 배너와 정확히 일치 */
+/* 데스크톱만 - 1024px 이상에서만 적용 */
 @media (min-width: 1024px) {
+    /* 배너 컨테이너 측정 */
+    .banner-container,
+    .main-banner {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* 실시간 상담현황도 동일하게 */
     .status-board,
-    .status-section {
-        max-width: 1200px;  /* 배너 최대 너비와 동일 */
-        padding: 40px 0;
+    .status-section,
+    .consultation-status,
+    .realtime-status {
+        max-width: 1200px !important;
+        width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding: 40px 20px !important;
+    }
+
+    /* 내부 컨테이너도 제한 */
+    .status-wrapper,
+    .status-container {
+        max-width: 100% !important;
     }
 }
 
-/* 모바일에서도 배너와 동일 */
-@media (max-width: 768px) {
-    .status-board,
-    .status-section {
-        width: 100%;
-        padding: 30px 15px;
-    }
+/* 모바일은 절대 건드리지 마 */
+@media (max-width: 1023px) {
+    /* 변경 없음 - 기존 모바일 스타일 유지 */
 }
 
 .status-header {
