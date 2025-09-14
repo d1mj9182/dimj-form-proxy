@@ -5,25 +5,30 @@ window.currentStep = currentStep;
 // Simple nextStep function - defined early to ensure it's available
 function nextStep() {
     console.log('nextStep function called, currentStep:', currentStep);
-    
+
     if (currentStep >= 3) {
         console.log('Already at final step');
         return;
     }
-    
+
     currentStep++;
     window.currentStep = currentStep;
     console.log('Moving to step:', currentStep);
-    
+
     // Hide all steps
     const allSteps = document.querySelectorAll('.step-content');
     allSteps.forEach(step => step.classList.remove('active'));
-    
+
     // Show current step
     const targetStep = document.getElementById(`step${currentStep}`);
     if (targetStep) {
         targetStep.classList.add('active');
         console.log('Successfully showed step', currentStep);
+
+        // Step 2로 이동할 때 상담현황 너비 조정
+        if (currentStep === 2) {
+            setTimeout(adjustDesktopStatusWidth, 100);
+        }
     } else {
         console.error('Could not find step element:', `step${currentStep}`);
     }
@@ -334,6 +339,69 @@ let realTimeData = {
     ]
 };
 
+// 데스크톱에서만 실시간 상담현황 너비 조정
+function adjustDesktopStatusWidth() {
+    if (window.innerWidth >= 1024) {
+        console.log('Adjusting desktop status width...');
+
+        // 여러 선택자로 실시간 상담현황 섹션 찾기
+        const selectors = [
+            '.status-board',
+            '.status-section',
+            '[class*="consultation"]',
+            '[class*="status"]',
+            'div:contains("실시간")',
+            '#step2 .status-board', // 2페이지 내 status-board
+            '.main-content .status-board'
+        ];
+
+        let found = false;
+        selectors.forEach(selector => {
+            try {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    if (element && (element.textContent.includes('실시간') || element.classList.contains('status-board'))) {
+                        element.style.cssText += `
+                            max-width: 1200px !important;
+                            margin: 40px auto !important;
+                            width: 90% !important;
+                            padding: 40px 20px !important;
+                            box-sizing: border-box !important;
+                        `;
+                        console.log('Status section width adjusted:', element.className);
+                        found = true;
+                    }
+                });
+            } catch (e) {
+                // 일부 브라우저에서 지원하지 않는 선택자 무시
+            }
+        });
+
+        if (!found) {
+            console.log('Status section not found, trying alternative method...');
+            // 대안: step2 내의 모든 div 확인
+            const step2 = document.getElementById('step2');
+            if (step2) {
+                const divs = step2.querySelectorAll('div');
+                divs.forEach(div => {
+                    if (div.style.background && div.style.background.includes('gradient')) {
+                        div.style.cssText += `
+                            max-width: 1200px !important;
+                            margin: 40px auto !important;
+                            width: 90% !important;
+                        `;
+                        console.log('Found gradient div, adjusted width');
+                    }
+                });
+            }
+        }
+    }
+}
+
+// 페이지 로드와 리사이즈 시 실행
+window.addEventListener('load', adjustDesktopStatusWidth);
+window.addEventListener('resize', adjustDesktopStatusWidth);
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded - Initializing application');
@@ -341,6 +409,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check URL hash for direct step access
     checkURLHash();
     trackVisitor();
+
+    // 데스크톱 상담현황 너비 조정 실행
+    adjustDesktopStatusWidth();
+
+    // 스텝 변경 시에도 다시 실행
+    setTimeout(adjustDesktopStatusWidth, 1000);
     
     // Phone number formatting
     const phoneInput = document.getElementById('phone');
