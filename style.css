@@ -214,6 +214,33 @@ body {
         margin-left: -50vw !important;
         margin-right: -50vw !important;
     }
+
+    /* 모바일에서 상세페이지 이미지 꽉 차게 */
+    .detail-image,
+    .product-image,
+    .content-image,
+    img[alt*="상세"],
+    img[alt*="민조"] {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin-left: calc(-50vw + 50%) !important;
+        position: relative !important;
+    }
+
+    /* 이미지 컨테이너도 */
+    .detail-image-wrapper,
+    .product-detail-image {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    /* 상세페이지 모든 이미지 전체 너비 */
+    .detail-page img {
+        width: 100vw !important;
+        margin-left: -15px !important;
+        margin-right: -15px !important;
+    }
     
     .form-container {
         padding: 0 !important;
