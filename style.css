@@ -398,6 +398,25 @@ body {
     justify-content: center;
     overflow: hidden;
     border-radius: 0;
+    min-height: 280px;
+}
+
+/* 데스크탑에서 메인배너와 step2-banner 일치 */
+@media (min-width: 769px) {
+    .step2-banner {
+        width: 100vw !important;
+        left: 50% !important;
+        right: 50% !important;
+        margin-left: -50vw !important;
+        margin-right: -50vw !important;
+        margin-top: 0 !important;
+        margin-bottom: 2rem !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        overflow: hidden !important;
+        min-height: 280px !important;
+        height: auto !important;
+    }
 }
 
 .step2-banner::before {
