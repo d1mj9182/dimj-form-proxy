@@ -4041,20 +4041,19 @@ button.telecom-btn.selected:nth-child(6):hover {
     position: fixed !important;
     top: 20px !important;
     right: 20px !important;
-    width: auto !important;
-    min-width: 140px !important;
-    height: 48px !important;
-    padding: 0 1rem !important;
+    width: 160px !important;
+    height: 40px !important;
+    padding: 8px 16px !important;
     background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%) !important;
     color: white !important;
     border: none !important;
-    border-radius: 24px !important;
+    border-radius: 20px !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0.5rem !important;
-    font-size: 0.9rem !important;
+    gap: 6px !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
     box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3) !important;
     transition: all 0.3s ease !important;
@@ -4062,6 +4061,7 @@ button.telecom-btn.selected:nth-child(6):hover {
     animation: pulse 2s infinite !important;
     opacity: 1 !important;
     visibility: visible !important;
+    white-space: nowrap !important;
 }
 
 @keyframes pulse {
@@ -4181,15 +4181,17 @@ button.telecom-btn.selected:nth-child(6):hover {
         position: fixed !important;
         top: 10px !important;
         right: 10px !important;
-        min-width: 120px !important;
-        height: 42px !important;
-        font-size: 0.8rem !important;
-        padding: 0 0.75rem !important;
+        width: 140px !important;
+        height: 35px !important;
+        font-size: 11px !important;
+        padding: 6px 12px !important;
         z-index: 99999 !important;
         display: flex !important;
         opacity: 1 !important;
         visibility: visible !important;
         background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%) !important;
+        border-radius: 17px !important;
+        white-space: nowrap !important;
     }
     
     .fraud-btn-text {
