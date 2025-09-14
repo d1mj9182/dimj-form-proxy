@@ -3644,14 +3644,14 @@ button.telecom-btn.selected:nth-child(6):hover {
     }
 }
 
-/* 새로운 배너 컨테이너 시스템 - 전체 이미지 보이게 */
+/* 새로운 배너 컨테이너 시스템 - 화면 전체 너비 */
 .banner-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto 2rem auto;
+    width: 100vw; /* 뷰포트 전체 너비 */
+    margin-left: calc(-50vw + 50%); /* 부모 컨테이너 무시하고 화면 전체 사용 */
+    margin-right: calc(-50vw + 50%);
+    margin-bottom: 2rem;
     background: white;
     padding: 10px 0;
-    aspect-ratio: 3/1; /* 가로세로 비율 고정 */
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -3668,16 +3668,15 @@ button.telecom-btn.selected:nth-child(6):hover {
     background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
 }
 
-/* 이미지 - 전체 보이게 contain 사용 */
+/* 이미지 - 화면 전체 너비에 맞춤 */
 .banner-inner img,
 .banner-container img {
     width: 100%;
     height: auto;
     max-height: 400px;
-    object-fit: contain; /* cover 대신 contain - 이미지 전체 보임 */
+    object-fit: cover; /* 꽉 채우기로 변경 */
     object-position: center;
     display: block;
-    margin: 0 auto;
 }
 
 /* 배너 placeholder */
@@ -3693,10 +3692,24 @@ button.telecom-btn.selected:nth-child(6):hover {
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-/* 모바일 - 이미지 크기 조정 */
+/* 부모 컨테이너 패딩 무시 - 배너 전용 */
+.container,
+.main-content,
+.step-content {
+    position: relative;
+}
+
+.banner-container {
+    position: relative !important;
+}
+
+/* 모바일 - 화면 전체 너비 유지 */
 @media (max-width: 768px) {
     .banner-container {
-        margin: 0 auto 1rem auto;
+        width: 100vw !important;
+        margin-left: calc(-50vw + 50%) !important;
+        margin-right: calc(-50vw + 50%) !important;
+        margin-bottom: 1rem;
         padding: 5px 0;
     }
     
@@ -3708,7 +3721,10 @@ button.telecom-btn.selected:nth-child(6):hover {
 
 @media (max-width: 480px) {
     .banner-container {
-        margin: 0 auto 0.5rem auto;
+        width: 100vw !important;
+        margin-left: calc(-50vw + 50%) !important;
+        margin-right: calc(-50vw + 50%) !important;
+        margin-bottom: 0.5rem;
     }
     
     .banner-inner img,
