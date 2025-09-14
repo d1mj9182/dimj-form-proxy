@@ -934,6 +934,36 @@ body {
     border: 1px solid #374151;
 }
 
+/* 데스크톱 상담현황판 높이 최적화 */
+@media (min-width: 1024px) {
+    .status-board {
+        padding: 1.5rem 2rem !important;
+        margin: 1rem auto !important;
+        max-height: 600px !important;
+        overflow-y: auto !important;
+    }
+
+    .status-header {
+        margin-bottom: 1rem !important;
+    }
+
+    .consultation-list {
+        max-height: 300px !important;
+        overflow-y: auto !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .stats-grid {
+        gap: 1rem !important;
+        margin-top: 1rem !important;
+    }
+
+    .stat-card {
+        padding: 1rem !important;
+        min-height: auto !important;
+    }
+}
+
 /* 데스크톱 1024px 이상에서만 */
 @media screen and (min-width: 1024px) {
     /* 실시간 상담현황 섹션 찾아서 강제 적용 */
