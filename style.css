@@ -418,40 +418,45 @@ body {
         height: auto !important;
     }
 
-    /* 실시간 상담 현황 배너 내용 크기 조정 */
+    /* 실시간 상담 현황 배너 내용 크기 조정 - 모바일처럼 줄임 */
     .step2-banner .banner-content {
-        padding: 3rem 2rem !important;
-        max-width: 1200px !important;
+        padding: 2rem 1rem !important;
+        max-width: 800px !important;
         margin: 0 auto !important;
         position: relative !important;
         z-index: 2 !important;
+        width: 90% !important;
     }
 
     .step2-banner .banner-content h2 {
-        font-size: 3rem !important;
-        margin-bottom: 1.5rem !important;
-        font-weight: 900 !important;
+        font-size: 2.2rem !important;
+        margin-bottom: 1rem !important;
+        font-weight: 800 !important;
+        text-align: center !important;
     }
 
     .step2-banner .banner-content p {
-        font-size: 1.4rem !important;
-        margin-bottom: 2rem !important;
+        font-size: 1.1rem !important;
+        margin-bottom: 1.5rem !important;
         opacity: 0.95 !important;
+        text-align: center !important;
     }
 
     .step2-banner .banner-stats {
-        gap: 3rem !important;
+        gap: 2rem !important;
         justify-content: center !important;
         flex-wrap: wrap !important;
+        max-width: 600px !important;
+        margin: 0 auto !important;
     }
 
     .step2-banner .banner-stat .stat-number {
-        font-size: 2.5rem !important;
-        font-weight: 900 !important;
+        font-size: 1.8rem !important;
+        font-weight: 800 !important;
     }
 
     .step2-banner .banner-stat .stat-label {
-        font-size: 1.1rem !important;
+        font-size: 0.9rem !important;
         opacity: 0.9 !important;
     }
 }
@@ -862,18 +867,24 @@ body {
     margin-bottom: 2rem;
 }
 
-/* 데스크탑 전용 CTA 버튼 더 크게 */
+/* 데스크탑 전용 CTA 버튼 2배 크기 */
 @media (min-width: 769px) {
     .cta-button {
-        padding: 4.5rem 9rem !important;
-        font-size: 3rem !important;
-        min-height: 180px !important;
-        border-radius: 2.5rem !important;
-        box-shadow: 0 15px 60px rgba(59, 130, 246, 0.7) !important;
+        padding: 6rem 12rem !important;
+        font-size: 4rem !important;
+        min-height: 240px !important;
+        border-radius: 3rem !important;
+        box-shadow: 0 20px 80px rgba(59, 130, 246, 0.8) !important;
         font-weight: 900 !important;
-        margin-top: 3rem !important;
-        margin-bottom: 4rem !important;
-        letter-spacing: 0.05em !important;
+        margin-top: 4rem !important;
+        margin-bottom: 5rem !important;
+        letter-spacing: 0.1em !important;
+        transform: scale(1) !important;
+    }
+
+    .cta-button:hover {
+        transform: scale(1.02) !important;
+        box-shadow: 0 25px 100px rgba(59, 130, 246, 0.9) !important;
     }
 }
 
