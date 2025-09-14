@@ -1715,7 +1715,9 @@ button.telecom-btn.selected:nth-child(6):hover {
     text-align: center;
     font-size: 0.875rem;
     color: #6b7280;
-    margin-bottom: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+    padding: 1rem 0;
 }
 
 /* Footer */
