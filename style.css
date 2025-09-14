@@ -417,6 +417,43 @@ body {
         min-height: 280px !important;
         height: auto !important;
     }
+
+    /* 실시간 상담 현황 배너 내용 크기 조정 */
+    .step2-banner .banner-content {
+        padding: 3rem 2rem !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        position: relative !important;
+        z-index: 2 !important;
+    }
+
+    .step2-banner .banner-content h2 {
+        font-size: 3rem !important;
+        margin-bottom: 1.5rem !important;
+        font-weight: 900 !important;
+    }
+
+    .step2-banner .banner-content p {
+        font-size: 1.4rem !important;
+        margin-bottom: 2rem !important;
+        opacity: 0.95 !important;
+    }
+
+    .step2-banner .banner-stats {
+        gap: 3rem !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+    }
+
+    .step2-banner .banner-stat .stat-number {
+        font-size: 2.5rem !important;
+        font-weight: 900 !important;
+    }
+
+    .step2-banner .banner-stat .stat-label {
+        font-size: 1.1rem !important;
+        opacity: 0.9 !important;
+    }
 }
 
 .step2-banner::before {
@@ -823,6 +860,20 @@ body {
     justify-content: center;
     box-shadow: 0 6px 30px rgba(59, 130, 246, 0.4);
     margin-bottom: 2rem;
+}
+
+/* 데스크탑 전용 CTA 버튼 크게 */
+@media (min-width: 769px) {
+    .cta-button {
+        padding: 3.5rem 7rem !important;
+        font-size: 2.5rem !important;
+        min-height: 140px !important;
+        border-radius: 2rem !important;
+        box-shadow: 0 12px 50px rgba(59, 130, 246, 0.6) !important;
+        font-weight: 900 !important;
+        margin-top: 2rem !important;
+        margin-bottom: 3rem !important;
+    }
 }
 
 .cta-button:hover {
