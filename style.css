@@ -862,17 +862,18 @@ body {
     margin-bottom: 2rem;
 }
 
-/* 데스크탑 전용 CTA 버튼 크게 */
+/* 데스크탑 전용 CTA 버튼 더 크게 */
 @media (min-width: 769px) {
     .cta-button {
-        padding: 3.5rem 7rem !important;
-        font-size: 2.5rem !important;
-        min-height: 140px !important;
-        border-radius: 2rem !important;
-        box-shadow: 0 12px 50px rgba(59, 130, 246, 0.6) !important;
+        padding: 4.5rem 9rem !important;
+        font-size: 3rem !important;
+        min-height: 180px !important;
+        border-radius: 2.5rem !important;
+        box-shadow: 0 15px 60px rgba(59, 130, 246, 0.7) !important;
         font-weight: 900 !important;
-        margin-top: 2rem !important;
-        margin-bottom: 3rem !important;
+        margin-top: 3rem !important;
+        margin-bottom: 4rem !important;
+        letter-spacing: 0.05em !important;
     }
 }
 
@@ -906,14 +907,54 @@ body {
 }
 
 /* Step 2: Status Board */
-.status-board {
+/* 실시간 상담현황 컨테이너 */
+.status-board,
+.status-section,
+.realtime-status,
+.consultation-status {
+    width: 100%;
+    max-width: 1200px;  /* 배너와 동일한 최대 너비 */
+    margin: 20px auto;
+    padding: 40px 20px;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     color: white;
-    padding: 2rem;
     border-radius: 1.5rem;
-    margin-bottom: 2rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     border: 1px solid #374151;
+}
+
+/* 내부 콘텐츠 정렬 */
+.status-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* 숫자 카드 그리드 */
+.status-numbers,
+.status-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    max-width: 100%;  /* 부모 너비에 맞춤 */
+}
+
+/* 데스크톱에서 배너와 정확히 일치 */
+@media (min-width: 1024px) {
+    .status-board,
+    .status-section {
+        max-width: 1200px;  /* 배너 최대 너비와 동일 */
+        padding: 40px 0;
+    }
+}
+
+/* 모바일에서도 배너와 동일 */
+@media (max-width: 768px) {
+    .status-board,
+    .status-section {
+        width: 100%;
+        padding: 30px 15px;
+    }
 }
 
 .status-header {
