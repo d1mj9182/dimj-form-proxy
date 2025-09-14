@@ -4458,7 +4458,7 @@ button.fraud-prevention-btn {
     position: fixed !important;
     top: 20px !important;
     right: 20px !important;
-    width: 130px !important;
+    width: 100px !important;
     height: 35px !important;
     background: linear-gradient(135deg, #ff4757 0%, #ff3742 50%, #c44569 100%) !important;
     color: #ffffff !important;
@@ -4468,13 +4468,14 @@ button.fraud-prevention-btn {
     visibility: visible !important;
     border-radius: 18px !important;
     border: none !important;
-    padding: 6px 14px !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
     box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4) !important;
     white-space: nowrap !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5) !important;
+    gap: 0 !important;
 }
