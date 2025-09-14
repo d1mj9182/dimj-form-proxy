@@ -934,45 +934,95 @@ body {
     border: 1px solid #374151;
 }
 
-/* 데스크톱 실시간 상담현황 칸 공간 효율적 활용 */
+/* 데스크톱 실시간 상담현황 공백 완전 제거 - 딱 맞게 */
 @media (min-width: 1024px) {
+    .status-board {
+        padding: 1rem !important;
+        margin: 0.5rem auto !important;
+    }
+
+    .status-header {
+        margin-bottom: 0.5rem !important;
+        padding: 0 !important;
+    }
+
+    .live-indicator {
+        gap: 0.3rem !important;
+    }
+
+    .status-title {
+        margin: 0 !important;
+        font-size: 1.1rem !important;
+    }
+
+    .live-time {
+        margin: 0 !important;
+        font-size: 0.9rem !important;
+    }
+
+    .consultation-list {
+        margin: 0.5rem 0 !important;
+        padding: 0 !important;
+    }
+
     .stats-grid {
         grid-template-columns: repeat(4, 1fr) !important;
-        gap: 0.75rem !important;
-        margin: 1rem 0 !important;
+        gap: 0.5rem !important;
+        margin: 0.5rem 0 0 0 !important;
+        padding: 0 !important;
     }
 
     .stat-card {
-        padding: 0.8rem !important;
-        min-height: 80px !important;
-    }
-
-    .stat-content {
-        margin-bottom: 0.3rem !important;
-    }
-
-    .stat-number {
-        font-size: 1.5rem !important;
-        line-height: 1 !important;
-    }
-
-    .stat-content p {
-        font-size: 0.8rem !important;
+        padding: 0.6rem !important;
+        min-height: 70px !important;
         margin: 0 !important;
     }
 
+    .stat-content {
+        margin: 0 0 0.2rem 0 !important;
+        padding: 0 !important;
+    }
+
+    .stat-number {
+        font-size: 1.4rem !important;
+        line-height: 1 !important;
+        margin: 0 !important;
+    }
+
+    .stat-unit {
+        margin: 0 !important;
+    }
+
+    .stat-content p {
+        font-size: 0.75rem !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .stat-icon {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
     .stat-indicator {
-        margin-top: 0.3rem !important;
+        margin: 0.2rem 0 0 0 !important;
+        padding: 0 !important;
     }
 
     .stat-indicator span {
-        font-size: 0.7rem !important;
+        font-size: 0.65rem !important;
+        margin: 0 !important;
     }
 
-    /* 와이드 카드도 높이 조정 */
+    .pulse-mini {
+        margin: 0 0.2rem 0 0 !important;
+    }
+
+    /* 와이드 카드 완전 최적화 */
     .stat-card.stat-wide {
-        min-height: 80px !important;
-        padding: 0.8rem 1.2rem !important;
+        min-height: 70px !important;
+        padding: 0.6rem 0.8rem !important;
+        margin: 0 !important;
     }
 }
 
