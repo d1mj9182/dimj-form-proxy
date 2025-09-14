@@ -2799,17 +2799,21 @@ button.telecom-btn.selected:nth-child(6):hover {
         width: 100% !important;
     }
     
-    /* 통계 카드 완전 재설계 */
+    /* 통계 카드 - 데스크톱과 동일하게 유지 */
     .stats-grid {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 0.5rem !important;
-        margin-bottom: 1rem !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-rows: repeat(3, auto) !important;
+        gap: 1rem !important;
+        margin-bottom: 1.5rem !important;
     }
     
     .stat-card {
-        padding: 0.75rem 0.5rem !important;
-        border-radius: 0.75rem !important;
-        text-align: center !important;
+        padding: 1rem !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
     
     .stat-content p {
@@ -2988,16 +2992,21 @@ button.telecom-btn.selected:nth-child(6):hover {
         margin-bottom: 0.75rem !important;
     }
     
-    /* 통계 카드를 세로로 + 크기 축소 */
+    /* 통계 카드 - 데스크톱과 동일하게 유지 */
     .stats-grid {
-        grid-template-columns: 1fr !important;
-        gap: 0.5rem !important;
-        margin-bottom: 1rem !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-rows: repeat(3, auto) !important;
+        gap: 1rem !important;
+        margin-bottom: 1.5rem !important;
     }
     
     .stat-card {
-        padding: 0.75rem !important;
-        min-height: 70px !important;
+        padding: 1rem !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
     
     .stat-number {
@@ -3847,17 +3856,29 @@ button.telecom-btn.selected:nth-child(6):hover {
     }
 }
 
-/* 모바일/태블릿 - 기존 세로 배열 유지 */
+/* 모바일/태블릿 - 기존 데스크톱과 동일한 스타일 유지 */
 @media (max-width: 1023px) {
     .stats-grid {
-        display: flex !important;
-        flex-direction: column !important;
-        padding: 10px !important;
-        gap: 10px !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-rows: repeat(3, auto) !important;
+        gap: 1rem !important;
+        margin-bottom: 1.5rem !important;
     }
     
     .stat-card {
-        width: 100% !important;
+        padding: 1rem !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    /* 사은품 지급 카드를 3칸 넓이로 확장 */
+    .stat-card.stat-wide {
+        grid-column: 1 / -1 !important;
+        padding: 1.5rem 2rem !important;
+        text-align: center !important;
     }
 }
     
@@ -4020,28 +4041,28 @@ button.telecom-btn.selected:nth-child(6):hover {
    부정클릭 방지 버튼 스타일
    =============================== */
 .fraud-prevention-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: auto;
-    min-width: 140px;
-    height: 48px;
-    padding: 0 1rem;
-    background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-    color: white;
-    border: none;
-    border-radius: 24px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
-    transition: all 0.3s ease;
-    z-index: 9999;
-    animation: pulse 2s infinite;
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: auto !important;
+    min-width: 140px !important;
+    height: 48px !important;
+    padding: 0 1rem !important;
+    background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 24px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3) !important;
+    transition: all 0.3s ease !important;
+    z-index: 9999 !important;
+    animation: pulse 2s infinite !important;
 }
 
 @keyframes pulse {
