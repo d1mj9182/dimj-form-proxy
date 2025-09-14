@@ -3732,6 +3732,70 @@ button.telecom-btn.selected:nth-child(6):hover {
         max-height: 200px; /* 더 작은 화면에서는 더 작게 */
     }
 }
+
+/* 주요 서비스 버튼 레이아웃 개선 */
+.main-service-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.main-service-btn {
+    width: 100% !important;
+    font-size: 16px !important;
+    padding: 15px 20px !important;
+    min-height: 60px !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+}
+
+.sub-services {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.sub-service-btn {
+    font-size: 14px !important;
+    padding: 12px 15px !important;
+    min-height: 50px !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+}
+
+/* 모바일에서 텍스트 크기 조정 */
+@media (max-width: 768px) {
+    .main-service-btn {
+        font-size: 14px !important;
+        padding: 12px 15px !important;
+        min-height: 55px !important;
+    }
+    
+    .sub-service-btn {
+        font-size: 12px !important;
+        padding: 10px 12px !important;
+        min-height: 45px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .sub-services {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .main-service-btn {
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+        min-height: 50px !important;
+    }
+    
+    .sub-service-btn {
+        font-size: 11px !important;
+        padding: 8px 10px !important;
+        min-height: 40px !important;
+    }
+}
     
     /* 2페이지 메인배너 완전 중앙 정렬 및 좌우 공백 제거 */
     #step2MainBanner {
