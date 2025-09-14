@@ -427,6 +427,37 @@ body {
         z-index: 2 !important;
         width: 90% !important;
     }
+}
+
+/* 데스크톱에서만 - banner-content 너비 조정 */
+@media (min-width: 1024px) {
+    /* step2-banner 너비 설정 */
+    .step2-banner {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* banner-content도 동일하게 - 더 강력하게 */
+    .banner-content,
+    div.banner-content {
+        max-width: 1200px !important;
+        width: auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 40px 20px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 내부 오버레이도 조정 */
+    .banner-overlay {
+        max-width: 100% !important;
+    }
+}
+
+/* 모바일은 그대로 */
+@media (max-width: 1023px) {
+    /* 변경 없음 */
+}
 
     .step2-banner .banner-content h2 {
         font-size: 2.2rem !important;
