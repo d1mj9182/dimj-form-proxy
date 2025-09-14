@@ -4035,33 +4035,46 @@ button.telecom-btn.selected:nth-child(6):hover {
 }
 
 /* ===============================
-   부정클릭 방지 버튼 스타일
+   부정클릭 방지 버튼 스타일 - 강력한 오버라이드
    =============================== */
-.fraud-prevention-btn {
+#fraudPreventionBtn,
+button#fraudPreventionBtn,
+.fraud-prevention-btn,
+button.fraud-prevention-btn {
     position: fixed !important;
     top: 20px !important;
     right: 20px !important;
-    width: 160px !important;
-    height: 40px !important;
-    padding: 8px 16px !important;
-    background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%) !important;
-    color: white !important;
+    width: 170px !important;
+    height: 45px !important;
+    padding: 10px 20px !important;
+    background: linear-gradient(135deg, #ff4757 0%, #ff3742 50%, #c44569 100%) !important;
+    color: #ffffff !important;
     border: none !important;
-    border-radius: 20px !important;
+    border-radius: 25px !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 6px !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3) !important;
+    gap: 8px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
     transition: all 0.3s ease !important;
-    z-index: 99999 !important;
+    z-index: 999999 !important;
     animation: pulse 2s infinite !important;
     opacity: 1 !important;
     visibility: visible !important;
     white-space: nowrap !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    max-width: none !important;
+    min-width: auto !important;
+    max-height: none !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+    left: auto !important;
+    bottom: auto !important;
 }
 
 @keyframes pulse {
@@ -4077,9 +4090,10 @@ button.telecom-btn.selected:nth-child(6):hover {
 }
 
 .fraud-prevention-btn:hover {
-    transform: scale(1.05);
-    background: linear-gradient(135deg, #ff5555 0%, #dd0000 100%);
-    box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+    transform: translateY(-2px) scale(1.05) !important;
+    background: linear-gradient(135deg, #ff5252 0%, #ff1744 50%, #ad1457 100%) !important;
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .fraud-prevention-btn svg {
@@ -4181,17 +4195,22 @@ button.telecom-btn.selected:nth-child(6):hover {
         position: fixed !important;
         top: 10px !important;
         right: 10px !important;
-        width: 140px !important;
-        height: 35px !important;
-        font-size: 11px !important;
-        padding: 6px 12px !important;
+        width: 150px !important;
+        height: 38px !important;
+        font-size: 12px !important;
+        padding: 8px 15px !important;
         z-index: 99999 !important;
         display: flex !important;
         opacity: 1 !important;
         visibility: visible !important;
-        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%) !important;
-        border-radius: 17px !important;
+        background: linear-gradient(135deg, #ff4757 0%, #ff3742 50%, #c44569 100%) !important;
+        border-radius: 19px !important;
         white-space: nowrap !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+        border: 2px solid rgba(255, 255, 255, 0.1) !important;
     }
     
     .fraud-btn-text {
@@ -4432,4 +4451,28 @@ button.telecom-btn.selected:nth-child(6):hover {
     .gift-amount-input {
         width: 60px;
     }
+}
+
+/* ===== 최종 강력한 부정클릭방지 버튼 오버라이드 ===== */
+#fraudPreventionBtn {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 170px !important;
+    height: 45px !important;
+    background: linear-gradient(135deg, #ff4757 0%, #ff3742 50%, #c44569 100%) !important;
+    color: #ffffff !important;
+    display: flex !important;
+    z-index: 999999 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    border-radius: 25px !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4) !important;
 }
