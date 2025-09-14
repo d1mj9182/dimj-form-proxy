@@ -608,8 +608,8 @@ function updateConsultationList() {
               item.time === '5분 전' ? '8분 전' : '12분 전'
     }));
     
-    // Add new consultation and keep only 4 most recent
-    realTimeData.recentConsultations = [newConsultation, ...realTimeData.recentConsultations.slice(0, 3)];
+    // Add new consultation and keep only 7 most recent
+    realTimeData.recentConsultations = [newConsultation, ...realTimeData.recentConsultations.slice(0, 6)];
     
     renderConsultationList();
 }

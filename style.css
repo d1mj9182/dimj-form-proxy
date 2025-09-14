@@ -3499,10 +3499,10 @@ button.telecom-btn.selected:nth-child(6):hover {
         margin-top: 0.25rem !important;
     }
     
-    /* 상담 목록 - 4명 모두 보이도록 높이 더 증가 */
+    /* 상담 목록 - 7명 모두 보이도록 높이 증가 */
     .consultation-list {
-        max-height: 600px !important;
-        min-height: 400px !important;
+        max-height: 850px !important;
+        min-height: 700px !important;
         overflow-y: auto !important;
         background: rgba(15, 23, 42, 0.3) !important;
         border-radius: 0.75rem !important;
@@ -3599,8 +3599,8 @@ button.telecom-btn.selected:nth-child(6):hover {
     }
     
     .consultation-list {
-        max-height: 500px !important;
-        min-height: 350px !important;
+        max-height: 700px !important;
+        min-height: 550px !important;
         padding: 1rem !important;
     }
     
@@ -4236,10 +4236,10 @@ button.telecom-btn.selected:nth-child(6):hover {
         box-sizing: border-box !important;
     }
     
-    /* 상담 목록 모바일 최적화 - 4명 보이도록 높이 증가 */
+    /* 상담 목록 모바일 최적화 - 7명 보이도록 높이 증가 */
     .consultation-list {
-        max-height: 480px !important;
-        min-height: 320px !important;
+        max-height: 720px !important;
+        min-height: 560px !important;
         padding: 1rem !important;
         margin: 0 0.25rem !important;
     }
