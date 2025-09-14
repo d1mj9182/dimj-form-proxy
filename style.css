@@ -3796,6 +3796,67 @@ button.telecom-btn.selected:nth-child(6):hover {
         min-height: 40px !important;
     }
 }
+
+/* 데스크톱 전용 - 메인배너 수정 */
+@media (min-width: 1024px) {
+    .banner-container {
+        width: 100% !important;
+        max-width: 1920px !important;
+        margin: 0 auto 2rem auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    .banner-inner img,
+    .banner-container img {
+        width: 100%;
+        height: auto;
+        max-height: 500px !important;
+        object-fit: contain !important;
+    }
+}
+
+/* 실시간 현황판 그리드 수정 - 데스크톱 */
+@media (min-width: 1024px) {
+    .stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 20px !important;
+        padding: 20px !important;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .stat-card {
+        min-height: 150px !important;
+        padding: 20px !important;
+    }
+    
+    /* 하단 전체 너비 카드 (사은품 지급) */
+    .stat-card.stat-wide {
+        grid-column: 1 / -1 !important;
+    }
+    
+    /* 현황판 컨테이너 */
+    .status-board {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+}
+
+/* 모바일/태블릿 - 기존 세로 배열 유지 */
+@media (max-width: 1023px) {
+    .stats-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 10px !important;
+        gap: 10px !important;
+    }
+    
+    .stat-card {
+        width: 100% !important;
+    }
+}
     
     /* 2페이지 메인배너 완전 중앙 정렬 및 좌우 공백 제거 */
     #step2MainBanner {
