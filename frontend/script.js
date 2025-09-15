@@ -331,12 +331,7 @@ let realTimeData = {
     cashReward: 1200,
     installationsCompleted: 23,
     onlineConsultants: 12,
-    recentConsultations: [
-        { id: 1, name: '김○○', service: '인터넷 + IPTV', status: '상담완료', amount: 80, time: '방금 전', date: '2025-01-15', color: 'green' },
-        { id: 2, name: '이○○', service: '가전렌탈', status: '계약진행중', amount: 120, time: '2분 전', date: '2025-01-15', color: 'blue' },
-        { id: 3, name: '박○○', service: 'CCTV + 유심', status: '상담중', amount: 60, time: '5분 전', date: '2025-01-15', color: 'purple' },
-        { id: 4, name: '최○○', service: '인터넷', status: '설치완료', amount: 50, time: '8분 전', date: '2025-01-14', color: 'orange' }
-    ]
+    recentConsultations: []
 };
 
 // 데스크톱에서만 실시간 상담현황 너비 조정
