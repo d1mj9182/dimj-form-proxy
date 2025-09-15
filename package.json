@@ -4,7 +4,21 @@
   "description": "DIMJ Form Airtable Proxy Server",
   "main": "api/airtable.js",
   "scripts": {
-    "dev": "vercel dev"
+    "dev": "vercel dev",
+    "build": "echo 'Build not needed'",
+    "deploy": "vercel --prod"
   },
-  "dependencies": {}
+  "keywords": [
+    "airtable",
+    "proxy",
+    "vercel",
+    "serverless"
+  ],
+  "author": "DIMJ",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
