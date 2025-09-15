@@ -327,10 +327,10 @@ let antiSpam = {
 };
 
 let realTimeData = {
-    todayApplications: 47,
-    cashReward: 1200,
-    installationsCompleted: 23,
-    onlineConsultants: 12,
+    todayApplications: 0,
+    cashReward: 0,
+    installationsCompleted: 0,
+    onlineConsultants: 0,
     recentConsultations: []
 };
 
@@ -622,6 +622,12 @@ async function updateConsultationList() {
         if (response.ok) {
             const data = await response.json();
             if (data.success && data.records && data.records.length > 0) {
+                // 실제 통계 데이터 업데이트
+                realTimeData.todayApplications = data.records.length;
+                realTimeData.cashReward = data.records.reduce((sum, record) => sum + (record.fields['사은품금액'] || 0), 0);
+                realTimeData.installationsCompleted = data.records.filter(record => record.fields['상태'] === '설치완료').length;
+                realTimeData.onlineConsultants = Math.max(1, Math.floor(data.records.length / 10)); // 접수 건수 기반 상담사 수
+
                 // 실제 에어테이블 데이터 사용
                 const latestRecord = data.records[data.records.length - 1]; // 최신 데이터
                 const newConsultation = {
@@ -637,6 +643,7 @@ async function updateConsultationList() {
 
                 // 실제 데이터로 업데이트
                 addToConsultationList(newConsultation);
+                updateDashboardStats(); // 통계 업데이트
                 return;
             }
         }
@@ -698,6 +705,25 @@ function updateLiveTime() {
         const timeString = now.toLocaleTimeString('ko-KR');
         liveTimeEl.textContent = `LIVE • ${timeString}`;
     }
+}
+
+function updateDashboardStats() {
+    // 실시간 통계 업데이트
+    const todayApplicationsEl = document.getElementById('todayApplications');
+    const completedConsultationsEl = document.getElementById('completedConsultations');
+    const onlineConsultantsEl = document.getElementById('onlineConsultants');
+    const waitingConsultationEl = document.getElementById('waitingConsultation');
+    const consultingNowEl = document.getElementById('consultingNow');
+    const installReservationEl = document.getElementById('installReservation');
+
+    if (todayApplicationsEl) todayApplicationsEl.textContent = realTimeData.todayApplications;
+    if (completedConsultationsEl) completedConsultationsEl.textContent = realTimeData.installationsCompleted;
+    if (onlineConsultantsEl) onlineConsultantsEl.textContent = realTimeData.onlineConsultants;
+
+    // 추가 통계 계산
+    if (waitingConsultationEl) waitingConsultationEl.textContent = Math.max(0, realTimeData.todayApplications - realTimeData.installationsCompleted);
+    if (consultingNowEl) consultingNowEl.textContent = Math.min(realTimeData.onlineConsultants, realTimeData.todayApplications);
+    if (installReservationEl) installReservationEl.textContent = Math.floor(realTimeData.todayApplications * 0.6); // 접수의 60%가 설치 예약
 }
 
 // Form Handling
