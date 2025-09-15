@@ -733,7 +733,7 @@ async function submitToAirtable(data) {
                 '상담희망시간': data.preference || '빠른 시간에 연락드립니다',
                 '접수일시': new Date().toISOString(),
                 'IP주소': antiSpam.userIP || 'Unknown',
-                '상태': '접수완료',
+                '상태': '상담 대기',
                 'ID': applicationId
             }
         };
