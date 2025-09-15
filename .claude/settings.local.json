@@ -205,7 +205,8 @@
       "Bash(git ls-tree:*)",
       "Bash(vercel:*)",
       "Bash(npm install:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(git merge:*)"
     ],
     "deny": [],
     "ask": []
