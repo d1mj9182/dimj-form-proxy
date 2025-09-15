@@ -207,7 +207,9 @@
       "Bash(npm install:*)",
       "Bash(git restore:*)",
       "Bash(git merge:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(sed:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
