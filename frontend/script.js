@@ -595,18 +595,43 @@ function startRealTimeUpdates() {
     updateGiftAmountFromAirtable();
 }
 
-function updateStatistics() {
-    realTimeData.todayApplications += Math.floor(Math.random() * 3);
-    realTimeData.cashReward += Math.floor(Math.random() * 100);
-    realTimeData.installationsCompleted += Math.floor(Math.random() * 2);
-    realTimeData.onlineConsultants = 8 + Math.floor(Math.random() * 8);
-    
+async function updateStatistics() {
+    // 에어테이블에서 실제 데이터를 가져와서 통계 업데이트
+    try {
+        const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.records) {
+                // 실제 에어테이블 데이터로 업데이트
+                const today = new Date().toISOString().split('T')[0];
+                const todayRecords = data.records.filter(record => {
+                    const recordDate = record.fields['접수일시'];
+                    return recordDate && recordDate.includes(today);
+                });
+
+                realTimeData.todayApplications = todayRecords.length;
+                realTimeData.cashReward = data.records.reduce((sum, record) => sum + (record.fields['사은품금액'] || 0), 0);
+                realTimeData.installationsCompleted = data.records.filter(record => record.fields['상태'] === '설치완료').length;
+                realTimeData.onlineConsultants = Math.max(1, Math.min(15, Math.floor(data.records.length / 5))); // 실제 데이터 기반 상담사 수
+            }
+        }
+    } catch (error) {
+        console.log('통계 업데이트 실패 - 에어테이블 연결 확인 필요:', error);
+        // API 연결 실패시 기존 값 유지 (랜덤 값 생성하지 않음)
+    }
+
     // Update DOM elements
     const todayAppsEl = document.getElementById('todayApplications');
     const completedEl = document.getElementById('completedConsultations');
     const cashRewardEl = document.getElementById('cashReward');
     const consultantsEl = document.getElementById('onlineConsultants');
-    
+
     if (todayAppsEl) todayAppsEl.textContent = realTimeData.todayApplications;
     if (completedEl) completedEl.textContent = realTimeData.installationsCompleted;
     if (cashRewardEl) cashRewardEl.textContent = realTimeData.cashReward;
@@ -647,8 +672,9 @@ async function updateConsultationList() {
                     color: ['green', 'blue', 'purple', 'orange'][Math.floor(Math.random() * 4)]
                 };
 
-                // 실제 데이터로 업데이트
-                addToConsultationList(newConsultation);
+                // 실제 데이터로 상담 목록 업데이트
+                realTimeData.recentConsultations = [newConsultation, ...realTimeData.recentConsultations.slice(0, 6)];
+                renderConsultationList();
                 updateDashboardStats(); // 통계 업데이트
                 return;
             }
@@ -657,27 +683,46 @@ async function updateConsultationList() {
         console.error('실시간 데이터 로드 실패:', error);
     }
 
-    // API 호출 실패시 폴백 (가짜 데이터 대신 빈 상태)
+    // API 호출 실패시 폴백 - 기존 데이터만 시간 업데이트
     console.log('에어테이블 연결 실패 - 실시간 업데이트 대기 중');
-    
-    // Update time for existing consultations
-    realTimeData.recentConsultations = realTimeData.recentConsultations.map(item => ({
-        ...item,
-        time: item.time === '방금 전' ? '2분 전' : 
-              item.time === '2분 전' ? '5분 전' :
-              item.time === '5분 전' ? '8분 전' : '12분 전'
-    }));
-    
-    // Add new consultation and keep only 7 most recent
-    realTimeData.recentConsultations = [newConsultation, ...realTimeData.recentConsultations.slice(0, 6)];
-    
-    renderConsultationList();
+
+    // 기존 상담 목록이 있을 경우에만 시간 업데이트
+    if (realTimeData.recentConsultations.length > 0) {
+        realTimeData.recentConsultations = realTimeData.recentConsultations.map(item => ({
+            ...item,
+            time: item.time === '방금 전' ? '2분 전' :
+                  item.time === '2분 전' ? '5분 전' :
+                  item.time === '5분 전' ? '8분 전' : '12분 전'
+        }));
+
+        renderConsultationList();
+    }
 }
 
 function renderConsultationList() {
     const consultationList = document.getElementById('consultationList');
     if (!consultationList) return;
-    
+
+    // 상담 목록이 비어있을 경우 대기 메시지 표시
+    if (realTimeData.recentConsultations.length === 0) {
+        consultationList.innerHTML = `
+            <div class="consultation-item empty-state">
+                <div class="consultation-left">
+                    <div class="consultation-info">
+                        <h4 class="consultation-name">실시간 상담 대기 중</h4>
+                        <p class="consultation-service">에어테이블 연동 확인 필요</p>
+                        <p class="consultation-date">서비스 점검 중</p>
+                    </div>
+                </div>
+                <div class="consultation-right">
+                    <p class="consultation-amount">-</p>
+                    <p class="consultation-time">대기 중</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
     consultationList.innerHTML = realTimeData.recentConsultations.map((consultation, index) => `
         <div class="consultation-item ${consultation.color} ${index === 0 ? 'new' : ''}">
             <div class="consultation-left">

@@ -6,6 +6,8 @@ export default async function handler(req, res) {
     "https://dimj9182.github.io/DIMJ-form", // GitHub Pages
     "https://d1mj9182.github.io",          // GitHub Pages (루트)
     "http://localhost:3000",               // 로컬 개발용
+    "http://localhost:8000",               // Python HTTP Server
+    "http://127.0.0.1:8000",              // Python HTTP Server
     "http://127.0.0.1:5500",              // Live Server 개발용
     "http://localhost:5500"                // Live Server 로컬
   ];
@@ -42,20 +44,20 @@ export default async function handler(req, res) {
   // POST 요청 - 데이터 생성
   if (req.method === "POST") {
     try {
-      // DIMJ-form에서 사용하는 필드명들
+      // DIMJ-form에서 사용하는 필드명들 (실제 에어테이블 컬럼명과 일치)
       const allowedFields = [
+        "접수일시",
         "이름",
         "연락처",
-        "주요서비스",
         "통신사",
+        "주요서비스",
         "기타서비스",
         "상담희망시간",
-        "접수일시",
-        "IP주소",
+        "개인정보동의",
         "상태",
         "사은품금액",
-        "ID",
-        "개인정보동의"
+        "IP주소",
+        "IP"
       ];
 
       const body = req.body;
@@ -112,19 +114,28 @@ export default async function handler(req, res) {
   // GET 요청 - 데이터 조회 (사은품 금액 합계용)
   if (req.method === "GET") {
     try {
+      console.log("🔍 에어테이블 API 호출 시도:", AIRTABLE_API_URL);
+      console.log("🔑 API_KEY 존재:", !!API_KEY);
+      console.log("📊 BASE_ID:", BASE_ID);
+      console.log("📋 TABLE_NAME:", TABLE_NAME);
+
       const airtableRes = await fetch(AIRTABLE_API_URL, {
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         },
       });
 
+      console.log("📡 에어테이블 응답 상태:", airtableRes.status);
+
       const data = await airtableRes.json();
+      console.log("📄 에어테이블 응답 데이터:", JSON.stringify(data, null, 2));
 
       if (!airtableRes.ok) {
         throw {
           message: data.error?.message || "에어테이블 조회 오류",
           code: data.error?.type || "AIRTABLE_ERROR",
-          status: airtableRes.status
+          status: airtableRes.status,
+          fullError: data
         };
       }
 
@@ -139,7 +150,14 @@ export default async function handler(req, res) {
       return res.status(500).json({
         success: false,
         error: error.message || "데이터 조회 중 오류가 발생했습니다.",
-        code: error.code || "INTERNAL_ERROR"
+        code: error.code || "INTERNAL_ERROR",
+        debug: {
+          hasApiKey: !!API_KEY,
+          baseId: BASE_ID,
+          tableName: TABLE_NAME,
+          url: AIRTABLE_API_URL,
+          fullError: error.fullError || error
+        }
       });
     }
   }
