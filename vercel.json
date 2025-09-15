@@ -1,1 +1,9 @@
-test
+{
+  "functions": {
+    "api/airtable.js": {
+      "maxDuration": 10
+    }
+  },
+  "buildCommand": "echo No build required",
+  "outputDirectory": "."
+}
