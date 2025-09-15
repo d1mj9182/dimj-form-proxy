@@ -1,7 +1,7 @@
 {
-  "functions": {
-    "api/airtable.js": {
-      "maxDuration": 10
+    "functions": {
+      "api/airtable.js": {
+        "runtime": "nodejs18.x"
+      }
     }
   }
-}
