@@ -1,7 +1,7 @@
 {
     "functions": {
-      "api/*.js": {
-        "runtime": "@vercel/node@18.x"
+      "api/airtable.js": {
+        "runtime": "nodejs18.x"
       }
     }
   }
