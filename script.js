@@ -419,9 +419,39 @@ document.addEventListener('DOMContentLoaded', function() {
     // Phone number formatting
     const phoneInput = document.getElementById('phone');
     if (phoneInput) {
+        // Handle typing/input
         phoneInput.addEventListener('input', function(e) {
             const formatted = formatPhoneNumber(e.target.value);
             e.target.value = formatted;
+        });
+
+        // Handle paste events
+        phoneInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const formatted = formatPhoneNumber(pastedText);
+            e.target.value = formatted;
+
+            // Trigger input event for validation
+            const inputEvent = new Event('input', { bubbles: true });
+            e.target.dispatchEvent(inputEvent);
+        });
+
+        // Handle backspace and delete keys properly
+        phoneInput.addEventListener('keydown', function(e) {
+            // Allow: backspace, delete, tab, escape, enter
+            if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (e.keyCode === 65 && e.ctrlKey === true) ||
+                (e.keyCode === 67 && e.ctrlKey === true) ||
+                (e.keyCode === 86 && e.ctrlKey === true) ||
+                (e.keyCode === 88 && e.ctrlKey === true)) {
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
         });
     }
     
@@ -886,14 +916,17 @@ function displaySubmittedInfo() {
 function formatPhoneNumber(input) {
     // Remove all non-digit characters
     const digits = input.replace(/\D/g, '');
-    
+
+    // Limit to 11 digits (010-1234-5678 format)
+    const limitedDigits = digits.substring(0, 11);
+
     // Format as 010-1234-5678
-    if (digits.length <= 3) {
-        return digits;
-    } else if (digits.length <= 7) {
-        return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    if (limitedDigits.length <= 3) {
+        return limitedDigits;
+    } else if (limitedDigits.length <= 7) {
+        return `${limitedDigits.slice(0, 3)}-${limitedDigits.slice(3)}`;
     } else {
-        return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+        return `${limitedDigits.slice(0, 3)}-${limitedDigits.slice(3, 7)}-${limitedDigits.slice(7, 11)}`;
     }
 }
 
