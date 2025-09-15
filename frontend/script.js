@@ -614,29 +614,43 @@ function updateStatistics() {
     if (consultantsEl) consultantsEl.textContent = realTimeData.onlineConsultants;
 }
 
-function updateConsultationList() {
-    const names = ['김○○', '이○○', '박○○', '최○○', '정○○', '장○○', '윤○○', '임○○'];
-    const services = ['인터넷', 'IPTV', '가전렌탈', 'CCTV', '유심', '인터넷+IPTV', 'CCTV+유심', '가전렌탈+인터넷'];
-    const statuses = ['상담완료', '계약진행중', '상담중', '설치완료'];
-    const colors = ['green', 'blue', 'purple', 'orange'];
-    const amounts = [30, 40, 50, 60, 80, 120];
-    
-    // Generate random date (today or yesterday)
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const randomDate = Math.random() > 0.7 ? yesterday : today;
-    
-    const newConsultation = {
-        id: Date.now(),
-        name: names[Math.floor(Math.random() * names.length)],
-        service: services[Math.floor(Math.random() * services.length)],
-        status: statuses[Math.floor(Math.random() * statuses.length)],
-        amount: amounts[Math.floor(Math.random() * amounts.length)],
-        time: '방금 전',
-        date: randomDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-        color: colors[Math.floor(Math.random() * colors.length)]
-    };
+async function updateConsultationList() {
+    try {
+        // 프록시 서버를 통해 실제 에어테이블 데이터 가져오기
+        const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.records && data.records.length > 0) {
+                // 실제 에어테이블 데이터 사용
+                const latestRecord = data.records[data.records.length - 1]; // 최신 데이터
+                const newConsultation = {
+                    id: Date.now(),
+                    name: latestRecord.fields['이름'] ? latestRecord.fields['이름'].replace(/(.)/g, '$1○').slice(0, 3) : '신규○○',
+                    service: latestRecord.fields['주요서비스'] || '상담',
+                    status: latestRecord.fields['상태'] || '접수완료',
+                    amount: latestRecord.fields['사은품금액'] || 50,
+                    time: '방금 전',
+                    date: new Date().toISOString().split('T')[0],
+                    color: ['green', 'blue', 'purple', 'orange'][Math.floor(Math.random() * 4)]
+                };
+
+                // 실제 데이터로 업데이트
+                addToConsultationList(newConsultation);
+                return;
+            }
+        }
+    } catch (error) {
+        console.error('실시간 데이터 로드 실패:', error);
+    }
+
+    // API 호출 실패시 폴백 (가짜 데이터 대신 빈 상태)
+    console.log('에어테이블 연결 실패 - 실시간 업데이트 대기 중');
     
     // Update time for existing consultations
     realTimeData.recentConsultations = realTimeData.recentConsultations.map(item => ({
