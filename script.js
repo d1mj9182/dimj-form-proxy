@@ -849,17 +849,18 @@ async function submitToAirtable(data) {
         // 에어테이블용 데이터 준비
         const airtableData = {
             fields: {
+                '접수일시': new Date().toISOString(),
                 '이름': data.name,
                 '연락처': data.phone,
-                '주요서비스': selectedServices.main || '',
                 '통신사': selectedProvider || '',
+                '주요서비스': selectedServices.main || '',
                 '기타서비스': selectedServices.additional.join(', ') || '',
                 '상담희망시간': data.preference || '빠른 시간에 연락드립니다',
-                '접수일시': new Date().toISOString(),
-                'IP주소': antiSpam.userIP || 'Unknown',
+                '개인정보동의': 'Y', // 신청 완료 시 동의한 것으로 처리
                 '상태': '상담 대기',
                 '사은품금액': 0, // 기본값 0, 관리자가 나중에 설정
-                'ID': applicationId
+                'IP주소': antiSpam.userIP || 'Unknown',
+                'IP': antiSpam.userIP || 'Unknown' // IP 필드 중복으로 보임
             }
         };
 
