@@ -23,6 +23,7 @@ const AIRTABLE_CONFIG = {
         submissionTime: '접수일시',
         ipAddress: 'IP주소',
         status: '상태',
+        giftAmount: '사은품금액',
         id: 'ID'
     }
 };
@@ -42,6 +43,7 @@ const SETUP_GUIDE = {
         '   - 접수일시 (Date & time)',
         '   - IP주소 (Single line text)',
         '   - 상태 (Single select: 상담 대기, 상담 중, 상담 완료, 설치 예약, 설치 완료)',
+        '   - 사은품금액 (Number)',
         '   - ID (Single line text)',
         '4. Developer Hub(airtable.com/developers)에서 Personal Access Token 생성',
         '5. 베이스 ID 복사 (URL에서 app으로 시작하는 부분)',

@@ -546,16 +546,24 @@ function startRealTimeUpdates() {
     setInterval(() => {
         updateStatistics();
     }, 5000);
-    
+
     // Update consultation list every 8 seconds
     setInterval(() => {
         updateConsultationList();
     }, 8000);
-    
+
     // Update live time every second
     setInterval(() => {
         updateLiveTime();
     }, 1000);
+
+    // Update gift amounts from Airtable every 30 seconds (if configured)
+    setInterval(() => {
+        updateGiftAmountFromAirtable();
+    }, 30000);
+
+    // Initial gift amount update
+    updateGiftAmountFromAirtable();
 }
 
 function updateStatistics() {
@@ -734,6 +742,7 @@ async function submitToAirtable(data) {
                 '접수일시': new Date().toISOString(),
                 'IP주소': antiSpam.userIP || 'Unknown',
                 '상태': '상담 대기',
+                '사은품금액': 0, // 기본값 0, 관리자가 나중에 설정
                 'ID': applicationId
             }
         };
@@ -803,6 +812,49 @@ function getSelectedProvider() {
     const providerSection = document.querySelector('.service-category:nth-child(2)');
     const providerBtn = providerSection?.querySelector('.telecom-btn.selected');
     return providerBtn ? providerBtn.textContent.trim() : '';
+}
+
+// 에어테이블에서 사은품 금액 총합 가져오기
+async function updateGiftAmountFromAirtable() {
+    if (!AIRTABLE_CONFIG.baseId || AIRTABLE_CONFIG.baseId === 'YOUR_BASE_ID') {
+        console.log('에어테이블 설정이 완료되지 않음');
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`에어테이블 API 오류: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // 사은품 금액 총합 계산
+        let totalGiftAmount = 0;
+        data.records.forEach(record => {
+            const giftAmount = record.fields['사은품금액'] || 0;
+            totalGiftAmount += Number(giftAmount);
+        });
+
+        // 실시간 현황판 업데이트
+        realTimeData.cashReward = totalGiftAmount;
+        const cashRewardEl = document.getElementById('cashReward');
+        if (cashRewardEl) {
+            cashRewardEl.textContent = totalGiftAmount;
+        }
+
+        console.log('사은품 총 금액 업데이트:', totalGiftAmount);
+
+    } catch (error) {
+        console.error('사은품 금액 업데이트 오류:', error);
+    }
 }
 
 function displaySubmittedInfo() {
