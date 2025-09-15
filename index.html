@@ -1,10 +1,521 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <title>API Proxy Server</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>당일민족 - 인터넷·TV·가전렌탈 성지</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Airtable Proxy Server</h1>
-    <p>API Endpoint: /api/airtable</p>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator" id="stepIndicator">
+            <div class="step active" data-step="1">1</div>
+            <div class="step-line"></div>
+            <div class="step" data-step="2">2</div>
+            <div class="step-line"></div>
+            <div class="step" data-step="3">3</div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content" id="mainContent">
+            
+            <!-- Step 1: Landing Page -->
+            <div class="step-content active" id="step1">
+                <!-- Test Text -->
+                
+                <!-- Main Banner for Step 1 -->
+                <div class="banner-container" id="step1MainBanner">
+                    <div class="banner-inner">
+                        <img id="step1BannerImage" src="" alt="메인 배너" style="display: none;">
+                        <div class="banner-placeholder" id="step1BannerPlaceholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-image"></i>
+                                <h4>메인 배너 이미지를 추가해주세요</h4>
+                                <p>권장 사이즈: <strong>1920 × 600px (5:2 비율)</strong></p>
+                                <p>관리자 페이지 > 메인 배너 탭에서 업로드 가능합니다</p>
+                                <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="landing-hero">
+                    <h1>🏆 인터넷·TV·가전렌탈 성지</h1>
+                    <p class="hero-subtitle">💰 120만원 현금사은품 당일지급</p>
+                    <p class="hero-note">(2025년 9월 기준, 사은품 금액은 변동될 수 있습니다)</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-clock"></i>
+                        <p>24시간 실시간 상담</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-home"></i>
+                        <p>당일 설치</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>전국 설치가능</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-check-circle"></i>
+                        <p>당일현금지급</p>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ 인터넷·TV 방치하면 130만원 손해</h3>
+                    <p>전화할 때마다 다른 금액? 이제는 모두에게 똑같이! <strong>정찰제 도입</strong></p>
+                </div>
+
+                <div class="benefits-list">
+                    <p><i class="fas fa-check-circle"></i>3년 이상 사용고객 · 신규 · 이사 · 사업장 · 원룸 · 모텔 · 호텔 전부 환영</p>
+                    <p><i class="fas fa-check-circle"></i>1:1 맞춤 컨설팅 · 공식요금비교 · 현금혜택 안내</p>
+                </div>
+
+                <!-- Detail Page Images Section -->
+                <div class="detail-images-section" id="detailImagesSection">
+                    <div class="detail-images-grid" id="detailImagesGrid">
+                        <div class="detail-images-placeholder" id="detailImagesPlaceholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-images"></i>
+                                <h4>상세 이미지를 추가해주세요</h4>
+                                <p>권장 사이즈: <strong>800 × 600px 이상</strong></p>
+                                <p>세로로 긴 이미지도 자동으로 최적화됩니다</p>
+                                <p>개수 제한 없이 모든 상세 이미지를 업로드하세요</p>
+                                <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <button class="cta-button" onclick="nextStep()">
+                    지금 바로 신청하기 <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Step 2: Status Board + Form -->
+            <div class="step-content" id="step2">
+                <!-- Back Button -->
+                <div class="back-button-container">
+                    <button onclick="previousStep()" class="back-button">
+                        <i class="fas fa-chevron-left"></i> 이전으로
+                    </button>
+                </div>
+                
+                <!-- Main Banner for Step 2 -->
+                <div class="banner-container" id="step2MainBanner">
+                    <div class="banner-inner">
+                        <img id="step2BannerImage" src="" alt="메인 배너" style="display: none;">
+                        <div class="banner-placeholder" id="step2BannerPlaceholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-image"></i>
+                                <h4>메인 배너 이미지를 추가해주세요</h4>
+                                <p>권장 사이즈: <strong>1920 × 600px (5:2 비율)</strong></p>
+                                <p>관리자 페이지 > 메인 배너 탭에서 업로드 가능합니다</p>
+                                <a href="admin.html" class="admin-link-btn">관리자 페이지로 이동</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Banner Section -->
+                <div class="step2-banner" id="step2Banner" style="display: none;">
+                    <div class="banner-content">
+                        <h2 id="bannerTitle">🎯 실시간 상담 현황</h2>
+                        <p id="bannerDescription">지금 이 순간에도 많은 고객님들이 최고의 혜택을 받고 계십니다!</p>
+                        <div class="banner-stats">
+                            <div class="banner-stat">
+                                <span class="stat-number">47</span>
+                                <span class="stat-label">오늘 신청</span>
+                            </div>
+                            <div class="banner-stat">
+                                <span class="stat-number">1,200만원</span>
+                                <span class="stat-label">누적 사은품</span>
+                            </div>
+                            <div class="banner-stat">
+                                <span class="stat-number">12명</span>
+                                <span class="stat-label">상담사 대기</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="banner-overlay"></div>
+                </div>
+                
+                <!-- Real-time Status Board -->
+                <div class="status-board">
+                    <div class="status-header">
+                        <div class="live-indicator">
+                            <div class="pulse-dot"></div>
+                            <span class="status-title">실시간 상담 현황</span>
+                        </div>
+                        <div class="live-time" id="liveTime">LIVE • 00:00:00</div>
+                    </div>
+
+                    <!-- Consultation List -->
+                    <div class="consultation-list" id="consultationList">
+                        <!-- Dynamic content will be inserted here -->
+                    </div>
+
+                    <!-- Statistics Dashboard -->
+                    <div class="stats-grid">
+                        <div class="stat-card stat-green">
+                            <div class="stat-content">
+                                <p>오늘 접수</p>
+                                <span class="stat-number" id="todayApplications">47</span><span class="stat-unit">건</span>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-indicator">
+                                <div class="pulse-mini"></div>
+                                <span>실시간 업데이트</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-teal">
+                            <div class="stat-content">
+                                <p>상담 대기</p>
+                                <span class="stat-number" id="waitingConsultation">5</span><span class="stat-unit">명</span>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-indicator">
+                                <div class="pulse-mini"></div>
+                                <span>대기 중</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-red">
+                            <div class="stat-content">
+                                <p>상담 중</p>
+                                <span class="stat-number" id="consultingNow">8</span><span class="stat-unit">명</span>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div class="stat-indicator">
+                                <div class="pulse-mini"></div>
+                                <span>실시간 상담</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-blue">
+                            <div class="stat-content">
+                                <p>상담 완료</p>
+                                <span class="stat-number" id="completedConsultations">23</span><span class="stat-unit">건</span>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="stat-indicator">
+                                <div class="pulse-mini"></div>
+                                <span>오늘 기준</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-purple">
+                            <div class="stat-content">
+                                <p>설치 예약</p>
+                                <span class="stat-number" id="installReservation">15</span><span class="stat-unit">건</span>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-indicator">
+                                <div class="pulse-mini"></div>
+                                <span>대기 중</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-yellow">
+                            <div class="stat-content">
+                                <p>설치 완료</p>
+                                <span class="stat-number" id="onlineConsultants">12</span><span class="stat-unit">건</span>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-thumbs-up"></i>
+                            </div>
+                            <div class="stat-indicator">
+                                <div class="pulse-mini"></div>
+                                <span>설치완료 누적량</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-orange stat-wide">
+                            <div class="stat-content">
+                                <p>사은품 지급</p>
+                                <span class="stat-number" id="cashReward">1200</span><span class="stat-unit">만원</span>
+                            </div>
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-indicator">
+                                <div class="pulse-mini"></div>
+                                <span>누적 금액</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Service Selection -->
+                <div class="form-section">
+                    <h2>📋 관심 서비스 선택</h2>
+                    <div class="service-selection">
+                        <label>관심 서비스 * (중복선택 가능)</label>
+                        
+                        <!-- Telecom Provider Selection -->
+                        <div class="service-category">
+                            <p class="category-title">신청 통신사를 선택해주세요</p>
+                            <div class="telecom-grid">
+                                <button type="button" class="telecom-btn">SK</button>
+                                <button type="button" class="telecom-btn">KT</button>
+                                <button type="button" class="telecom-btn">LG</button>
+                                <button type="button" class="telecom-btn">스카이라이프</button>
+                                <button type="button" class="telecom-btn">LG헬로비전</button>
+                                <button type="button" class="telecom-btn">SKB+POP</button>
+                            </div>
+                        </div>
+
+                        <div class="service-category">
+                            <p class="category-title">주요 서비스</p>
+                            <div class="telecom-grid main-service-grid">
+                                <button type="button" class="telecom-btn main-service-btn"><i class="fas fa-globe"></i> 인터넷+IPTV</button>
+                                <div class="sub-services">
+                                    <button type="button" class="telecom-btn sub-service-btn"><i class="fas fa-wifi"></i> 단품 인터넷</button>
+                                    <button type="button" class="telecom-btn sub-service-btn"><i class="fas fa-tv"></i> IPTV추가</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="service-category">
+                            <p class="category-title">기타 서비스</p>
+                            <div class="telecom-grid">
+                                <button type="button" class="telecom-btn"><i class="fas fa-home"></i> 가전렌탈</button>
+                                <button type="button" class="telecom-btn"><i class="fas fa-mobile-alt"></i> 유심</button>
+                                <button type="button" class="telecom-btn"><i class="fas fa-video"></i> CCTV</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Application Form -->
+                <div class="form-section">
+                    <h2>📋 빠른 신청하기</h2>
+                    
+                    <div class="urgent-notice">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div>
+                            <p><strong>⏰ 한정 특가 진행 중!</strong></p>
+                            <p>지금 신청하면 최대 120만원 현금사은품 + 당일설치 가능</p>
+                        </div>
+                    </div>
+
+                    <form id="applicationForm">
+                        <div class="form-group">
+                            <label for="name">이름 *</label>
+                            <input type="text" id="name" name="name" placeholder="성함을 입력해주세요" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">연락처 *</label>
+                            <input type="tel" id="phone" name="phone" placeholder="010-1234-5678" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="preference">상담 희망 시간</label>
+                            <select id="preference" name="preference">
+                                <option value="">빠른 시간에 연락드립니다</option>
+                                <option value="8시">8시</option>
+                                <option value="9시">9시</option>
+                                <option value="10시">10시</option>
+                                <option value="11시">11시</option>
+                                <option value="12시">12시</option>
+                                <option value="13시">13시</option>
+                                <option value="14시">14시</option>
+                                <option value="15시">15시</option>
+                                <option value="16시">16시</option>
+                                <option value="17시">17시</option>
+                                <option value="18시">18시</option>
+                                <option value="19시">19시</option>
+                                <option value="20시">20시</option>
+                                <option value="21시">21시</option>
+                                <option value="22시">22시</option>
+                            </select>
+                        </div>
+
+                        <div class="process-info">
+                            <h4>✅ 신청 후 진행과정</h4>
+                            <div class="process-steps">
+                                <p>1. 전문 상담사가 예약 시간대에 연락드립니다</p>
+                                <p>2. 맞춤 요금제 및 혜택을 안내해드립니다</p>
+                                <p>3. 설치일정을 조율합니다 (최대한 빠른 설치)</p>
+                                <p>4. 설치 완료 후 현금사은품을 당일 지급합니다</p>
+                            </div>
+                        </div>
+
+                        <!-- 개인정보 동의 섹션 -->
+                        <div class="privacy-agreement-section">
+                            <div class="privacy-checkbox-wrapper">
+                                <input type="checkbox" id="privacyAgree" name="privacyAgree" required>
+                                <label for="privacyAgree">
+                                    <span class="checkbox-text">개인정보 수집 및 이용에 동의합니다</span>
+                                    <span class="required-mark">(필수)</span>
+                                </label>
+                                <button type="button" class="privacy-detail-btn" onclick="showPrivacyModal()">
+                                    약관보기
+                                </button>
+                            </div>
+                            <div class="privacy-notice">
+                                <small>※ 개인정보는 서비스 제공 목적으로만 사용되며, 관련 법령에 따라 안전하게 관리됩니다.</small>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-button" id="submitButton" disabled>
+                            🎉 지금 바로 신청하고 120만원 받기 <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Step 3: Completion -->
+            <div class="step-content" id="step3">
+                <div class="completion-content">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    
+                    <h2>🎉 신청이 완료되었습니다!</h2>
+                    
+                    <div class="application-info">
+                        <h3>신청 정보</h3>
+                        <div id="submittedInfo">
+                            <!-- Application info will be displayed here -->
+                        </div>
+                    </div>
+
+                    <div class="contact-info">
+                        <h4>📞 빠른 상담을 원하신다면</h4>
+                        <p>지금 바로 전화주세요! 24시간 상담 가능합니다.</p>
+                        <a href="tel:1661-9182" class="phone-button">
+                            📞 1661-9182
+                        </a>
+                    </div>
+
+                    <p class="completion-message">전문 상담사가 곧 연락드리겠습니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Partner Info -->
+        <div class="partner-info">
+            <p>SK · KT · LG · KT스카이라이프 · LG헬로비전 · SKB+POP 공식 파트너</p>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <h3>당일민족</h3>
+            <div class="footer-info">
+                <p>대표자: 이진호 · 사업자등록번호: 706-24-00856</p>
+                <p>통신판매업신고번호: 2024-광주광산-0343호</p>
+                <p>이메일: skfdms10044@gmail.com</p>
+                <p class="phone-number">대표번호: 1661-9182</p>
+            </div>
+            <p class="copyright">© 2025 당일민족</p>
+            <p class="copyright-reserved">All rights reserved.</p>
+            <div class="admin-link">
+                <a href="admin.html" title="관리자 페이지">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Top Button -->
+    <button id="topButton" class="top-button" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- 개인정보 약관 모달 -->
+    <div class="privacy-modal" id="privacyModal">
+        <div class="privacy-modal-content">
+            <div class="privacy-modal-header">
+                <h2>개인정보 수집 및 이용 동의</h2>
+                <button type="button" class="modal-close-btn" onclick="closePrivacyModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="privacy-modal-body">
+                <h3>1. 개인정보 수집 목적</h3>
+                <ul>
+                    <li>통신서비스 가입 상담 및 안내</li>
+                    <li>맞춤형 서비스 제공 및 요금제 추천</li>
+                    <li>고객 문의사항 처리 및 A/S 서비스 제공</li>
+                </ul>
+
+                <h3>2. 수집하는 개인정보 항목</h3>
+                <ul>
+                    <li>필수항목: 성명, 연락처, 주소, 생년월일</li>
+                    <li>선택항목: 이메일, 현재 사용 중인 통신사 정보</li>
+                </ul>
+
+                <h3>3. 개인정보 보유 및 이용기간</h3>
+                <ul>
+                    <li>서비스 제공 완료 후 3년간 보관</li>
+                    <li>단, 관계법령에 따라 보관이 필요한 경우 해당 기간 동안 보관</li>
+                </ul>
+
+                <h3>4. 개인정보 제3자 제공</h3>
+                <ul>
+                    <li>통신사: 서비스 가입 처리를 위한 최소한의 정보 제공</li>
+                    <li>설치기사: 설치 서비스 제공을 위한 연락처 및 주소 정보</li>
+                </ul>
+
+                <h3>5. 동의 거부 권리</h3>
+                <p>귀하는 개인정보 수집 및 이용에 대한 동의를 거부할 권리가 있습니다. 
+                다만, 필수항목에 대한 동의를 거부할 경우 서비스 이용이 제한될 수 있습니다.</p>
+            </div>
+            <div class="privacy-modal-footer">
+                <button type="button" class="modal-confirm-btn" onclick="agreePrivacy()">
+                    동의하고 닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 부정클릭 방지 버튼 -->
+    <button id="fraudPreventionBtn" class="fraud-prevention-btn" onclick="showFraudWarning()">
+        부정클릭방지
+    </button>
+
+    <!-- 부정클릭 경고 모달 -->
+    <div id="fraudWarningModal" class="fraud-warning-modal">
+        <div class="fraud-warning-content">
+            <div class="fraud-warning-header">
+                <h2>⚠️ 경고</h2>
+                <button class="modal-close-btn" onclick="closeFraudWarning()">×</button>
+            </div>
+            <div class="fraud-warning-body">
+                <p id="fraudWarningText">부정클릭은 법적 처벌 대상입니다. 정당한 목적으로만 서비스를 이용해 주세요.</p>
+            </div>
+            <div class="fraud-warning-footer">
+                <button type="button" class="modal-confirm-btn" onclick="closeFraudWarning()">
+                    확인
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="airtable-config.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
