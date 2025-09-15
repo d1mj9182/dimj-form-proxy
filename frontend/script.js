@@ -456,6 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateLiveTime();
     renderConsultationList();
     setupEventListeners();
+    console.log('🚀 페이지 로드 완료, 즉시 API 호출 실행'); // 디버깅 로그
     updateConsultationList(); // 즉시 API 호출
     startRealTimeUpdates();
     addInteractionTracking();
@@ -568,6 +569,8 @@ function updateStepIndicator() {
 
 // Real-time Updates
 function startRealTimeUpdates() {
+    console.log('✅ 실시간 업데이트 타이머 시작됨'); // 디버깅 로그
+
     // Update statistics every 5 seconds
     setInterval(() => {
         updateStatistics();
