@@ -2,9 +2,11 @@ export default async function handler(req, res) {
   // CORS 설정 - DIMJ-form 전용
   const allowedOrigins = [
     "https://dimj-form.vercel.app",         // 메인 배포 도메인
-    "https://d1mj9182.github.io",          // GitHub Pages (혹시 사용할 경우)
+    "https://dimj9182.github.io/DIMJ-form", // GitHub Pages
+    "https://d1mj9182.github.io",          // GitHub Pages (루트)
     "http://localhost:3000",               // 로컬 개발용
-    "http://127.0.0.1:5500"               // Live Server 개발용
+    "http://127.0.0.1:5500",              // Live Server 개발용
+    "http://localhost:5500"                // Live Server 로컬
   ];
 
   const requestOrigin = req.headers.origin;
