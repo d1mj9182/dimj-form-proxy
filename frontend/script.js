@@ -784,36 +784,27 @@ async function submitToAirtable(data) {
         };
         localStorage.setItem(`application_${applicationId}`, JSON.stringify(localData));
 
-        // 에어테이블 API 호출 (프록시 서버 사용)
-        if (AIRTABLE_CONFIG.baseId && AIRTABLE_CONFIG.baseId !== 'YOUR_BASE_ID') {
-            try {
-                const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        baseId: AIRTABLE_CONFIG.baseId,
-                        tableName: AIRTABLE_CONFIG.tableName,
-                        apiKey: AIRTABLE_CONFIG.apiKey,
-                        data: airtableData
-                    })
-                });
+        // 에어테이블 API 호출 (프록시 서버 환경변수 사용)
+        try {
+            const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(airtableData)
+            });
 
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(`에어테이블 API 오류: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
-                }
-
-                const result = await response.json();
-                console.log('에어테이블 전송 성공:', result);
-            } catch (apiError) {
-                console.error('에어테이블 API 오류:', apiError);
-                // API 오류가 발생해도 로컬 저장소에는 저장되므로 계속 진행
-                console.log('로컬 저장소에만 저장됨');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(`에어테이블 API 오류: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
             }
-        } else {
-            console.log('에어테이블 설정이 완료되지 않음. 로컬 저장소만 사용.');
+
+            const result = await response.json();
+            console.log('에어테이블 전송 성공:', result);
+        } catch (apiError) {
+            console.error('에어테이블 API 오류:', apiError);
+            // API 오류가 발생해도 로컬 저장소에는 저장되므로 계속 진행
+            console.log('로컬 저장소에만 저장됨');
         }
 
         console.log('Application submitted successfully:', applicationId);
@@ -850,13 +841,9 @@ function getSelectedProvider() {
 
 // 에어테이블에서 사은품 금액 총합 가져오기
 async function updateGiftAmountFromAirtable() {
-    if (!AIRTABLE_CONFIG.baseId || AIRTABLE_CONFIG.baseId === 'YOUR_BASE_ID') {
-        console.log('에어테이블 설정이 완료되지 않음');
-        return;
-    }
-
     try {
-        const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable?baseId=${AIRTABLE_CONFIG.baseId}&tableName=${encodeURIComponent(AIRTABLE_CONFIG.tableName)}&apiKey=${AIRTABLE_CONFIG.apiKey}`, {
+        // 프록시 서버를 통해 에어테이블 데이터 조회 (환경변수 사용)
+        const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

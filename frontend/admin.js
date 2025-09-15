@@ -141,18 +141,16 @@ async function loadApplications() {
 
     // Try to fetch from Airtable through proxy server
     try {
-        const config = window.AIRTABLE_CONFIG;
-        if (config && config.baseId && config.baseId !== 'YOUR_BASE_ID') {
-            const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+        const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
 
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.records) {
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.records) {
                     airtableApplications = data.records.map(record => ({
                         id: record.fields.ID || record.id,
                         name: record.fields['이름'] || '',
