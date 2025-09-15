@@ -856,13 +856,16 @@ async function submitToAirtable(data) {
                 '주요서비스': selectedServices.main || '',
                 '기타서비스': selectedServices.additional.join(', ') || '',
                 '상담희망시간': data.preference || '빠른 시간에 연락드립니다',
-                '개인정보동의': 'Y', // 신청 완료 시 동의한 것으로 처리
+                '개인정보동의': 'Y',
                 '상태': '상담 대기',
-                '사은품금액': 0, // 기본값 0, 관리자가 나중에 설정
+                '사은품금액': 0,
                 'IP주소': antiSpam.userIP || 'Unknown',
-                'IP': antiSpam.userIP || 'Unknown' // IP 필드 중복으로 보임
+                'IP': antiSpam.userIP || 'Unknown'
             }
         };
+
+        // 디버깅: 전송할 데이터 로그
+        console.log('🔍 에어테이블 전송 데이터:', JSON.stringify(airtableData, null, 2));
 
         // 로컬 스토리지에 백업 저장
         const localData = {
