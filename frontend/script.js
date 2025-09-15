@@ -1774,16 +1774,26 @@ function cleanOldSubmitCounts() {
 
 async function checkDailyLimit() {
     try {
+        // 테스트용으로 일일 제한 임시 비활성화
+        console.log('🧪 테스트 모드: 일일 신청 제한 비활성화됨');
+        return {
+            allowed: true,
+            count: 0,
+            limit: 999 // 테스트용 높은 값
+        };
+
+        // 원래 코드 (테스트 후 복원용)
+        /*
         // Get user identifier (IP or browser fingerprint)
         if (!antiSpam.userIP) {
             antiSpam.userIP = await getUserIP();
         }
-        
+
         const identifier = antiSpam.userIP;
         const todayCount = getTodaySubmitCount(identifier);
-        
+
         console.log(`Today's submit count for ${identifier.substring(0, 8)}...: ${todayCount}/${antiSpam.dailyLimit}`);
-        
+
         if (todayCount >= antiSpam.dailyLimit) {
             return {
                 allowed: false,
@@ -1791,6 +1801,7 @@ async function checkDailyLimit() {
                 limit: antiSpam.dailyLimit
             };
         }
+        */
         
         return {
             allowed: true,
