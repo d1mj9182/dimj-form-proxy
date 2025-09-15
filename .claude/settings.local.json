@@ -206,7 +206,8 @@
       "Bash(vercel:*)",
       "Bash(npm install:*)",
       "Bash(git restore:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
