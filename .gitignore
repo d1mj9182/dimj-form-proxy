@@ -1,0 +1,25 @@
+# Claude Code 관련 파일
+.claude/
+
+# 로그 파일
+*.log
+
+# 임시 파일
+*.tmp
+*.temp
+
+# 시스템 파일
+.DS_Store
+Thumbs.db
+
+# IDE 파일
+.vscode/
+.idea/
+
+# Node.js (나중에 필요할 경우)
+node_modules/
+package-lock.json
+
+# 환경 변수
+.env
+.env.local
