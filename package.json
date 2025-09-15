@@ -1,0 +1,10 @@
+{
+  "name": "dimj-form-proxy",
+  "version": "1.0.0",
+  "description": "DIMJ Form Airtable Proxy Server",
+  "main": "api/airtable.js",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {}
+}
