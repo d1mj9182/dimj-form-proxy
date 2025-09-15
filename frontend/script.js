@@ -456,6 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateLiveTime();
     renderConsultationList();
     setupEventListeners();
+    updateConsultationList(); // 즉시 API 호출
     startRealTimeUpdates();
     addInteractionTracking();
     cleanOldSubmitCounts();
@@ -610,6 +611,7 @@ function updateStatistics() {
 }
 
 async function updateConsultationList() {
+    console.log('🔄 에어테이블 API 호출 시작...'); // 디버깅 로그
     try {
         // 프록시 서버를 통해 실제 에어테이블 데이터 가져오기
         const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
@@ -618,6 +620,7 @@ async function updateConsultationList() {
                 'Content-Type': 'application/json'
             }
         });
+        console.log('📡 API 응답 상태:', response.status); // 디버깅 로그
 
         if (response.ok) {
             const data = await response.json();
