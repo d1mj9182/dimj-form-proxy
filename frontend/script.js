@@ -655,11 +655,29 @@ async function updateConsultationList() {
             console.log('📊 에어테이블 응답 데이터:', data);
 
             if (data.success && data.records && data.records.length > 0) {
-                // 실제 통계 데이터 업데이트
-                realTimeData.todayApplications = data.records.length;
-                realTimeData.cashReward = data.records.reduce((sum, record) => sum + (record.fields['사은품금액'] || 0), 0);
-                realTimeData.installationsCompleted = data.records.filter(record => record.fields['상태'] === '설치완료').length;
-                realTimeData.onlineConsultants = Math.max(1, Math.floor(data.records.length / 10));
+                // 에어테이블 실제 데이터로 모든 통계 업데이트
+                const today = new Date().toISOString().split('T')[0]; // 오늘 날짜
+                const todayRecords = data.records.filter(record => {
+                    const recordDate = record.fields['접수일시'];
+                    return recordDate && recordDate.includes(today);
+                });
+
+                // 상태별 통계 계산
+                const consultingRecords = data.records.filter(record => record.fields['상태'] === '상담 중');
+                const completedRecords = data.records.filter(record => record.fields['상태'] === '상담완료');
+                const installedRecords = data.records.filter(record => record.fields['상태'] === '설치완료');
+                const reservedRecords = data.records.filter(record => record.fields['상태'] === '설치예약');
+                const waitingRecords = data.records.filter(record => record.fields['상태'] === '상담 대기');
+
+                // 실제 데이터로 업데이트
+                realTimeData.todayApplications = todayRecords.length; // 오늘 접수
+                realTimeData.cashReward = Math.floor(data.records.reduce((sum, record) => sum + (record.fields['사은품금액'] || 0), 0) / 10000); // 만원 단위
+                realTimeData.installationsCompleted = installedRecords.length; // 설치완료
+                realTimeData.onlineConsultants = installedRecords.length; // 설치완료를 onlineConsultants ID에 표시
+                realTimeData.waitingConsultation = waitingRecords.length; // 상담 대기
+                realTimeData.consultingNow = consultingRecords.length; // 상담 중
+                realTimeData.completedConsultations = completedRecords.length; // 상담 완료
+                realTimeData.installReservation = reservedRecords.length; // 설치 예약
 
                 // 에어테이블의 실제 데이터만 상담 목록으로 변환
                 const consultations = data.records.map((record, index) => {
@@ -678,12 +696,22 @@ async function updateConsultationList() {
 
                 realTimeData.recentConsultations = consultations;
                 renderConsultationList();
+                updateDashboardStats(); // 대시보드 통계 업데이트
                 return;
             } else {
-                // 에어테이블에 데이터가 없으면 빈 상태로 유지
-                console.log('📭 에어테이블에 데이터 없음 - 빈 상태 유지');
+                // 에어테이블에 데이터가 없으면 모든 통계를 0으로 초기화
+                console.log('📭 에어테이블에 데이터 없음 - 모든 통계 0으로 초기화');
+                realTimeData.todayApplications = 0;
+                realTimeData.cashReward = 0;
+                realTimeData.installationsCompleted = 0;
+                realTimeData.waitingConsultation = 0;
+                realTimeData.consultingNow = 0;
+                realTimeData.completedConsultations = 0;
+                realTimeData.installReservation = 0;
                 realTimeData.recentConsultations = [];
+
                 renderConsultationList();
+                updateDashboardStats(); // 0으로 초기화된 통계 업데이트
                 return;
             }
         }
@@ -691,12 +719,21 @@ async function updateConsultationList() {
         console.error('실시간 데이터 로드 실패:', error);
     }
 
-    // API 호출 실패시 빈 상태 유지 (가짜 데이터 생성하지 않음)
-    console.log('⚠️ 에어테이블 연결 없음 - 실제 데이터만 표시');
+    // API 호출 실패시 모든 통계를 0으로 초기화 (가짜 데이터 생성하지 않음)
+    console.log('⚠️ 에어테이블 연결 없음 - 모든 통계 0으로 초기화');
 
-    // 연결 실패시 상담 목록을 빈 배열로 초기화 (가짜 데이터 제거)
+    // 연결 실패시 모든 데이터를 0/빈상태로 초기화
+    realTimeData.todayApplications = 0;
+    realTimeData.cashReward = 0;
+    realTimeData.installationsCompleted = 0;
+    realTimeData.waitingConsultation = 0;
+    realTimeData.consultingNow = 0;
+    realTimeData.completedConsultations = 0;
+    realTimeData.installReservation = 0;
     realTimeData.recentConsultations = [];
+
     renderConsultationList();
+    updateDashboardStats();
 }
 
 function renderConsultationList() {
@@ -759,22 +796,23 @@ function updateLiveTime() {
 }
 
 function updateDashboardStats() {
-    // 실시간 통계 업데이트
+    // 에어테이블 실제 데이터로 모든 통계 업데이트
     const todayApplicationsEl = document.getElementById('todayApplications');
     const completedConsultationsEl = document.getElementById('completedConsultations');
-    const onlineConsultantsEl = document.getElementById('onlineConsultants');
+    const onlineConsultantsEl = document.getElementById('onlineConsultants'); // 설치완료 표시
     const waitingConsultationEl = document.getElementById('waitingConsultation');
     const consultingNowEl = document.getElementById('consultingNow');
     const installReservationEl = document.getElementById('installReservation');
+    const cashRewardEl = document.getElementById('cashReward');
 
-    if (todayApplicationsEl) todayApplicationsEl.textContent = realTimeData.todayApplications;
-    if (completedConsultationsEl) completedConsultationsEl.textContent = realTimeData.installationsCompleted;
-    if (onlineConsultantsEl) onlineConsultantsEl.textContent = realTimeData.onlineConsultants;
-
-    // 추가 통계 계산
-    if (waitingConsultationEl) waitingConsultationEl.textContent = Math.max(0, realTimeData.todayApplications - realTimeData.installationsCompleted);
-    if (consultingNowEl) consultingNowEl.textContent = Math.min(realTimeData.onlineConsultants, realTimeData.todayApplications);
-    if (installReservationEl) installReservationEl.textContent = Math.floor(realTimeData.todayApplications * 0.6); // 접수의 60%가 설치 예약
+    // 실제 에어테이블 데이터 표시
+    if (todayApplicationsEl) todayApplicationsEl.textContent = realTimeData.todayApplications || 0;
+    if (completedConsultationsEl) completedConsultationsEl.textContent = realTimeData.completedConsultations || 0;
+    if (onlineConsultantsEl) onlineConsultantsEl.textContent = realTimeData.installationsCompleted || 0; // 설치완료
+    if (waitingConsultationEl) waitingConsultationEl.textContent = realTimeData.waitingConsultation || 0;
+    if (consultingNowEl) consultingNowEl.textContent = realTimeData.consultingNow || 0;
+    if (installReservationEl) installReservationEl.textContent = realTimeData.installReservation || 0;
+    if (cashRewardEl) cashRewardEl.textContent = realTimeData.cashReward || 0;
 }
 
 // Form Handling
