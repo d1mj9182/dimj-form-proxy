@@ -331,7 +331,7 @@ let realTimeData = {
     cashReward: 0,
     installationsCompleted: 0,
     onlineConsultants: 0,
-    recentConsultations: []
+    recentConsultations: [] // 빈 배열로 시작 - 에어테이블 데이터로만 채움
 };
 
 // 데스크톱에서만 실시간 상담현황 너비 조정
@@ -659,23 +659,24 @@ async function updateConsultationList() {
                 realTimeData.installationsCompleted = data.records.filter(record => record.fields['상태'] === '설치완료').length;
                 realTimeData.onlineConsultants = Math.max(1, Math.floor(data.records.length / 10)); // 접수 건수 기반 상담사 수
 
-                // 실제 에어테이블 데이터 사용
-                const latestRecord = data.records[data.records.length - 1]; // 최신 데이터
-                const newConsultation = {
-                    id: Date.now(),
-                    name: latestRecord.fields['이름'] ? latestRecord.fields['이름'].replace(/(.)/g, '$1○').slice(0, 3) : '신규○○',
-                    service: latestRecord.fields['주요서비스'] || '상담',
-                    status: latestRecord.fields['상태'] || '접수완료',
-                    amount: latestRecord.fields['사은품금액'] || 50,
-                    time: '방금 전',
-                    date: new Date().toISOString().split('T')[0],
-                    color: ['green', 'blue', 'purple', 'orange'][Math.floor(Math.random() * 4)]
-                };
+                // 에어테이블의 모든 레코드를 상담 목록으로 변환 (최신 순)
+                const consultations = data.records.map((record, index) => {
+                    const fields = record.fields;
+                    return {
+                        id: record.id || `record_${index}`,
+                        name: fields['이름'] ? fields['이름'].replace(/(.{1})/g, '$1○').slice(0, 3) + '○' : '익명○○',
+                        service: fields['주요서비스'] || '상담',
+                        status: fields['상태'] || '접수완료',
+                        amount: fields['사은품금액'] || 0,
+                        time: '실시간',
+                        date: fields['접수일시'] ? new Date(fields['접수일시']).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                        color: ['green', 'blue', 'purple', 'orange'][index % 4]
+                    };
+                }).reverse().slice(0, 7); // 최신 7개만 표시
 
-                // 실제 데이터로 상담 목록 업데이트
-                realTimeData.recentConsultations = [newConsultation, ...realTimeData.recentConsultations.slice(0, 6)];
+                // 실제 에어테이블 데이터로 완전 교체 (가짜 데이터 없음)
+                realTimeData.recentConsultations = consultations;
                 renderConsultationList();
-                updateDashboardStats(); // 통계 업데이트
                 return;
             }
         }
@@ -683,40 +684,32 @@ async function updateConsultationList() {
         console.error('실시간 데이터 로드 실패:', error);
     }
 
-    // API 호출 실패시 폴백 - 기존 데이터만 시간 업데이트
-    console.log('에어테이블 연결 실패 - 실시간 업데이트 대기 중');
+    // API 호출 실패시 빈 상태 유지 (가짜 데이터 생성하지 않음)
+    console.log('⚠️ 에어테이블 연결 없음 - 실제 데이터만 표시');
 
-    // 기존 상담 목록이 있을 경우에만 시간 업데이트
-    if (realTimeData.recentConsultations.length > 0) {
-        realTimeData.recentConsultations = realTimeData.recentConsultations.map(item => ({
-            ...item,
-            time: item.time === '방금 전' ? '2분 전' :
-                  item.time === '2분 전' ? '5분 전' :
-                  item.time === '5분 전' ? '8분 전' : '12분 전'
-        }));
-
-        renderConsultationList();
-    }
+    // 연결 실패시 상담 목록을 빈 배열로 초기화 (가짜 데이터 제거)
+    realTimeData.recentConsultations = [];
+    renderConsultationList();
 }
 
 function renderConsultationList() {
     const consultationList = document.getElementById('consultationList');
     if (!consultationList) return;
 
-    // 상담 목록이 비어있을 경우 대기 메시지 표시
+    // 에어테이블에 데이터가 없을 경우 안내 메시지
     if (realTimeData.recentConsultations.length === 0) {
         consultationList.innerHTML = `
             <div class="consultation-item empty-state">
                 <div class="consultation-left">
                     <div class="consultation-info">
-                        <h4 class="consultation-name">실시간 상담 대기 중</h4>
-                        <p class="consultation-service">에어테이블 연동 확인 필요</p>
-                        <p class="consultation-date">서비스 점검 중</p>
+                        <h4 class="consultation-name">접수 대기 중</h4>
+                        <p class="consultation-service">신규 접수를 기다리고 있습니다</p>
+                        <p class="consultation-date">실시간 연동 중</p>
                     </div>
                 </div>
                 <div class="consultation-right">
                     <p class="consultation-amount">-</p>
-                    <p class="consultation-time">대기 중</p>
+                    <p class="consultation-time">대기</p>
                 </div>
             </div>
         `;
