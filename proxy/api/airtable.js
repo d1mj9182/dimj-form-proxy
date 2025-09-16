@@ -44,20 +44,36 @@ export default async function handler(req, res) {
   // POST 요청 - 데이터 생성
   if (req.method === "POST") {
     try {
-      // DIMJ-form에서 사용하는 필드명들 (실제 에어테이블 컬럼명과 일치)
-      const allowedFields = [
-        "접수일시",
-        "이름",
-        "연락처",
-        "통신사",
-        "주요서비스",
-        "기타서비스",
-        "상담희망시간",
-        "개인정보동의",
-        "상태",
-        "사은품금액",
-        "IP주소",
-        "IP"
+      // 이모지를 제거하는 헬퍼 함수
+      function removeEmojis(str) {
+        return str.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+      }
+
+      // 먼저 에어테이블에서 실제 필드 구조를 가져오기
+      let actualFields = [];
+      try {
+        const schemaResponse = await fetch(AIRTABLE_API_URL, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${API_KEY}`,
+          },
+        });
+
+        if (schemaResponse.ok) {
+          const schemaData = await schemaResponse.json();
+          if (schemaData.records && schemaData.records.length > 0) {
+            actualFields = Object.keys(schemaData.records[0].fields || {});
+            console.log('실제 에어테이블 필드명들:', actualFields);
+          }
+        }
+      } catch (schemaError) {
+        console.log('스키마 조회 실패, 기본 필드명 사용:', schemaError.message);
+      }
+
+      // DIMJ-form에서 사용하는 기본 필드명들
+      const baseFields = [
+        "접수일시", "이름", "연락처", "통신사", "주요서비스", "기타서비스",
+        "상담희망시간", "개인정보동의", "상태", "사은품금액", "IP주소", "IP"
       ];
 
       const body = req.body;
@@ -65,13 +81,25 @@ export default async function handler(req, res) {
 
       // 프록시 서버를 통한 요청인지 확인
       if (body.baseId && body.tableName && body.apiKey && body.data) {
-        // 클라이언트에서 보낸 프록시 요청 형태
         fieldsToSend = body.data.fields;
       } else {
-        // 직접 필드 데이터가 온 경우
-        for (const key of allowedFields) {
-          if (body[key] !== undefined) {
-            fieldsToSend[key] = body[key];
+        // 기본 필드명으로 데이터 매핑
+        for (const baseField of baseFields) {
+          if (body[baseField] !== undefined) {
+            // 이모지가 포함된 실제 필드명 찾기
+            let matchedField = baseField;
+
+            if (actualFields.length > 0) {
+              const found = actualFields.find(actualField =>
+                removeEmojis(actualField) === removeEmojis(baseField)
+              );
+              if (found) {
+                matchedField = found;
+                console.log(`필드 매칭: ${baseField} → ${matchedField}`);
+              }
+            }
+
+            fieldsToSend[matchedField] = body[baseField];
           }
         }
       }
