@@ -652,14 +652,16 @@ async function updateConsultationList() {
 
         if (response.ok) {
             const data = await response.json();
+            console.log('📊 에어테이블 응답 데이터:', data);
+
             if (data.success && data.records && data.records.length > 0) {
                 // 실제 통계 데이터 업데이트
                 realTimeData.todayApplications = data.records.length;
                 realTimeData.cashReward = data.records.reduce((sum, record) => sum + (record.fields['사은품금액'] || 0), 0);
                 realTimeData.installationsCompleted = data.records.filter(record => record.fields['상태'] === '설치완료').length;
-                realTimeData.onlineConsultants = Math.max(1, Math.floor(data.records.length / 10)); // 접수 건수 기반 상담사 수
+                realTimeData.onlineConsultants = Math.max(1, Math.floor(data.records.length / 10));
 
-                // 에어테이블의 모든 레코드를 상담 목록으로 변환 (최신 순)
+                // 에어테이블의 실제 데이터만 상담 목록으로 변환
                 const consultations = data.records.map((record, index) => {
                     const fields = record.fields;
                     return {
@@ -672,10 +674,15 @@ async function updateConsultationList() {
                         date: fields['접수일시'] ? new Date(fields['접수일시']).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                         color: ['green', 'blue', 'purple', 'orange'][index % 4]
                     };
-                }).reverse().slice(0, 7); // 최신 7개만 표시
+                }).reverse().slice(0, 7);
 
-                // 실제 에어테이블 데이터로 완전 교체 (가짜 데이터 없음)
                 realTimeData.recentConsultations = consultations;
+                renderConsultationList();
+                return;
+            } else {
+                // 에어테이블에 데이터가 없으면 빈 상태로 유지
+                console.log('📭 에어테이블에 데이터 없음 - 빈 상태 유지');
+                realTimeData.recentConsultations = [];
                 renderConsultationList();
                 return;
             }
