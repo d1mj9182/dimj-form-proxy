@@ -25,9 +25,23 @@ function nextStep() {
         targetStep.classList.add('active');
         console.log('Successfully showed step', currentStep);
 
-        // Step 2로 이동할 때 상담현황 너비 조정
+        // Step 2로 이동할 때 레이아웃 안정화
         if (currentStep === 2) {
-            setTimeout(adjustDesktopStatusWidth, 100);
+            // 즉시 실행으로 변경하여 깜빡임 방지
+            setTimeout(() => {
+                // 더 구체적인 요소만 조정
+                const statusBoards = document.querySelectorAll('.status-board');
+                statusBoards.forEach(board => {
+                    if (board.closest('#step2') && window.innerWidth >= 1024) {
+                        board.style.cssText += `
+                            max-width: 1200px !important;
+                            margin: 40px auto !important;
+                            width: 90% !important;
+                            box-sizing: border-box !important;
+                        `;
+                    }
+                });
+            }, 0); // 0ms로 즉시 실행
         }
     } else {
         console.error('Could not find step element:', `step${currentStep}`);
@@ -334,63 +348,10 @@ let realTimeData = {
     recentConsultations: [] // 빈 배열로 시작 - 에어테이블 데이터로만 채움
 };
 
-// 데스크톱에서만 실시간 상담현황 너비 조정
+// 데스크톱에서만 실시간 상담현황 너비 조정 (간소화)
 function adjustDesktopStatusWidth() {
-    if (window.innerWidth >= 1024) {
-        console.log('Adjusting desktop status width...');
-
-        // 여러 선택자로 실시간 상담현황 섹션 찾기
-        const selectors = [
-            '.status-board',
-            '.status-section',
-            '[class*="consultation"]',
-            '[class*="status"]',
-            'div:contains("실시간")',
-            '#step2 .status-board', // 2페이지 내 status-board
-            '.main-content .status-board'
-        ];
-
-        let found = false;
-        selectors.forEach(selector => {
-            try {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(element => {
-                    if (element && (element.textContent.includes('실시간') || element.classList.contains('status-board'))) {
-                        element.style.cssText += `
-                            max-width: 1200px !important;
-                            margin: 40px auto !important;
-                            width: 90% !important;
-                            padding: 40px 20px !important;
-                            box-sizing: border-box !important;
-                        `;
-                        console.log('Status section width adjusted:', element.className);
-                        found = true;
-                    }
-                });
-            } catch (e) {
-                // 일부 브라우저에서 지원하지 않는 선택자 무시
-            }
-        });
-
-        if (!found) {
-            console.log('Status section not found, trying alternative method...');
-            // 대안: step2 내의 모든 div 확인
-            const step2 = document.getElementById('step2');
-            if (step2) {
-                const divs = step2.querySelectorAll('div');
-                divs.forEach(div => {
-                    if (div.style.background && div.style.background.includes('gradient')) {
-                        div.style.cssText += `
-                            max-width: 1200px !important;
-                            margin: 40px auto !important;
-                            width: 90% !important;
-                        `;
-                        console.log('Found gradient div, adjusted width');
-                    }
-                });
-            }
-        }
-    }
+    // 이 함수는 더 이상 사용하지 않음 - nextStep에서 직접 처리
+    console.log('adjustDesktopStatusWidth 함수 호출됨 (사용 안함)');
 }
 
 // 페이지 로드와 리사이즈 시 실행
