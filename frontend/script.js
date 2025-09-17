@@ -421,9 +421,21 @@ document.addEventListener('DOMContentLoaded', function() {
     updateLiveTime();
     renderConsultationList();
     setupEventListeners();
-    console.log('🚀 페이지 로드 완료, 즉시 API 호출 실행'); // 디버깅 로그
-    updateConsultationList(); // 즉시 API 호출
-    startRealTimeUpdates();
+    // 🎯 완전한 타이머 시스템 시작
+    console.log('🚀 페이지 로드 완료, 새로운 타이머 시스템 시작');
+
+    // 기존 타이머 모두 정리
+    clearAllIntervals();
+
+    // 초기 데이터 로드
+    updateDashboardStats();
+
+    // 단일 타이머: 30초마다 한 번만 업데이트 (중복 방지)
+    dashboardInterval = setInterval(() => {
+        updateDashboardStats();
+    }, 30000);
+
+    console.log('✅ 단일 타이머 시스템 완료 - 30초 간격으로 실행');
     addInteractionTracking();
     cleanOldSubmitCounts();
     checkDailyLimit();
@@ -438,6 +450,12 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(addEntranceAnimations, 100);
     
     console.log('Application initialization complete');
+});
+
+// 페이지 떠날 때 정리
+window.addEventListener('beforeunload', () => {
+    clearAllIntervals();
+    console.log('✅ 페이지 종료 시 타이머 정리 완료');
 });
 
 // Event Listeners Setup
@@ -532,75 +550,187 @@ function updateStepIndicator() {
     });
 }
 
-// Real-time Updates - 단일 타이머만 사용
-function startRealTimeUpdates() {
-    console.log('✅ 단일 실시간 업데이트 타이머 시작 (30초 간격)');
+// 🎯 완전한 타이머 관리 시스템
+let dashboardInterval = null;
+let lastFetchTime = 0;
 
-    // 유일한 타이머: 30초마다 모든 데이터 업데이트
-    setInterval(() => {
-        updateConsultationList(); // 이 함수가 모든 통계와 리스트를 업데이트
-    }, 30000);
-
-    // 시간 표시만 1초마다 업데이트 (숫자에 영향 없음)
-    setInterval(() => {
-        updateLiveTime();
-    }, 1000);
-
-    console.log('✅ 중복 타이머 제거 완료 - 단일 데이터 소스 사용');
+// 기존의 모든 setInterval 제거
+function clearAllIntervals() {
+    if (dashboardInterval) {
+        clearInterval(dashboardInterval);
+        dashboardInterval = null;
+    }
+    // 모든 interval 강제 정리
+    for(let i = 1; i < 99999; i++) {
+        window.clearInterval(i);
+    }
+    console.log('✅ 모든 타이머 완전 제거됨');
 }
 
 // updateStatistics 함수 제거됨 - updateConsultationList가 모든 업데이트 담당
 
-async function updateConsultationList() {
-    console.log('🔄 에어테이블 API 호출 시작...'); // 디버깅 로그
+// 대시보드 업데이트 함수 (중복 방지)
+async function updateDashboardStats() {
+    // 중복 호출 방지 (1초 이내 재호출 무시)
+    const now = Date.now();
+    if (now - lastFetchTime < 1000) {
+        console.log('⚡ 중복 호출 방지');
+        return;
+    }
+    lastFetchTime = now;
+
     try {
-        // 프록시 서버를 통해 실제 에어테이블 데이터 가져오기
-        const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
+        console.log('🔄 단일 API 호출 시작...');
+        const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`);
+        const data = await response.json();
+
+        if (!data.success || !data.records) {
+            throw new Error('API 응답 오류');
+        }
+
+        // 빈 fields 필터링 및 최신순 정렬
+        const validRecords = data.records.filter(r => r.fields && Object.keys(r.fields).length > 0);
+        validRecords.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+
+        console.log(`📊 유효 레코드: ${validRecords.length}개`);
+        console.log('🎯 최신 순서:', validRecords.slice(0, 3).map(r => `${getFieldValue(r, '이름')}(${new Date(r.createdTime).toLocaleTimeString()})`));
+
+        // 통계 계산
+        const stats = {
+            today: 0,
+            waiting: 0,
+            consulting: 0,
+            completed: 0,
+            scheduled: 0,
+            installed: 0,
+            gift: 0
+        };
+
+        const today = new Date().toDateString();
+
+        validRecords.forEach(record => {
+            const fields = record.fields;
+            const createdDate = new Date(record.createdTime);
+
+            if (createdDate.toDateString() === today) {
+                stats.today++;
+            }
+
+            const status = getFieldValue(record, '상태') || '';
+            switch(status) {
+                case '상담 대기':
+                case '신규':
+                    stats.waiting++;
+                    break;
+                case '상담중':
+                case '상담 중':
+                    stats.consulting++;
+                    break;
+                case '상담 완료':
+                case '상담완료':
+                    stats.completed++;
+                    break;
+                case '설치예약':
+                case '설치 예약':
+                    stats.scheduled++;
+                    break;
+                case '설치완료':
+                case '설치 완료':
+                    stats.installed++;
+                    break;
             }
         });
-        console.log('📡 API 응답 상태:', response.status); // 디버깅 로그
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log('📊 에어테이블 응답 데이터:', data);
+        // 사은품 금액 계산
+        stats.gift = validRecords.reduce((sum, record) => {
+            return sum + (parseInt(getFieldValue(record, '사은품금액')) || 0);
+        }, 0);
 
-            if (data.success && data.records && data.records.length > 0) {
-                // 정렬 확인을 위한 디버깅 로그
-                console.log('🔍 프론트엔드 정렬 디버깅 - API에서 받은 순서:');
-                data.records.forEach((record, index) => {
-                    const submissionTime = getFieldValue(record, '접수일시');
-                    console.log(`레코드 ${index + 1}: ID=${record.id.substring(-4)}, 생성시간=${record.createdTime}, 접수일시=${submissionTime}`);
-                });
+        console.log('📈 계산된 통계:', stats);
 
-                // ❗ 핵심 수정: 빈 fields 레코드 제거하고 createdTime 정렬
-                console.log('🔄 1단계: 빈 레코드 제거 및 정렬 시작...');
+        // DOM 업데이트 (직접 설정, 애니메이션 없음)
+        const updateElement = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = value;
+                console.log(`🟢 ${id}: ${value}`);
+            }
+        };
 
-                // ✅ 핵심 해결책: 빈 레코드 제거 + 정확한 최신순 정렬
-                const originalCount = data.records.length;
+        updateElement('todayApplications', stats.today);
+        updateElement('waitingConsultation', stats.waiting);
+        updateElement('consultingNow', stats.consulting);
+        updateElement('completedConsultations', stats.completed);
+        updateElement('installReservation', stats.scheduled);
+        updateElement('onlineConsultants', stats.installed);
+        updateElement('cashReward', Math.floor(stats.gift / 10000)); // 만원 단위
 
-                // 1단계: 유효한 데이터만 필터링
-                data.records = data.records.filter(record => {
-                    return record.fields && Object.keys(record.fields).length > 0;
-                });
+        // 최신 리스트 업데이트
+        updateConsultationList(validRecords.slice(0, 7));
 
-                // 2단계: createdTime 기준 최신순 정렬 (최신이 맨 위로)
-                data.records.sort((a, b) => {
-                    return new Date(b.createdTime) - new Date(a.createdTime);
-                });
+    } catch (error) {
+        console.error('❌ 데이터 로드 실패:', error);
+    }
+}
 
-                console.log(`📊 데이터 정리: ${originalCount}개 → ${data.records.length}개 (유효 데이터만)`);
-                console.log('🎯 최신순 정렬 결과:');
-                data.records.forEach((record, index) => {
-                    const name = getFieldValue(record, '이름') || '익명';
-                    const time = new Date(record.createdTime).toLocaleTimeString();
-                    console.log(`  ${index + 1}번째: ${name} (${time})`);
-                });
+// 리스트 업데이트 함수
+function updateConsultationList(records) {
+    const listContainer = document.getElementById('consultationList');
+    if (!listContainer || !records) return;
 
-                // 에어테이블 실제 데이터로 모든 통계 업데이트
-                const today = new Date().toISOString().split('T')[0]; // 오늘 날짜
+    if (records.length === 0) {
+        listContainer.innerHTML = `
+            <div class="consultation-item empty-state">
+                <div class="consultation-left">
+                    <div class="consultation-info">
+                        <h4 class="consultation-name">접수 대기 중</h4>
+                        <p class="consultation-service">신규 접수를 기다리고 있습니다</p>
+                        <p class="consultation-date">실시간 연동 중</p>
+                    </div>
+                </div>
+                <div class="consultation-right">
+                    <p class="consultation-amount">-</p>
+                    <p class="consultation-time">대기</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    listContainer.innerHTML = records.map((record, index) => {
+        const fields = record.fields;
+        const name = getFieldValue(record, '이름') || '익명';
+        const service = getFieldValue(record, '주요서비스') || '상담';
+        const status = getFieldValue(record, '상태') || '대기';
+        const amount = getFieldValue(record, '사은품금액') || 0;
+        const displayName = name ? name.replace(/(.{1})/g, '$1○').slice(0, 3) + '○' : '익명○○';
+        const time = new Date(record.createdTime).toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const statusColor = getStatusColor(status);
+
+        return `
+            <div class="consultation-item ${statusColor} ${index === 0 ? 'new' : ''}">
+                <div class="consultation-left">
+                    <div class="consultation-dot ${statusColor}"></div>
+                    <div class="consultation-info">
+                        <h4 class="consultation-name ${statusColor}">${displayName} 고객님</h4>
+                        <p class="consultation-service">${service} ${status}</p>
+                        <p class="consultation-date">접수: ${time}</p>
+                    </div>
+                </div>
+                <div class="consultation-right">
+                    <p class="consultation-amount ${statusColor}">현금 ${amount}만원</p>
+                    <p class="consultation-time">실시간</p>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    console.log(`📋 리스트 업데이트 완료: ${records.length}개 항목`);
+}
 
                 // 상태별 색상 매핑 함수
                 function getStatusColor(status) {
