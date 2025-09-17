@@ -536,12 +536,7 @@ function updateStepIndicator() {
 function startRealTimeUpdates() {
     console.log('✅ 실시간 업데이트 타이머 시작됨'); // 디버깅 로그
 
-    // Update statistics every 5 seconds with real Airtable data
-    setInterval(() => {
-        updateStatistics();
-    }, 5000);
-
-    // Update consultation list every 8 seconds
+    // Update consultation list every 8 seconds (통합된 업데이트 - updateStatistics 제거)
     setInterval(() => {
         updateConsultationList();
     }, 8000);
@@ -560,48 +555,7 @@ function startRealTimeUpdates() {
     updateGiftAmountFromAirtable();
 }
 
-async function updateStatistics() {
-    // 에어테이블에서 실제 데이터를 가져와서 통계 업데이트
-    try {
-        const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            if (data.success && data.records) {
-                // 실제 에어테이블 데이터로 업데이트
-                const today = new Date().toISOString().split('T')[0];
-                const todayRecords = data.records.filter(record => {
-                    const recordDate = record.fields['접수일시'];
-                    return recordDate && recordDate.includes(today);
-                });
-
-                realTimeData.todayApplications = todayRecords.length;
-                realTimeData.cashReward = data.records.reduce((sum, record) => sum + (record.fields['사은품금액'] || 0), 0);
-                realTimeData.installationsCompleted = data.records.filter(record => record.fields['상태'] === '설치완료').length;
-                realTimeData.onlineConsultants = data.records.filter(record => record.fields['상태'] === '설치완료').length; // 설치완료 수만 표시
-            }
-        }
-    } catch (error) {
-        console.log('통계 업데이트 실패 - 에어테이블 연결 확인 필요:', error);
-        // API 연결 실패시 기존 값 유지 (랜덤 값 생성하지 않음)
-    }
-
-    // Update DOM elements
-    const todayAppsEl = document.getElementById('todayApplications');
-    const completedEl = document.getElementById('completedConsultations');
-    const cashRewardEl = document.getElementById('cashReward');
-    const consultantsEl = document.getElementById('onlineConsultants');
-
-    if (todayAppsEl) todayAppsEl.textContent = realTimeData.todayApplications;
-    if (completedEl) completedEl.textContent = realTimeData.installationsCompleted;
-    if (cashRewardEl) cashRewardEl.textContent = realTimeData.cashReward;
-    if (consultantsEl) consultantsEl.textContent = realTimeData.onlineConsultants;
-}
+// updateStatistics 함수 제거됨 - updateConsultationList가 모든 업데이트 담당
 
 async function updateConsultationList() {
     console.log('🔄 에어테이블 API 호출 시작...'); // 디버깅 로그
