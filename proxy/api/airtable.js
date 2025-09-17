@@ -54,6 +54,10 @@ export default async function handler(req, res) {
       if (body.baseId && body.tableName && body.apiKey && body.data) {
         fieldsToSend = body.data.fields;
         console.log('📋 프록시 요청 데이터:', fieldsToSend);
+      } else if (body.fields) {
+        // 프론트엔드에서 { fields: {...} } 형태로 온 경우
+        fieldsToSend = body.fields;
+        console.log('📋 fields 객체 요청 데이터:', fieldsToSend);
       } else {
         // 직접 필드 데이터가 온 경우 - 그대로 전송
         fieldsToSend = { ...body };
