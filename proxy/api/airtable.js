@@ -106,8 +106,10 @@ export default async function handler(req, res) {
     try {
       console.log("🔍 에어테이블 API 호출 시도:", AIRTABLE_API_URL);
       console.log("🔑 API_KEY 존재:", !!API_KEY);
+      console.log("🔑 API_KEY 앞 10자:", API_KEY ? API_KEY.substring(0, 10) + '...' : 'None');
       console.log("📊 BASE_ID:", BASE_ID);
       console.log("📋 TABLE_NAME:", TABLE_NAME);
+      console.log("📋 TABLE_NAME (인코딩됨):", encodeURIComponent(TABLE_NAME));
 
       const airtableRes = await fetch(AIRTABLE_API_URL, {
         headers: {

@@ -532,7 +532,7 @@ function updateStepIndicator() {
 function startRealTimeUpdates() {
     console.log('✅ 실시간 업데이트 타이머 시작됨'); // 디버깅 로그
 
-    // Update statistics every 5 seconds
+    // Update statistics every 5 seconds with real Airtable data
     setInterval(() => {
         updateStatistics();
     }, 5000);
@@ -1256,26 +1256,6 @@ function safeElementUpdate(elementId, updateFunction) {
     }
 }
 
-// Enhanced error handling for all functions
-function updateStatistics() {
-    try {
-        realTimeData.todayApplications += Math.floor(Math.random() * 3);
-        realTimeData.cashReward += Math.floor(Math.random() * 100);
-        realTimeData.installationsCompleted += Math.floor(Math.random() * 2);
-        realTimeData.onlineConsultants = 8 + Math.floor(Math.random() * 8);
-        
-        // Update main status board
-        safeElementUpdate('todayApplications', (el) => el.textContent = realTimeData.todayApplications);
-        safeElementUpdate('completedConsultations', (el) => el.textContent = realTimeData.installationsCompleted);
-        safeElementUpdate('cashReward', (el) => el.textContent = realTimeData.cashReward);
-        safeElementUpdate('onlineConsultants', (el) => el.textContent = realTimeData.onlineConsultants);
-        
-        // Update banner statistics
-        updateBannerStats();
-        
-    } catch (error) {
-        console.error('Error updating statistics:', error);
-    }
 }
 
 function updateBannerStats() {
