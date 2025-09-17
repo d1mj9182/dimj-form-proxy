@@ -536,10 +536,10 @@ function updateStepIndicator() {
 function startRealTimeUpdates() {
     console.log('✅ 실시간 업데이트 타이머 시작됨'); // 디버깅 로그
 
-    // Update consultation list every 8 seconds (통합된 업데이트 - updateStatistics 제거)
+    // Update consultation list every 30 seconds (실시간성 유지)
     setInterval(() => {
         updateConsultationList();
-    }, 8000);
+    }, 30000);
 
     // Update live time every second
     setInterval(() => {
@@ -671,11 +671,18 @@ async function updateConsultationList() {
             }
         }
     } catch (error) {
-        console.error('실시간 데이터 로드 실패:', error);
+        console.error('🚨 실시간 데이터 로드 실패:', {
+            message: error.message,
+            status: error.status || 'Unknown',
+            timestamp: new Date().toISOString()
+        });
+
+        // 사용자에게 명확한 에러 상황 안내 (개발자 도구에서 확인 가능)
+        console.warn('📡 에어테이블 API 연결 실패 - 백엔드 서버 상태를 확인해주세요');
     }
 
-    // API 호출 실패시 모든 통계를 0으로 초기화 (가짜 데이터 생성하지 않음)
-    console.log('⚠️ 에어테이블 연결 없음 - 모든 통계 0으로 초기화');
+    // API 호출 실패시 모든 통계를 0으로 초기화 (실제 데이터만 표시)
+    console.log('⚠️ 에어테이블 연결 없음 - 모든 통계 0으로 초기화 (실제 데이터 대기 중)');
 
     // 연결 실패시 모든 데이터를 0/빈상태로 초기화
     realTimeData.todayApplications = 0;
