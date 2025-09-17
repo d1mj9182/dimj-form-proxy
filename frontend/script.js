@@ -546,13 +546,9 @@ function startRealTimeUpdates() {
         updateLiveTime();
     }, 1000);
 
-    // Update gift amounts from Airtable every 30 seconds (if configured)
-    setInterval(() => {
-        updateGiftAmountFromAirtable();
-    }, 30000);
-
-    // Initial gift amount update
-    updateGiftAmountFromAirtable();
+    // ❌ 중복 제거: updateGiftAmountFromAirtable() 타이머 제거
+    // updateConsultationList()에서 이미 사은품 금액을 계산하므로 중복 제거
+    console.log('✅ 중복 사은품 금액 업데이트 타이머 제거됨 - updateConsultationList()에서 처리');
 }
 
 // updateStatistics 함수 제거됨 - updateConsultationList가 모든 업데이트 담당
@@ -695,7 +691,10 @@ async function updateConsultationList() {
                     };
                 }).slice(0, 7); // 상위 7개만
 
-                console.log('🎯 최종 상담목록 (최신순):', consultations.map((c, i) => `${i+1}. ${c.name} - ${c.status}`));
+                console.log('🎯 최종 상담목록 (최신순):', consultations.map((c, i) => {
+                    const originalRecord = data.records.find(r => r.id === c.id);
+                    return `${i+1}. ${c.name} - ${c.status} (생성시간: ${originalRecord?.createdTime})`;
+                }));
 
                 realTimeData.recentConsultations = consultations;
                 renderConsultationList();
@@ -806,6 +805,17 @@ function updateLiveTime() {
 }
 
 function updateDashboardStats() {
+    // 🔥 숫자 업데이트 디버깅
+    console.log('📊 대시보드 통계 업데이트 시작:', {
+        todayApplications: realTimeData.todayApplications,
+        completedConsultations: realTimeData.completedConsultations,
+        installationsCompleted: realTimeData.installationsCompleted,
+        waitingConsultation: realTimeData.waitingConsultation,
+        consultingNow: realTimeData.consultingNow,
+        installReservation: realTimeData.installReservation,
+        cashReward: realTimeData.cashReward
+    });
+
     // 에어테이블 실제 데이터로 모든 통계 업데이트
     const todayApplicationsEl = document.getElementById('todayApplications');
     const completedConsultationsEl = document.getElementById('completedConsultations');
@@ -815,14 +825,37 @@ function updateDashboardStats() {
     const installReservationEl = document.getElementById('installReservation');
     const cashRewardEl = document.getElementById('cashReward');
 
-    // 실제 에어테이블 데이터 표시
-    if (todayApplicationsEl) todayApplicationsEl.textContent = realTimeData.todayApplications || 0;
-    if (completedConsultationsEl) completedConsultationsEl.textContent = realTimeData.completedConsultations || 0;
-    if (onlineConsultantsEl) onlineConsultantsEl.textContent = realTimeData.installationsCompleted || 0; // 설치완료
-    if (waitingConsultationEl) waitingConsultationEl.textContent = realTimeData.waitingConsultation || 0;
-    if (consultingNowEl) consultingNowEl.textContent = realTimeData.consultingNow || 0;
-    if (installReservationEl) installReservationEl.textContent = realTimeData.installReservation || 0;
-    if (cashRewardEl) cashRewardEl.textContent = realTimeData.cashReward || 0;
+    // 실제 에어테이블 데이터 표시 - 각각 로그 추가
+    if (todayApplicationsEl) {
+        todayApplicationsEl.textContent = realTimeData.todayApplications || 0;
+        console.log('🟢 오늘접수 업데이트:', realTimeData.todayApplications);
+    }
+    if (completedConsultationsEl) {
+        completedConsultationsEl.textContent = realTimeData.completedConsultations || 0;
+        console.log('🟢 상담완료 업데이트:', realTimeData.completedConsultations);
+    }
+    if (onlineConsultantsEl) {
+        onlineConsultantsEl.textContent = realTimeData.installationsCompleted || 0;
+        console.log('🟢 설치완료 업데이트:', realTimeData.installationsCompleted);
+    }
+    if (waitingConsultationEl) {
+        waitingConsultationEl.textContent = realTimeData.waitingConsultation || 0;
+        console.log('🟢 상담대기 업데이트:', realTimeData.waitingConsultation);
+    }
+    if (consultingNowEl) {
+        consultingNowEl.textContent = realTimeData.consultingNow || 0;
+        console.log('🟢 상담중 업데이트:', realTimeData.consultingNow);
+    }
+    if (installReservationEl) {
+        installReservationEl.textContent = realTimeData.installReservation || 0;
+        console.log('🟢 설치예약 업데이트:', realTimeData.installReservation);
+    }
+    if (cashRewardEl) {
+        cashRewardEl.textContent = realTimeData.cashReward || 0;
+        console.log('🟢 현금사은품 업데이트:', realTimeData.cashReward);
+    }
+
+    console.log('✅ 대시보드 통계 업데이트 완료');
 }
 
 // Form Handling
@@ -1022,43 +1055,14 @@ function getSelectedProvider() {
     return providerBtn ? providerBtn.textContent.trim() : '';
 }
 
-// 에어테이블에서 사은품 금액 총합 가져오기
+// ❌ 중복 함수 비활성화: updateConsultationList()에서 이미 처리됨
+// 이 함수가 30초마다 별도 실행되면서 숫자 임의 변동의 원인이었음
+/*
 async function updateGiftAmountFromAirtable() {
-    try {
-        // 프록시 서버를 통해 에어테이블 데이터 조회 (환경변수 사용)
-        const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`에어테이블 API 오류: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // 사은품 금액 총합 계산
-        let totalGiftAmount = 0;
-        data.records.forEach(record => {
-            const giftAmount = record.fields['사은품금액'] || 0;
-            totalGiftAmount += Number(giftAmount);
-        });
-
-        // 실시간 현황판 업데이트
-        realTimeData.cashReward = totalGiftAmount;
-        const cashRewardEl = document.getElementById('cashReward');
-        if (cashRewardEl) {
-            cashRewardEl.textContent = totalGiftAmount;
-        }
-
-        console.log('사은품 총 금액 업데이트:', totalGiftAmount);
-
-    } catch (error) {
-        console.error('사은품 금액 업데이트 오류:', error);
-    }
+    // 이 함수는 더 이상 사용하지 않음
+    // updateConsultationList()에서 빈 레코드 제거한 후 정확히 계산함
 }
+*/
 
 function displaySubmittedInfo() {
     const submittedInfoEl = document.getElementById('submittedInfo');
