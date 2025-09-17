@@ -116,4 +116,4 @@ module.exports = async function handler(req, res) {
     console.error('[Airtable Proxy Error]', err);
     return res.status(500).json({ success: false, error: err.message || 'Unknown error' });
   }
-};
+};// Force redeploy 1758153367
