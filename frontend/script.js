@@ -583,7 +583,7 @@ async function updateStatistics() {
                 realTimeData.todayApplications = todayRecords.length;
                 realTimeData.cashReward = data.records.reduce((sum, record) => sum + (record.fields['사은품금액'] || 0), 0);
                 realTimeData.installationsCompleted = data.records.filter(record => record.fields['상태'] === '설치완료').length;
-                realTimeData.onlineConsultants = Math.max(1, Math.min(15, Math.floor(data.records.length / 5))); // 실제 데이터 기반 상담사 수
+                realTimeData.onlineConsultants = data.records.filter(record => record.fields['상태'] === '설치완료').length; // 설치완료 수만 표시
             }
         }
     } catch (error) {
@@ -622,6 +622,19 @@ async function updateConsultationList() {
             if (data.success && data.records && data.records.length > 0) {
                 // 에어테이블 실제 데이터로 모든 통계 업데이트
                 const today = new Date().toISOString().split('T')[0]; // 오늘 날짜
+
+                // 상태별 색상 매핑 함수
+                function getStatusColor(status) {
+                    const colorMap = {
+                        '상담 대기': 'blue',
+                        '상담 중': 'orange',
+                        '상담완료': 'green',
+                        '설치예약': 'purple',
+                        '설치완료': 'green',
+                        '접수완료': 'blue'
+                    };
+                    return colorMap[status] || 'blue';
+                }
 
                 // 이모지를 무시하고 필드값 가져오는 헬퍼 함수
                 function getFieldValue(record, targetField) {
@@ -678,7 +691,7 @@ async function updateConsultationList() {
                         amount: getFieldValue(record, '사은품금액') || 0,
                         time: '실시간',
                         date: getFieldValue(record, '접수일시') ? new Date(getFieldValue(record, '접수일시')).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-                        color: ['green', 'blue', 'purple', 'orange'][index % 4]
+                        color: getStatusColor(getFieldValue(record, '상태') || '접수완료')
                     };
                 }).slice(0, 7);
 
