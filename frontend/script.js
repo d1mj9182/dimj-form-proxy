@@ -345,6 +345,10 @@ let realTimeData = {
     cashReward: 0,
     installationsCompleted: 0,
     onlineConsultants: 0,
+    waitingConsultation: 0,
+    consultingNow: 0,
+    completedConsultations: 0,
+    installReservation: 0,
     recentConsultations: [] // 빈 배열로 시작 - 에어테이블 데이터로만 채움
 };
 
