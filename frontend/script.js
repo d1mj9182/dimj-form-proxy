@@ -532,23 +532,21 @@ function updateStepIndicator() {
     });
 }
 
-// Real-time Updates
+// Real-time Updates - 단일 타이머만 사용
 function startRealTimeUpdates() {
-    console.log('✅ 실시간 업데이트 타이머 시작됨'); // 디버깅 로그
+    console.log('✅ 단일 실시간 업데이트 타이머 시작 (30초 간격)');
 
-    // Update consultation list every 30 seconds (실시간성 유지)
+    // 유일한 타이머: 30초마다 모든 데이터 업데이트
     setInterval(() => {
-        updateConsultationList();
+        updateConsultationList(); // 이 함수가 모든 통계와 리스트를 업데이트
     }, 30000);
 
-    // Update live time every second
+    // 시간 표시만 1초마다 업데이트 (숫자에 영향 없음)
     setInterval(() => {
         updateLiveTime();
     }, 1000);
 
-    // ❌ 중복 제거: updateGiftAmountFromAirtable() 타이머 제거
-    // updateConsultationList()에서 이미 사은품 금액을 계산하므로 중복 제거
-    console.log('✅ 중복 사은품 금액 업데이트 타이머 제거됨 - updateConsultationList()에서 처리');
+    console.log('✅ 중복 타이머 제거 완료 - 단일 데이터 소스 사용');
 }
 
 // updateStatistics 함수 제거됨 - updateConsultationList가 모든 업데이트 담당
@@ -580,34 +578,26 @@ async function updateConsultationList() {
                 // ❗ 핵심 수정: 빈 fields 레코드 제거하고 createdTime 정렬
                 console.log('🔄 1단계: 빈 레코드 제거 및 정렬 시작...');
 
-                // 1단계: 빈 fields를 가진 레코드 완전 제거
+                // ✅ 핵심 해결책: 빈 레코드 제거 + 정확한 최신순 정렬
                 const originalCount = data.records.length;
+
+                // 1단계: 유효한 데이터만 필터링
                 data.records = data.records.filter(record => {
-                    const hasData = record.fields && Object.keys(record.fields).length > 0;
-                    if (!hasData) {
-                        console.log(`❌ 빈 레코드 제거: ${record.id.substring(-4)} (생성: ${record.createdTime})`);
-                    }
-                    return hasData;
+                    return record.fields && Object.keys(record.fields).length > 0;
                 });
 
-                console.log(`📊 레코드 필터링: ${originalCount}개 → ${data.records.length}개`);
-
-                // 2단계: createdTime 기준 최신순 정렬
+                // 2단계: createdTime 기준 최신순 정렬 (최신이 맨 위로)
                 data.records.sort((a, b) => {
                     return new Date(b.createdTime) - new Date(a.createdTime);
                 });
 
-                console.log('✅ 필터링 및 정렬 후 최종 순서:');
+                console.log(`📊 데이터 정리: ${originalCount}개 → ${data.records.length}개 (유효 데이터만)`);
+                console.log('🎯 최신순 정렬 결과:');
                 data.records.forEach((record, index) => {
                     const name = getFieldValue(record, '이름') || '익명';
-                    console.log(`${index + 1}. ID=${record.id.substring(-4)}, 생성=${record.createdTime}, 이름=${name}`);
+                    const time = new Date(record.createdTime).toLocaleTimeString();
+                    console.log(`  ${index + 1}번째: ${name} (${time})`);
                 });
-
-                // 🧪 테스트를 위해 의도적으로 최신 데이터가 1번에 오는지 확인
-                if (data.records.length > 0) {
-                    const firstRecord = data.records[0];
-                    console.log(`🎯 1번째 레코드 확인: ID=${firstRecord.id.substring(-4)}, 생성=${firstRecord.createdTime}`);
-                }
 
                 // 에어테이블 실제 데이터로 모든 통계 업데이트
                 const today = new Date().toISOString().split('T')[0]; // 오늘 날짜

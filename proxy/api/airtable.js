@@ -122,21 +122,10 @@ export default async function handler(req, res) {
       console.log("📋 TABLE_NAME:", TABLE_NAME);
       console.log("📋 TABLE_NAME (인코딩됨):", encodeURIComponent(TABLE_NAME));
 
-      // 최신순 정렬 시도 - 여러 방법으로 시도
-      let airtableUrl = AIRTABLE_API_URL;
+      // Airtable API는 createdTime으로 정렬 불가능하므로 프론트엔드에서 정렬
+      console.log('📋 에어테이블 API 호출 (프론트엔드에서 createdTime 정렬 예정)');
 
-      // 방법 1: Created 필드로 정렬 시도
-      try {
-        const createdSortParams = new URLSearchParams({
-          sort: JSON.stringify([{field: "Created", direction: "desc"}])
-        });
-        console.log('📋 정렬 방법 1: Created 필드 desc');
-        airtableUrl = `${AIRTABLE_API_URL}?${createdSortParams}`;
-      } catch (error) {
-        console.log('⚠️ Created 정렬 실패, 기본 URL 사용');
-      }
-
-      const airtableRes = await fetch(airtableUrl, {
+      const airtableRes = await fetch(AIRTABLE_API_URL, {
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         },
