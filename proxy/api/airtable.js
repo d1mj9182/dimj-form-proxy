@@ -66,54 +66,23 @@ export default async function handler(req, res) {
 
       console.log('📤 에어테이블로 전송할 데이터:', JSON.stringify({ fields: fieldsToSend }, null, 2));
 
-      // 에어테이블에서 실제 필드 목록을 먼저 가져와서 이모지 제거 후 매칭
-      let actualFields = {};
-      try {
-        // 먼저 테이블 구조를 확인하기 위해 한 개 레코드만 가져오기
-        const schemaRes = await fetch(`${AIRTABLE_API_URL}?maxRecords=1`, {
-          headers: { Authorization: `Bearer ${API_KEY}` }
-        });
+      // GPT 방식: 허용된 필드명 리스트로 필터링
+      const allowedFields = [
+        "접수일자", "고객명", "연락처", "통신사", "상품",
+        "부가상품", "상담시간", "진행상황", "TV추가",
+        // 추가로 현재 버전 필드명도 포함
+        "접수일시", "이름", "주요서비스", "기타서비스",
+        "상담희망시간", "개인정보동의", "상태", "사은품금액", "IP주소", "IP"
+      ];
 
-        if (schemaRes.ok) {
-          const schemaData = await schemaRes.json();
-          if (schemaData.records && schemaData.records.length > 0) {
-            // 첫 번째 레코드의 필드들을 기준으로 매칭
-            const firstRecord = schemaData.records[0];
-            const availableFields = Object.keys(firstRecord.fields);
-
-            console.log('📋 에어테이블 실제 필드명들:', availableFields);
-
-            // 이모지 제거 함수
-            const removeEmojis = (str) => {
-              return str.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
-            };
-
-            // 보내려는 각 필드에 대해 실제 에어테이블 필드명과 매칭
-            for (const [sendKey, value] of Object.entries(fieldsToSend)) {
-              const cleanSendKey = removeEmojis(sendKey);
-
-              // 실제 필드명에서 이모지를 제거한 것과 비교
-              const matchedField = availableFields.find(field => {
-                const cleanFieldName = removeEmojis(field);
-                return cleanFieldName === cleanSendKey;
-              });
-
-              if (matchedField) {
-                actualFields[matchedField] = value;
-                console.log(`✅ 매칭됨: ${sendKey} → ${matchedField}`);
-              } else {
-                console.log(`❌ 매칭 실패: ${sendKey}`);
-              }
-            }
-          }
+      const processedFields = {};
+      for (const key of allowedFields) {
+        if (fieldsToSend[key] !== undefined) {
+          processedFields[key] = fieldsToSend[key];
         }
-      } catch (error) {
-        console.log('스키마 조회 실패, 기본 필드명 사용:', error.message);
-        actualFields = fieldsToSend;
       }
 
-      // 매칭된 필드가 없으면 원본 데이터 사용
-      const processedFields = Object.keys(actualFields).length > 0 ? actualFields : fieldsToSend;
+      console.log('🔍 처리된 필드들:', processedFields);
 
       const airtableRes = await fetch(AIRTABLE_API_URL, {
         method: "POST",

@@ -3,14 +3,14 @@
 
 const AIRTABLE_CONFIG = {
     // 에어테이블 베이스 ID (예: appXXXXXXXXXXXXXX)
-    baseId: 'YOUR_BASE_ID',
+    baseId: 'appC57cOVf66tahSp',
 
     // 테이블 이름 (예: 'Table 1' 또는 '신청접수')
-    tableName: 'YOUR_TABLE_NAME',
+    tableName: '당일민족',
 
     // Personal Access Token 또는 API Key
     // 새로운 방식: Personal Access Token 권장
-    apiKey: 'YOUR_PERSONAL_ACCESS_TOKEN',
+    apiKey: 'PROXY_SERVER_USED',
 
     // 컬럼 매핑 (에어테이블의 실제 필드명과 일치해야 함)
     fields: {
