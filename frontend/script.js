@@ -574,6 +574,13 @@ async function updateConsultationList() {
             console.log('📊 에어테이블 응답 데이터:', data);
 
             if (data.success && data.records && data.records.length > 0) {
+                // 정렬 확인을 위한 디버깅 로그
+                console.log('🔍 프론트엔드 정렬 디버깅 - 받은 순서:');
+                data.records.forEach((record, index) => {
+                    const submissionTime = getFieldValue(record, '접수일시');
+                    console.log(`레코드 ${index + 1}: ID=${record.id.substring(-4)}, 접수일시=${submissionTime}`);
+                });
+
                 // 에어테이블 실제 데이터로 모든 통계 업데이트
                 const today = new Date().toISOString().split('T')[0]; // 오늘 날짜
 
@@ -637,6 +644,7 @@ async function updateConsultationList() {
 
                 // 에어테이블의 실제 데이터만 상담 목록으로 변환 (이모지 무시)
                 const consultations = data.records.map((record, index) => {
+                    const submissionTime = getFieldValue(record, '접수일시');
                     return {
                         id: record.id || `record_${index}`,
                         name: getFieldValue(record, '이름') ? getFieldValue(record, '이름').replace(/(.{1})/g, '$1○').slice(0, 3) + '○' : '익명○○',
@@ -644,10 +652,19 @@ async function updateConsultationList() {
                         status: getFieldValue(record, '상태') || '접수완료',
                         amount: getFieldValue(record, '사은품금액') || 0,
                         time: '실시간',
-                        date: getFieldValue(record, '접수일시') ? new Date(getFieldValue(record, '접수일시')).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                        date: submissionTime ? new Date(submissionTime).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                        submissionTime: submissionTime, // 정렬용 원본 시간 추가
                         color: getStatusColor(getFieldValue(record, '상태') || '접수완료')
                     };
-                }).slice(0, 7);
+                })
+                .sort((a, b) => {
+                    // 최신순 정렬 (프론트엔드에서 추가 정렬)
+                    if (!a.submissionTime || !b.submissionTime) return 0;
+                    return new Date(b.submissionTime) - new Date(a.submissionTime);
+                })
+                .slice(0, 7);
+
+                console.log('🔄 정렬 후 순서:', consultations.map((c, i) => `${i+1}. ${c.submissionTime}`));
 
                 realTimeData.recentConsultations = consultations;
                 renderConsultationList();

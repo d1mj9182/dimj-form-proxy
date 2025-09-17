@@ -156,6 +156,20 @@ export default async function handler(req, res) {
       const data = await airtableRes.json();
       console.log("📄 에어테이블 응답 데이터:", JSON.stringify(data, null, 2));
 
+      // 정렬 디버깅: 각 레코드의 접수일시 필드 확인
+      if (data.records && data.records.length > 0) {
+        console.log("🔍 정렬 디버깅 - 각 레코드의 접수일시:");
+        data.records.forEach((record, index) => {
+          const fields = record.fields;
+          console.log(`레코드 ${index + 1}:`, {
+            id: record.id,
+            접수일시_직접: fields['접수일시'],
+            접수일시_이모지: fields['📅 접수일시'] || fields['📅접수일시'],
+            모든필드명: Object.keys(fields)
+          });
+        });
+      }
+
       if (!airtableRes.ok) {
         throw {
           message: data.error?.message || "에어테이블 조회 오류",
