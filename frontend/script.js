@@ -581,15 +581,27 @@ async function updateConsultationList() {
                     console.log(`레코드 ${index + 1}: ID=${record.id.substring(-4)}, 생성시간=${record.createdTime}, 접수일시=${submissionTime}`);
                 });
 
-                // 먼저 createdTime 기준으로 정렬
-                console.log('🔄 createdTime 기준으로 재정렬 시작...');
+                // ❗ 핵심 수정: 빈 fields 레코드 제거하고 createdTime 정렬
+                console.log('🔄 1단계: 빈 레코드 제거 및 정렬 시작...');
+
+                // 1단계: 빈 fields를 가진 레코드 완전 제거
+                data.records = data.records.filter(record => {
+                    const hasData = record.fields && Object.keys(record.fields).length > 0;
+                    if (!hasData) {
+                        console.log(`❌ 빈 레코드 제거: ${record.id.substring(-4)} (생성: ${record.createdTime})`);
+                    }
+                    return hasData;
+                });
+
+                // 2단계: createdTime 기준 최신순 정렬
                 data.records.sort((a, b) => {
                     return new Date(b.createdTime) - new Date(a.createdTime);
                 });
 
-                console.log('🔍 정렬 후 순서:');
+                console.log('✅ 필터링 및 정렬 후 최종 순서:');
                 data.records.forEach((record, index) => {
-                    console.log(`정렬 후 ${index + 1}: ID=${record.id.substring(-4)}, 생성시간=${record.createdTime}`);
+                    const name = getFieldValue(record, '이름') || '익명';
+                    console.log(`${index + 1}. ID=${record.id.substring(-4)}, 생성=${record.createdTime}, 이름=${name}`);
                 });
 
                 // 에어테이블 실제 데이터로 모든 통계 업데이트
@@ -630,18 +642,31 @@ async function updateConsultationList() {
                     return undefined;
                 }
 
+                // 🔥 핵심: 이제 data.records는 이미 유효한 데이터만 포함됨
+                console.log('📊 통계 계산 시작 - 유효 레코드 수:', data.records.length);
+
                 // 오늘 접수 필터링 (정확한 컬럼명)
                 const todayRecords = data.records.filter(record => {
                     const recordDate = getFieldValue(record, '접수일시');
                     return recordDate && recordDate.includes(today);
                 });
 
-                // 상태별 통계 계산 (정확한 컬럼명)
+                // 상태별 통계 계산 (정확한 컬럼명) - 빈 레코드는 이미 제거됨
                 const consultingRecords = data.records.filter(record => getFieldValue(record, '상태') === '상담 중');
                 const completedRecords = data.records.filter(record => getFieldValue(record, '상태') === '상담완료');
                 const installedRecords = data.records.filter(record => getFieldValue(record, '상태') === '설치완료');
                 const reservedRecords = data.records.filter(record => getFieldValue(record, '상태') === '설치예약');
                 const waitingRecords = data.records.filter(record => getFieldValue(record, '상태') === '상담 대기');
+
+                console.log('📈 통계 결과:', {
+                    '전체': data.records.length,
+                    '오늘접수': todayRecords.length,
+                    '상담대기': waitingRecords.length,
+                    '상담중': consultingRecords.length,
+                    '상담완료': completedRecords.length,
+                    '설치예약': reservedRecords.length,
+                    '설치완료': installedRecords.length
+                });
 
                 // 실제 데이터로 업데이트
                 realTimeData.todayApplications = todayRecords.length; // 오늘 접수
@@ -653,38 +678,24 @@ async function updateConsultationList() {
                 realTimeData.completedConsultations = completedRecords.length; // 상담 완료
                 realTimeData.installReservation = reservedRecords.length; // 설치 예약
 
-                // 에어테이블의 실제 데이터만 상담 목록으로 변환 (이모지 무시)
+                // 🎯 이미 정렬된 유효한 데이터로 상담 목록 생성
                 const consultations = data.records.map((record, index) => {
                     const submissionTime = getFieldValue(record, '접수일시');
+                    const name = getFieldValue(record, '이름') || '익명';
+
                     return {
                         id: record.id || `record_${index}`,
-                        name: getFieldValue(record, '이름') ? getFieldValue(record, '이름').replace(/(.{1})/g, '$1○').slice(0, 3) + '○' : '익명○○',
+                        name: name ? name.replace(/(.{1})/g, '$1○').slice(0, 3) + '○' : '익명○○',
                         service: getFieldValue(record, '주요서비스') || '상담',
                         status: getFieldValue(record, '상태') || '접수완료',
                         amount: getFieldValue(record, '사은품금액') || 0,
                         time: '실시간',
                         date: submissionTime ? new Date(submissionTime).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-                        submissionTime: submissionTime, // 정렬용 원본 시간 추가
                         color: getStatusColor(getFieldValue(record, '상태') || '접수완료')
                     };
-                })
-                .sort((a, b) => {
-                    // 최신순 정렬 (createdTime 기준)
-                    const aTime = a.submissionTime ? new Date(a.submissionTime) : new Date(0);
-                    const bTime = b.submissionTime ? new Date(b.submissionTime) : new Date(0);
+                }).slice(0, 7); // 상위 7개만
 
-                    // submissionTime이 없으면 에어테이블 createdTime 사용
-                    const aCreated = data.records.find(r => r.id === a.id)?.createdTime;
-                    const bCreated = data.records.find(r => r.id === b.id)?.createdTime;
-
-                    const aFinalTime = a.submissionTime ? aTime : (aCreated ? new Date(aCreated) : new Date(0));
-                    const bFinalTime = b.submissionTime ? bTime : (bCreated ? new Date(bCreated) : new Date(0));
-
-                    return bFinalTime - aFinalTime; // 최신순 (desc)
-                })
-                .slice(0, 7);
-
-                console.log('🔄 정렬 후 순서:', consultations.map((c, i) => `${i+1}. ${c.submissionTime}`));
+                console.log('🎯 최종 상담목록 (최신순):', consultations.map((c, i) => `${i+1}. ${c.name} - ${c.status}`));
 
                 realTimeData.recentConsultations = consultations;
                 renderConsultationList();
