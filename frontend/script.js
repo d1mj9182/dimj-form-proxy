@@ -676,7 +676,7 @@ async function updateConsultationList() {
                         date: getFieldValue(record, '접수일시') ? new Date(getFieldValue(record, '접수일시')).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                         color: ['green', 'blue', 'purple', 'orange'][index % 4]
                     };
-                }).reverse().slice(0, 7);
+                }).slice(0, 7);
 
                 realTimeData.recentConsultations = consultations;
                 renderConsultationList();

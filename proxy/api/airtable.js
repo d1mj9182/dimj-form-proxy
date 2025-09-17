@@ -66,8 +66,32 @@ export default async function handler(req, res) {
 
       console.log('📤 에어테이블로 전송할 데이터:', JSON.stringify({ fields: fieldsToSend }, null, 2));
 
-      // 모든 데이터를 그대로 전송 (디버깅용)
-      const processedFields = fieldsToSend;
+      // 이모지를 무시하고 매칭하는 로직
+      const processedFields = {};
+
+      // 이모지 제거 함수
+      const removeEmojis = (str) => {
+        return str.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+      };
+
+      // 원본 데이터와 이모지 포함 버전 모두 추가
+      for (const [key, value] of Object.entries(fieldsToSend)) {
+        // 원본
+        processedFields[key] = value;
+
+        // 이모지 포함 버전들
+        processedFields[`📅 ${key}`] = value; // 접수일시
+        processedFields[`👤 ${key}`] = value; // 이름
+        processedFields[`📞 ${key}`] = value; // 연락처
+        processedFields[`📱 ${key}`] = value; // 통신사
+        processedFields[`🌐 ${key}`] = value; // 주요서비스
+        processedFields[`➕ ${key}`] = value; // 기타서비스
+        processedFields[`⏰ ${key}`] = value; // 상담희망시간
+        processedFields[`✅ ${key}`] = value; // 개인정보동의
+        processedFields[`📊 ${key}`] = value; // 상태
+        processedFields[`💰 ${key}`] = value; // 사은품금액
+        processedFields[`🖥️ ${key}`] = value; // IP주소
+      }
 
       console.log('🔍 처리된 필드들:', processedFields);
 
@@ -116,7 +140,12 @@ export default async function handler(req, res) {
       console.log("📋 TABLE_NAME:", TABLE_NAME);
       console.log("📋 TABLE_NAME (인코딩됨):", encodeURIComponent(TABLE_NAME));
 
-      const airtableRes = await fetch(AIRTABLE_API_URL, {
+      // 최신순 정렬을 위한 파라미터 추가
+      const sortParams = new URLSearchParams({
+        sort: JSON.stringify([{field: "접수일시", direction: "desc"}])
+      });
+
+      const airtableRes = await fetch(`${AIRTABLE_API_URL}?${sortParams}`, {
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         },

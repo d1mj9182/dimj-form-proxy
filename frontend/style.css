@@ -1208,6 +1208,7 @@ body {
 .consultation-amount {
     font-weight: bold;
     margin-bottom: 0.25rem;
+    font-size: 2em; /* 텍스트 크기 2배 */
 }
 
 .consultation-amount.green { color: #10b981; }
