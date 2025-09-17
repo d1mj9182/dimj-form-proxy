@@ -641,22 +641,22 @@ async function updateConsultationList() {
                     return undefined;
                 }
 
-                // 오늘 접수 필터링 (이모지 포함 컬럼명)
+                // 오늘 접수 필터링 (정확한 컬럼명)
                 const todayRecords = data.records.filter(record => {
-                    const recordDate = getFieldValue(record, '📅 접수일시');
+                    const recordDate = getFieldValue(record, '접수일시');
                     return recordDate && recordDate.includes(today);
                 });
 
-                // 상태별 통계 계산 (이모지 포함 컬럼명)
-                const consultingRecords = data.records.filter(record => getFieldValue(record, '📋 상태') === '상담 중');
-                const completedRecords = data.records.filter(record => getFieldValue(record, '📋 상태') === '상담완료');
-                const installedRecords = data.records.filter(record => getFieldValue(record, '📋 상태') === '설치완료');
-                const reservedRecords = data.records.filter(record => getFieldValue(record, '📋 상태') === '설치예약');
-                const waitingRecords = data.records.filter(record => getFieldValue(record, '📋 상태') === '상담 대기');
+                // 상태별 통계 계산 (정확한 컬럼명)
+                const consultingRecords = data.records.filter(record => getFieldValue(record, '상태') === '상담 중');
+                const completedRecords = data.records.filter(record => getFieldValue(record, '상태') === '상담완료');
+                const installedRecords = data.records.filter(record => getFieldValue(record, '상태') === '설치완료');
+                const reservedRecords = data.records.filter(record => getFieldValue(record, '상태') === '설치예약');
+                const waitingRecords = data.records.filter(record => getFieldValue(record, '상태') === '상담 대기');
 
                 // 실제 데이터로 업데이트
                 realTimeData.todayApplications = todayRecords.length; // 오늘 접수
-                realTimeData.cashReward = Math.floor(data.records.reduce((sum, record) => sum + (getFieldValue(record, '💰 사은품금액') || 0), 0) / 10000); // 만원 단위
+                realTimeData.cashReward = Math.floor(data.records.reduce((sum, record) => sum + (getFieldValue(record, '사은품금액') || 0), 0) / 10000); // 만원 단위
                 realTimeData.installationsCompleted = installedRecords.length; // 설치완료
                 realTimeData.onlineConsultants = installedRecords.length; // 설치완료를 onlineConsultants ID에 표시
                 realTimeData.waitingConsultation = waitingRecords.length; // 상담 대기
@@ -668,12 +668,12 @@ async function updateConsultationList() {
                 const consultations = data.records.map((record, index) => {
                     return {
                         id: record.id || `record_${index}`,
-                        name: getFieldValue(record, '👤 이름') ? getFieldValue(record, '👤 이름').replace(/(.{1})/g, '$1○').slice(0, 3) + '○' : '익명○○',
-                        service: getFieldValue(record, '🏠 주요서비스') || '상담',
-                        status: getFieldValue(record, '📋 상태') || '접수완료',
-                        amount: getFieldValue(record, '💰 사은품금액') || 0,
+                        name: getFieldValue(record, '이름') ? getFieldValue(record, '이름').replace(/(.{1})/g, '$1○').slice(0, 3) + '○' : '익명○○',
+                        service: getFieldValue(record, '주요서비스') || '상담',
+                        status: getFieldValue(record, '상태') || '접수완료',
+                        amount: getFieldValue(record, '사은품금액') || 0,
                         time: '실시간',
-                        date: getFieldValue(record, '📅 접수일시') ? new Date(getFieldValue(record, '📅 접수일시')).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                        date: getFieldValue(record, '접수일시') ? new Date(getFieldValue(record, '접수일시')).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                         color: ['green', 'blue', 'purple', 'orange'][index % 4]
                     };
                 }).reverse().slice(0, 7);
@@ -888,19 +888,20 @@ async function submitToAirtable(data) {
             return targetField; // 못 찾으면 원래 이름 반환
         }
 
-        // 에어테이블용 데이터 준비 (실제 컬럼명 사용)
+        // 에어테이블용 데이터 준비 (정확한 컬럼명 사용)
         const baseFields = {
-            '📅 접수일시': new Date().toISOString(),
-            '👤 이름': data.name,
-            '📞 연락처': data.phone,
-            '📡 통신사': selectedProvider || '',
-            '🏠 주요서비스': selectedServices.main || '',
-            '➕ 기타서비스': selectedServices.additional.join(', ') || '',
-            '⏰ 상담희망시간': data.preference || '빠른 시간에 연락드립니다',
-            '✅ 개인정보동의': 'Y',
-            '📋 상태': '상담 대기',
-            '💰 사은품금액': 0,
-            '🌐 IP주소': antiSpam.userIP || 'Unknown'
+            '접수일시': new Date().toISOString(),
+            '이름': data.name,
+            '연락처': data.phone,
+            '통신사': selectedProvider || '',
+            '주요서비스': selectedServices.main || '',
+            '기타서비스': selectedServices.additional.join(', ') || '',
+            '상담희망시간': data.preference || '빠른 시간에 연락드립니다',
+            '개인정보동의': 'Y',
+            '상태': '상담 대기',
+            '사은품금액': 0,
+            'IP주소': antiSpam.userIP || 'Unknown',
+            'IP': antiSpam.userIP || 'Unknown'
         };
 
         // 실제 에어테이블 필드명으로 변환 (이모지 포함된 필드명 찾기)
