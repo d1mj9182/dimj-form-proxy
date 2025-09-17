@@ -66,19 +66,8 @@ export default async function handler(req, res) {
 
       console.log('📤 에어테이블로 전송할 데이터:', JSON.stringify({ fields: fieldsToSend }, null, 2));
 
-      // GPT 방식: 허용된 필드명 리스트로 필터링
-      const allowedFields = [
-        "접수일시", "이름", "연락처", "통신사", "주요서비스",
-        "기타서비스", "상담희망시간", "개인정보동의", "상태",
-        "사은품금액", "IP주소", "IP"
-      ];
-
-      const processedFields = {};
-      for (const key of allowedFields) {
-        if (fieldsToSend[key] !== undefined) {
-          processedFields[key] = fieldsToSend[key];
-        }
-      }
+      // 모든 데이터를 그대로 전송 (디버깅용)
+      const processedFields = fieldsToSend;
 
       console.log('🔍 처리된 필드들:', processedFields);
 
