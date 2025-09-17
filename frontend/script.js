@@ -581,6 +581,7 @@ async function updateConsultationList() {
                 console.log('🔄 1단계: 빈 레코드 제거 및 정렬 시작...');
 
                 // 1단계: 빈 fields를 가진 레코드 완전 제거
+                const originalCount = data.records.length;
                 data.records = data.records.filter(record => {
                     const hasData = record.fields && Object.keys(record.fields).length > 0;
                     if (!hasData) {
@@ -588,6 +589,8 @@ async function updateConsultationList() {
                     }
                     return hasData;
                 });
+
+                console.log(`📊 레코드 필터링: ${originalCount}개 → ${data.records.length}개`);
 
                 // 2단계: createdTime 기준 최신순 정렬
                 data.records.sort((a, b) => {
@@ -599,6 +602,12 @@ async function updateConsultationList() {
                     const name = getFieldValue(record, '이름') || '익명';
                     console.log(`${index + 1}. ID=${record.id.substring(-4)}, 생성=${record.createdTime}, 이름=${name}`);
                 });
+
+                // 🧪 테스트를 위해 의도적으로 최신 데이터가 1번에 오는지 확인
+                if (data.records.length > 0) {
+                    const firstRecord = data.records[0];
+                    console.log(`🎯 1번째 레코드 확인: ID=${firstRecord.id.substring(-4)}, 생성=${firstRecord.createdTime}`);
+                }
 
                 // 에어테이블 실제 데이터로 모든 통계 업데이트
                 const today = new Date().toISOString().split('T')[0]; // 오늘 날짜
@@ -616,26 +625,35 @@ async function updateConsultationList() {
                     return colorMap[status] || 'blue';
                 }
 
-                // 이모지를 무시하고 필드값 가져오는 헬퍼 함수
+                // 🔥 단순하고 확실한 필드값 가져오기 함수
                 function getFieldValue(record, targetField) {
                     const fields = record.fields;
 
-                    // 정확한 매칭 시도
+                    // fields가 비어있으면 바로 null 반환
+                    if (!fields || Object.keys(fields).length === 0) {
+                        return null;
+                    }
+
+                    // 1차: 정확한 매칭
                     if (fields[targetField] !== undefined) {
                         return fields[targetField];
                     }
 
-                    // 이모지를 제거하고 매칭 시도
-                    const cleanTarget = targetField.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
-
+                    // 2차: 대소문자 무시 매칭
                     for (const [fieldName, value] of Object.entries(fields)) {
-                        const cleanField = fieldName.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
-                        if (cleanField === cleanTarget) {
+                        if (fieldName.toLowerCase() === targetField.toLowerCase()) {
                             return value;
                         }
                     }
 
-                    return undefined;
+                    // 3차: 공백 제거 후 매칭
+                    for (const [fieldName, value] of Object.entries(fields)) {
+                        if (fieldName.replace(/\s/g, '') === targetField.replace(/\s/g, '')) {
+                            return value;
+                        }
+                    }
+
+                    return null;
                 }
 
                 // 🔥 핵심: 이제 data.records는 이미 유효한 데이터만 포함됨
