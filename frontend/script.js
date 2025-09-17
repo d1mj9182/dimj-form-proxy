@@ -575,10 +575,21 @@ async function updateConsultationList() {
 
             if (data.success && data.records && data.records.length > 0) {
                 // 정렬 확인을 위한 디버깅 로그
-                console.log('🔍 프론트엔드 정렬 디버깅 - 받은 순서:');
+                console.log('🔍 프론트엔드 정렬 디버깅 - API에서 받은 순서:');
                 data.records.forEach((record, index) => {
                     const submissionTime = getFieldValue(record, '접수일시');
-                    console.log(`레코드 ${index + 1}: ID=${record.id.substring(-4)}, 접수일시=${submissionTime}`);
+                    console.log(`레코드 ${index + 1}: ID=${record.id.substring(-4)}, 생성시간=${record.createdTime}, 접수일시=${submissionTime}`);
+                });
+
+                // 먼저 createdTime 기준으로 정렬
+                console.log('🔄 createdTime 기준으로 재정렬 시작...');
+                data.records.sort((a, b) => {
+                    return new Date(b.createdTime) - new Date(a.createdTime);
+                });
+
+                console.log('🔍 정렬 후 순서:');
+                data.records.forEach((record, index) => {
+                    console.log(`정렬 후 ${index + 1}: ID=${record.id.substring(-4)}, 생성시간=${record.createdTime}`);
                 });
 
                 // 에어테이블 실제 데이터로 모든 통계 업데이트
@@ -658,9 +669,18 @@ async function updateConsultationList() {
                     };
                 })
                 .sort((a, b) => {
-                    // 최신순 정렬 (프론트엔드에서 추가 정렬)
-                    if (!a.submissionTime || !b.submissionTime) return 0;
-                    return new Date(b.submissionTime) - new Date(a.submissionTime);
+                    // 최신순 정렬 (createdTime 기준)
+                    const aTime = a.submissionTime ? new Date(a.submissionTime) : new Date(0);
+                    const bTime = b.submissionTime ? new Date(b.submissionTime) : new Date(0);
+
+                    // submissionTime이 없으면 에어테이블 createdTime 사용
+                    const aCreated = data.records.find(r => r.id === a.id)?.createdTime;
+                    const bCreated = data.records.find(r => r.id === b.id)?.createdTime;
+
+                    const aFinalTime = a.submissionTime ? aTime : (aCreated ? new Date(aCreated) : new Date(0));
+                    const bFinalTime = b.submissionTime ? bTime : (bCreated ? new Date(bCreated) : new Date(0));
+
+                    return bFinalTime - aFinalTime; // 최신순 (desc)
                 })
                 .slice(0, 7);
 

@@ -140,12 +140,21 @@ export default async function handler(req, res) {
       console.log("📋 TABLE_NAME:", TABLE_NAME);
       console.log("📋 TABLE_NAME (인코딩됨):", encodeURIComponent(TABLE_NAME));
 
-      // 최신순 정렬을 위한 파라미터 추가
-      const sortParams = new URLSearchParams({
-        sort: JSON.stringify([{field: "접수일시", direction: "desc"}])
-      });
+      // 최신순 정렬 시도 - 여러 방법으로 시도
+      let airtableUrl = AIRTABLE_API_URL;
 
-      const airtableRes = await fetch(`${AIRTABLE_API_URL}?${sortParams}`, {
+      // 방법 1: Created 필드로 정렬 시도
+      try {
+        const createdSortParams = new URLSearchParams({
+          sort: JSON.stringify([{field: "Created", direction: "desc"}])
+        });
+        console.log('📋 정렬 방법 1: Created 필드 desc');
+        airtableUrl = `${AIRTABLE_API_URL}?${createdSortParams}`;
+      } catch (error) {
+        console.log('⚠️ Created 정렬 실패, 기본 URL 사용');
+      }
+
+      const airtableRes = await fetch(airtableUrl, {
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         },
