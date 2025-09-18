@@ -868,7 +868,20 @@ function validateForm() {
     formData.name = nameInput.value.trim();
     formData.phone = phoneInput.value.trim();
     
-    const isValid = formData.name && formData.phone && formData.service && formData.provider;
+    // 🔥 폼 검증 강화 - 디버깅 로그 추가
+    const nameValue = document.getElementById('name')?.value?.trim();
+    const phoneValue = document.getElementById('phone')?.value?.trim();
+    const privacyChecked = document.getElementById('privacyAgree')?.checked;
+
+    console.log('폼 검증:', {
+        name: nameValue,
+        phone: phoneValue,
+        service: formData.service,
+        provider: formData.provider,
+        privacy: privacyChecked
+    });
+
+    const isValid = nameValue && phoneValue && privacyChecked;
     
     submitButton.disabled = !isValid;
     
@@ -906,7 +919,7 @@ function handleFormSubmit(e) {
 // Data Storage (localStorage + Airtable)
 async function submitToAirtable(data) {
     try {
-        console.log('Submitting application:', data);
+        console.log('🔥 에어테이블 전송 시작:', data);
 
         // Generate unique ID for application
         const applicationId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
@@ -971,6 +984,7 @@ async function submitToAirtable(data) {
 
         // 에어테이블 API 호출 (프록시 서버 환경변수 사용)
         try {
+            console.log('📡 POST 요청 시작...');
             const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
                 method: 'POST',
                 headers: {
@@ -1215,8 +1229,9 @@ function hideLoadingState() {
 
 // Enhanced form submission with loading state and anti-fraud protection
 async function handleFormSubmit(e) {
+    console.log('🚀 폼 제출 시작!', e);
     e.preventDefault();
-    
+
     // Check daily limit first
     const dailyCheck = await checkDailyLimit();
     if (!dailyCheck.allowed) {
