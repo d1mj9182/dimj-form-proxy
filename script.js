@@ -589,11 +589,12 @@ async function updateStatistics() {
                     return recordDate && recordDate.includes(today);
                 });
 
-                const waitingRecords = data.records.filter(record => record.fields['상태'] === '상담대기' || record.fields['상태'] === '상담 대기');
-                const consultingRecords = data.records.filter(record => record.fields['상태'] === '상담중' || record.fields['상태'] === '상담 중');
-                const completedRecords = data.records.filter(record => record.fields['상태'] === '상담완료' || record.fields['상태'] === '상담 완료');
-                const reservedRecords = data.records.filter(record => record.fields['상태'] === '설치예약' || record.fields['상태'] === '설치 예약');
-                const installedRecords = data.records.filter(record => record.fields['상태'] === '설치완료' || record.fields['상태'] === '설치 완료');
+                // 🔥 정확한 상태값 매칭 (이모지 제거된 필드에서)
+                const waitingRecords = data.records.filter(record => record.fields['상태'] === '상담 대기');
+                const consultingRecords = data.records.filter(record => record.fields['상태'] === '상담 중');
+                const completedRecords = data.records.filter(record => record.fields['상태'] === '상담완료');
+                const reservedRecords = data.records.filter(record => record.fields['상태'] === '설치예약');
+                const installedRecords = data.records.filter(record => record.fields['상태'] === '설치완료');
 
                 // 사은품 총액 계산 (만원 단위)
                 const totalGiftAmount = Math.floor(data.records.reduce((sum, record) => {

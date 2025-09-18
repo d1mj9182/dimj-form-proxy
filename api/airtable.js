@@ -14,14 +14,37 @@
 
 const ALLOWED_METHODS = ['GET', 'POST', 'PATCH', 'OPTIONS'];
 
-// 한글/영문/숫자만 남기고, 이모지·기타 특수문자 제거
-// (공백 제거: UI에서 "접수일시", "주요서비스" 등은 공백 없이도 키 매칭됨)
+// 🔥 강력한 이모지 제거 - 에어테이블 컬럼명 정규화
+// 에어테이블: "📅 접수일시" → 코드: "접수일시"
 function cleanFieldNames(fields = {}) {
   const cleaned = {};
   for (const rawKey in fields) {
     if (!Object.prototype.hasOwnProperty.call(fields, rawKey)) continue;
-    const newKey = rawKey.replace(/[^\w가-힣0-9]/g, ''); // 이모지/특수문자/공백 제거
-    cleaned[newKey] = fields[rawKey];
+
+    // 1단계: 이모지 완전 제거 (유니코드 이모지 범위)
+    let cleanKey = rawKey.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1F018}-\u{1F270}]/gu, '');
+
+    // 2단계: 공백 제거 및 특수문자 제거
+    cleanKey = cleanKey.replace(/^\s+|\s+$/g, '').replace(/[^\w가-힣0-9]/g, '');
+
+    // 3단계: 표준 필드명으로 매핑
+    const fieldMapping = {
+      '접수일시': '접수일시',
+      '이름': '이름',
+      '연락처': '연락처',
+      '통신사': '통신사',
+      '주요서비스': '주요서비스',
+      '기타서비스': '기타서비스',
+      '상담희망시간': '상담희망시간',
+      '개인정보동의': '개인정보동의',
+      '상태': '상태',
+      '사은품금액': '사은품금액',
+      'IP주소': 'IP주소',
+      'IP': 'IP'
+    };
+
+    const finalKey = fieldMapping[cleanKey] || cleanKey;
+    cleaned[finalKey] = fields[rawKey];
   }
   return cleaned;
 }

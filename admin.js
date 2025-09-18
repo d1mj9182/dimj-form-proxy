@@ -156,7 +156,7 @@ async function loadApplications() {
             throw new Error('잘못된 응답 형식');
         }
 
-        // 에어테이블 데이터를 관리자 페이지 형식으로 변환
+        // 🔥 이모지 제거된 필드명으로 정확한 데이터 매핑
         const applications = data.records.map(record => ({
             id: record.id,
             name: record.fields['이름'] || '익명',
@@ -165,9 +165,10 @@ async function loadApplications() {
             provider: record.fields['통신사'] || '-',
             additionalServices: record.fields['기타서비스'] || '-',
             preferredTime: record.fields['상담희망시간'] || '-',
-            status: record.fields['상태'] || '상담대기',
+            status: record.fields['상태'] || '상담 대기',
             giftAmount: record.fields['사은품금액'] || 0,
-            ipAddress: record.fields['IP주소'] || '-',
+            ipAddress: record.fields['IP주소'] || record.fields['IP'] || '-',
+            personalInfoConsent: record.fields['개인정보동의'] || false,
             timestamp: record.createdTime,
             submissionTime: record.fields['접수일시'] || record.createdTime
         }));
@@ -281,11 +282,12 @@ function formatDate(timestamp) {
 }
 
 async function updateStatus(recordId) {
-    const newStatus = prompt('상태를 선택하세요:\n1. 상담대기\n2. 상담중\n3. 상담완료\n4. 설치예약\n5. 설치완료', '1');
+    const newStatus = prompt('상태를 선택하세요:\n1. 상담 대기\n2. 상담 중\n3. 상담완료\n4. 설치예약\n5. 설치완료', '1');
 
+    // 🔥 에어테이블 상태값과 정확히 매칭
     const statusMap = {
-        '1': '상담대기',
-        '2': '상담중',
+        '1': '상담 대기',
+        '2': '상담 중',
         '3': '상담완료',
         '4': '설치예약',
         '5': '설치완료'
