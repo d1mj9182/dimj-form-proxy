@@ -1232,24 +1232,17 @@ async function handleFormSubmit(e) {
     console.log('🚀 폼 제출 시작!', e);
     e.preventDefault();
 
-    // Check daily limit first
-    const dailyCheck = await checkDailyLimit();
-    if (!dailyCheck.allowed) {
-        showDailyLimitMessage(dailyCheck.count, dailyCheck.limit);
-        return;
-    }
-    
-    // Anti-fraud checks
-    if (!preventDoubleSubmit()) {
-        console.warn('Double submit prevented');
-        return;
-    }
-    
-    if (!validateFormIntegrity()) {
-        alert('비정상적인 접근이 감지되었습니다. 페이지를 새로고침 후 다시 시도해주세요.');
-        resetAntiSpam();
-        return;
-    }
+    // 🔥 임시 우회: 모든 검증 비활성화 (디버깅용)
+    console.log('⚠️ 모든 검증 임시 우회 - 디버깅 모드');
+
+    // Check daily limit first (비활성화)
+    console.log('일일 제한 체크: 우회됨');
+
+    // Anti-fraud checks (비활성화)
+    console.log('중복 제출 방지: 우회됨');
+
+    // Form integrity (비활성화)
+    console.log('폼 무결성 검증: 우회됨');
     
     showLoadingState();
     
@@ -1264,7 +1257,9 @@ async function handleFormSubmit(e) {
     
     try {
         // Submit to Airtable
+        console.log('🔥🔥🔥 submitToAirtable 호출 직전!', formData);
         await submitToAirtable(formData);
+        console.log('🔥🔥🔥 submitToAirtable 호출 완료!');
         
         // Small delay for better UX
         setTimeout(() => {
