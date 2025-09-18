@@ -532,8 +532,13 @@ function updateStepIndicator() {
 function startRealTimeUpdates() {
     console.log('✅ 실시간 업데이트 타이머 시작됨'); // 디버깅 로그
 
-    // ✅ 임의 숫자 변동 제거: updateStatistics() 자동 호출 제거
-    // setInterval로 updateStatistics() 호출하지 않음
+    // ✅ 에어테이블 실제 데이터 기반 통계 업데이트 (30초마다)
+    setInterval(() => {
+        updateStatistics();
+    }, 30000);
+
+    // 즉시 한 번 실행
+    updateStatistics();
 
     // Update consultation list every 8 seconds
     setInterval(() => {
@@ -557,44 +562,87 @@ function startRealTimeUpdates() {
 async function updateStatistics() {
     // 에어테이블에서 실제 데이터를 가져와서 통계 업데이트
     try {
+        console.log('📊 에어테이블 데이터 가져오는 중...');
         const response = await fetch(`https://dimj-form-proxy.vercel.app/api/airtable`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
             }
         });
 
         if (response.ok) {
             const data = await response.json();
             if (data.success && data.records) {
-                // 실제 에어테이블 데이터로 업데이트
-                const today = new Date().toISOString().split('T')[0];
+                console.log(`📋 총 ${data.records.length}개 레코드 받음`);
+
+                // 오늘 날짜 (한국 시간 기준)
+                const today = new Date().toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                }).replace(/\./g, '-').replace(/\s/g, '').slice(0, -1); // YYYY-MM-DD 형식
+
+                // 필터링된 데이터 계산
                 const todayRecords = data.records.filter(record => {
                     const recordDate = record.fields['접수일시'];
                     return recordDate && recordDate.includes(today);
                 });
 
+                const waitingRecords = data.records.filter(record => record.fields['상태'] === '상담대기' || record.fields['상태'] === '상담 대기');
+                const consultingRecords = data.records.filter(record => record.fields['상태'] === '상담중' || record.fields['상태'] === '상담 중');
+                const completedRecords = data.records.filter(record => record.fields['상태'] === '상담완료' || record.fields['상태'] === '상담 완료');
+                const reservedRecords = data.records.filter(record => record.fields['상태'] === '설치예약' || record.fields['상태'] === '설치 예약');
+                const installedRecords = data.records.filter(record => record.fields['상태'] === '설치완료' || record.fields['상태'] === '설치 완료');
+
+                // 사은품 총액 계산 (만원 단위)
+                const totalGiftAmount = Math.floor(data.records.reduce((sum, record) => {
+                    const giftAmount = parseInt(record.fields['사은품금액'] || 0);
+                    return sum + giftAmount;
+                }, 0) / 10000);
+
+                // realTimeData 업데이트
                 realTimeData.todayApplications = todayRecords.length;
-                realTimeData.cashReward = data.records.reduce((sum, record) => sum + (record.fields['사은품금액'] || 0), 0);
-                realTimeData.installationsCompleted = data.records.filter(record => record.fields['상태'] === '설치완료').length;
-                realTimeData.onlineConsultants = Math.max(1, Math.min(15, Math.floor(data.records.length / 5))); // 실제 데이터 기반 상담사 수
+                realTimeData.waitingConsultation = waitingRecords.length;
+                realTimeData.consultingNow = consultingRecords.length;
+                realTimeData.completedConsultations = completedRecords.length;
+                realTimeData.installReservation = reservedRecords.length;
+                realTimeData.installationsCompleted = installedRecords.length;
+                realTimeData.cashReward = totalGiftAmount;
+
+                console.log(`📊 업데이트된 데이터:
+                오늘접수: ${realTimeData.todayApplications}
+                상담대기: ${realTimeData.waitingConsultation}
+                상담중: ${realTimeData.consultingNow}
+                상담완료: ${realTimeData.completedConsultations}
+                설치예약: ${realTimeData.installReservation}
+                설치완료: ${realTimeData.installationsCompleted}
+                사은품: ${realTimeData.cashReward}만원`);
             }
+        } else {
+            console.error('에어테이블 API 응답 오류:', response.status);
         }
     } catch (error) {
-        console.log('통계 업데이트 실패 - 에어테이블 연결 확인 필요:', error);
+        console.error('통계 업데이트 실패:', error);
         // API 연결 실패시 기존 값 유지 (랜덤 값 생성하지 않음)
     }
 
-    // Update DOM elements
+    // DOM 요소 업데이트
     const todayAppsEl = document.getElementById('todayApplications');
+    const waitingEl = document.getElementById('waitingConsultation');
+    const consultingEl = document.getElementById('consultingNow');
     const completedEl = document.getElementById('completedConsultations');
+    const reservationEl = document.getElementById('installReservation');
+    const installedEl = document.getElementById('onlineConsultants'); // 설치완료를 onlineConsultants ID에 표시
     const cashRewardEl = document.getElementById('cashReward');
-    const consultantsEl = document.getElementById('onlineConsultants');
 
-    if (todayAppsEl) todayAppsEl.textContent = realTimeData.todayApplications;
-    if (completedEl) completedEl.textContent = realTimeData.installationsCompleted;
-    if (cashRewardEl) cashRewardEl.textContent = realTimeData.cashReward;
-    if (consultantsEl) consultantsEl.textContent = realTimeData.onlineConsultants;
+    if (todayAppsEl) todayAppsEl.textContent = realTimeData.todayApplications || 0;
+    if (waitingEl) waitingEl.textContent = realTimeData.waitingConsultation || 0;
+    if (consultingEl) consultingEl.textContent = realTimeData.consultingNow || 0;
+    if (completedEl) completedEl.textContent = realTimeData.completedConsultations || 0;
+    if (reservationEl) reservationEl.textContent = realTimeData.installReservation || 0;
+    if (installedEl) installedEl.textContent = realTimeData.installationsCompleted || 0;
+    if (cashRewardEl) cashRewardEl.textContent = realTimeData.cashReward || 0;
 }
 
 async function updateConsultationList() {
