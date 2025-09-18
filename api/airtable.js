@@ -12,7 +12,7 @@
  *  - AIRTABLE_TABLE_NAME
  */
 
-const ALLOWED_METHODS = ['GET', 'OPTIONS'];
+const ALLOWED_METHODS = ['GET', 'POST', 'PATCH', 'OPTIONS'];
 
 // 한글/영문/숫자만 남기고, 이모지·기타 특수문자 제거
 // (공백 제거: UI에서 "접수일시", "주요서비스" 등은 공백 없이도 키 매칭됨)
@@ -91,32 +91,107 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const rawRecords = await fetchAllAirtableRecords({ apiKey, baseId, tableName });
+    // GET: 데이터 조회
+    if (req.method === 'GET') {
+      const rawRecords = await fetchAllAirtableRecords({ apiKey, baseId, tableName });
 
-    // 1) 빈 레코드 제거
-    const nonEmpty = rawRecords.filter(r => isNonEmptyFields(r.fields));
+      // 1) 빈 레코드 제거
+      const nonEmpty = rawRecords.filter(r => isNonEmptyFields(r.fields));
 
-    // 2) 필드 키 클린업(이모지/특수문자 제거)
-    const cleanedRecords = nonEmpty.map(r => ({
-      id: r.id,
-      createdTime: r.createdTime,
-      fields: cleanFieldNames(r.fields),
-    }));
+      // 2) 필드 키 클린업(이모지/특수문자 제거)
+      const cleanedRecords = nonEmpty.map(r => ({
+        id: r.id,
+        createdTime: r.createdTime,
+        fields: cleanFieldNames(r.fields),
+      }));
 
-    // 3) 최신순 정렬 (createdTime 내림차순)
-    const sorted = sortByCreatedTimeDesc(cleanedRecords);
+      // 3) 최신순 정렬 (createdTime 내림차순)
+      const sorted = sortByCreatedTimeDesc(cleanedRecords);
 
-    // v2.0 응답 형식 - 디버깅 정보 포함
-    console.log(`[PROXY v2.0] 처리 완료: ${sorted.length}개 유효 레코드`);
-    return res.status(200).json({
-      success: true,
-      version: "2.0-UPDATED",
-      timestamp: new Date().toISOString(),
-      totalRecords: rawRecords.length,
-      validRecords: sorted.length,
-      records: sorted,
-      message: "v2.0 프록시에서 정제된 데이터"
-    });
+      console.log(`[PROXY v2.0] GET 처리 완료: ${sorted.length}개 유효 레코드`);
+      return res.status(200).json({
+        success: true,
+        version: "2.0-UPDATED",
+        timestamp: new Date().toISOString(),
+        totalRecords: rawRecords.length,
+        validRecords: sorted.length,
+        records: sorted,
+        message: "v2.0 프록시에서 정제된 데이터"
+      });
+    }
+
+    // PATCH: 레코드 업데이트 (관리자 상태 변경용)
+    if (req.method === 'PATCH') {
+      const { recordId, fields } = req.body;
+
+      if (!recordId || !fields) {
+        return res.status(400).json({
+          success: false,
+          error: 'recordId와 fields가 필요합니다'
+        });
+      }
+
+      const updateUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}/${recordId}`;
+      const updateResp = await fetch(updateUrl, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fields })
+      });
+
+      if (!updateResp.ok) {
+        const errorText = await updateResp.text().catch(() => '');
+        throw new Error(`Airtable PATCH ${updateResp.status}: ${errorText}`);
+      }
+
+      const updatedRecord = await updateResp.json();
+      console.log(`[PROXY v2.0] PATCH 완료: ${recordId} 업데이트`);
+
+      return res.status(200).json({
+        success: true,
+        message: '레코드 업데이트 완료',
+        record: updatedRecord
+      });
+    }
+
+    // POST: 새 레코드 생성 (폼 제출용)
+    if (req.method === 'POST') {
+      const { fields } = req.body;
+
+      if (!fields) {
+        return res.status(400).json({
+          success: false,
+          error: 'fields가 필요합니다'
+        });
+      }
+
+      const createUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`;
+      const createResp = await fetch(createUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fields })
+      });
+
+      if (!createResp.ok) {
+        const errorText = await createResp.text().catch(() => '');
+        throw new Error(`Airtable POST ${createResp.status}: ${errorText}`);
+      }
+
+      const newRecord = await createResp.json();
+      console.log(`[PROXY v2.0] POST 완료: 새 레코드 생성`);
+
+      return res.status(201).json({
+        success: true,
+        message: '새 레코드 생성 완료',
+        record: newRecord
+      });
+    }
+
   } catch (err) {
     console.error('[Airtable Proxy Error]', err);
     return res.status(500).json({ success: false, error: err.message || 'Unknown error' });

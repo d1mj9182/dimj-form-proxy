@@ -132,33 +132,75 @@ function logout() {
 }
 
 // Data management
-function loadApplications() {
+async function loadApplications() {
     if (!adminState.isLoggedIn) return;
-    
-    // Get applications from localStorage
-    const applications = getAllApplications();
-    const statusFilter = document.getElementById('statusFilter').value;
-    const dateFilter = document.getElementById('dateFilter').value;
-    
-    // Filter applications
-    let filteredApps = applications;
-    
-    if (statusFilter) {
-        filteredApps = filteredApps.filter(app => app.status === statusFilter);
-    }
-    
-    if (dateFilter) {
-        filteredApps = filteredApps.filter(app => {
-            const appDate = new Date(app.timestamp).toISOString().split('T')[0];
-            return appDate === dateFilter;
+
+    try {
+        console.log('📋 에어테이블에서 관리자 데이터 로딩...');
+
+        // 에어테이블에서 데이터 가져오기
+        const response = await fetch('https://dimj-form-proxy.vercel.app/api/airtable', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            }
         });
+
+        if (!response.ok) {
+            throw new Error('에어테이블 데이터 로딩 실패');
+        }
+
+        const data = await response.json();
+        if (!data.success || !data.records) {
+            throw new Error('잘못된 응답 형식');
+        }
+
+        // 에어테이블 데이터를 관리자 페이지 형식으로 변환
+        const applications = data.records.map(record => ({
+            id: record.id,
+            name: record.fields['이름'] || '익명',
+            phone: record.fields['연락처'] || '-',
+            mainService: record.fields['주요서비스'] || '-',
+            provider: record.fields['통신사'] || '-',
+            additionalServices: record.fields['기타서비스'] || '-',
+            preferredTime: record.fields['상담희망시간'] || '-',
+            status: record.fields['상태'] || '상담대기',
+            giftAmount: record.fields['사은품금액'] || 0,
+            ipAddress: record.fields['IP주소'] || '-',
+            timestamp: record.createdTime,
+            submissionTime: record.fields['접수일시'] || record.createdTime
+        }));
+
+        const statusFilter = document.getElementById('statusFilter').value;
+        const dateFilter = document.getElementById('dateFilter').value;
+
+        // 필터링 적용
+        let filteredApps = applications;
+
+        if (statusFilter) {
+            filteredApps = filteredApps.filter(app => app.status === statusFilter);
+        }
+
+        if (dateFilter) {
+            filteredApps = filteredApps.filter(app => {
+                const appDate = new Date(app.timestamp).toISOString().split('T')[0];
+                return appDate === dateFilter;
+            });
+        }
+
+        // 최신순 정렬
+        filteredApps.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        renderApplicationsTable(filteredApps);
+        adminState.applications = filteredApps;
+
+        console.log(`✅ ${filteredApps.length}개 신청서 로딩 완료`);
+
+    } catch (error) {
+        console.error('관리자 데이터 로딩 오류:', error);
+        alert('데이터를 불러오는데 실패했습니다. 에어테이블 연결을 확인해주세요.');
     }
-    
-    // Sort by timestamp (newest first)
-    filteredApps.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    
-    renderApplicationsTable(filteredApps);
-    adminState.applications = filteredApps;
 }
 
 function getAllApplications() {
@@ -238,23 +280,51 @@ function formatDate(timestamp) {
     });
 }
 
-function updateStatus(id) {
-    const newStatus = prompt('상태를 선택하세요:\n1. pending (대기 중)\n2. contacted (연락 완료)\n3. completed (완료)', '1');
-    
+async function updateStatus(recordId) {
+    const newStatus = prompt('상태를 선택하세요:\n1. 상담대기\n2. 상담중\n3. 상담완료\n4. 설치예약\n5. 설치완료', '1');
+
     const statusMap = {
-        '1': 'pending',
-        '2': 'contacted', 
-        '3': 'completed'
+        '1': '상담대기',
+        '2': '상담중',
+        '3': '상담완료',
+        '4': '설치예약',
+        '5': '설치완료'
     };
-    
+
     if (statusMap[newStatus]) {
-        const appKey = `application_${id}`;
-        const appData = JSON.parse(localStorage.getItem(appKey));
-        appData.status = statusMap[newStatus];
-        localStorage.setItem(appKey, JSON.stringify(appData));
-        
-        loadApplications();
-        updateStats();
+        try {
+            console.log(`상태 변경: ${recordId} → ${statusMap[newStatus]}`);
+
+            // 에어테이블 업데이트 API 호출 (프록시 서버 통해서)
+            const response = await fetch('https://dimj-form-proxy.vercel.app/api/airtable', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    recordId: recordId,
+                    fields: {
+                        '상태': statusMap[newStatus]
+                    }
+                })
+            });
+
+            if (response.ok) {
+                alert(`상태가 "${statusMap[newStatus]}"로 변경되었습니다.`);
+                loadApplications(); // 관리자 페이지 새로고침
+
+                // 실시간 현황판도 즉시 업데이트
+                if (window.parent && window.parent.updateStatistics) {
+                    window.parent.updateStatistics();
+                }
+            } else {
+                throw new Error('상태 업데이트 실패');
+            }
+
+        } catch (error) {
+            console.error('상태 업데이트 오류:', error);
+            alert('상태 변경에 실패했습니다. 다시 시도해주세요.');
+        }
     }
 }
 
