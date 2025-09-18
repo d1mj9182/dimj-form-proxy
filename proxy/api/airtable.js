@@ -1,5 +1,6 @@
 /**
- * DIMJ-form Proxy: Airtable → Frontend
+ * DIMJ-form Proxy Server v2.0 - UPDATED 2025-09-18
+ * 완전 새로운 버전 - 4가지 핵심 문제 해결
  * - 이모지/특수문자 제거(필드키 정규화)
  * - 빈 레코드 필터링 (fields: {} 제거)
  * - createdTime 기준 최신순(내림차순) 정렬
@@ -105,12 +106,16 @@ module.exports = async function handler(req, res) {
     // 3) 최신순 정렬 (createdTime 내림차순)
     const sorted = sortByCreatedTimeDesc(cleanedRecords);
 
-    // 필요시: 서버 시간도 함께 내려 디버깅 용이
+    // v2.0 응답 형식 - 디버깅 정보 포함
+    console.log(`[PROXY v2.0] 처리 완료: ${sorted.length}개 유효 레코드`);
     return res.status(200).json({
       success: true,
-      now: new Date().toISOString(),
-      count: sorted.length,
+      version: "2.0-UPDATED",
+      timestamp: new Date().toISOString(),
+      totalRecords: rawRecords.length,
+      validRecords: sorted.length,
       records: sorted,
+      message: "v2.0 프록시에서 정제된 데이터"
     });
   } catch (err) {
     console.error('[Airtable Proxy Error]', err);
