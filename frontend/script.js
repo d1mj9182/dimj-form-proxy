@@ -1,5 +1,6 @@
 /**
- * DIMJ-form Frontend Orchestrator
+ * DIMJ-form Frontend v3.0 - FINAL VERSION 2025-09-18
+ * 완전 새로운 버전 - 모든 임의 숫자 생성 제거
  * - 단일 타이머(30초) / 중복 방지
  * - 프록시에서 정제된 데이터만 사용 (숫자 임의 변동 제거)
  * - 최신순(내림차순) 리스트 반영
@@ -8,6 +9,8 @@
  * ⚠️ HTML/CSS/레이아웃/ID는 기존 것 유지.
  * 아래 SELECTORS만 필요에 맞게 맞춰주세요(기본값은 흔히 쓰는 id 예시).
  */
+
+console.log('🚀 DIMJ Frontend v3.0 로드됨 - 모든 임의 숫자 생성 제거됨');
 
 /* =========================
    0) 셀렉터 매핑(실제 HTML ID에 맞춤)
