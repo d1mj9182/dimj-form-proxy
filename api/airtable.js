@@ -14,21 +14,33 @@
 
 const ALLOWED_METHODS = ['GET', 'POST', 'PATCH', 'OPTIONS'];
 
-// 🔥 강력한 이모지 제거 - 에어테이블 컬럼명 정규화
-// 에어테이블: "📅 접수일시" → 코드: "접수일시"
+// 🔥🔥🔥 초강력 이모지 무시 시스템 - 모든 이모지 완전 제거 🔥🔥🔥
+// 에어테이블 이모지 컬럼명을 완전히 무시하고 한글만 인식
 function cleanFieldNames(fields = {}) {
   const cleaned = {};
+
+  console.log('🔍 원본 에어테이블 필드명들:', Object.keys(fields));
+
   for (const rawKey in fields) {
     if (!Object.prototype.hasOwnProperty.call(fields, rawKey)) continue;
 
-    // 1단계: 이모지 완전 제거 (유니코드 이모지 범위)
-    let cleanKey = rawKey.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1F018}-\u{1F270}]/gu, '');
+    // 1단계: 모든 이모지 및 특수문자 완전 제거 (초강력 패턴)
+    let cleanKey = rawKey
+      // 모든 이모지 유니코드 범위 제거
+      .replace(/[\u{1F000}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{1F900}-\u{1F9FF}]|[\u{1F018}-\u{1F270}]|[\u{E000}-\u{F8FF}]|[\u{FE00}-\u{FE0F}]|[\u{1F200}-\u{1F2FF}]/gu, '')
+      // 모든 심볼 및 특수문자 제거
+      .replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]/g, '')
+      // 추가 특수문자 제거
+      .replace(/[^\w가-힣0-9\s]/g, '')
+      // 앞뒤 공백 제거
+      .trim()
+      // 내부 공백도 제거
+      .replace(/\s+/g, '');
 
-    // 2단계: 공백 제거 및 특수문자 제거
-    cleanKey = cleanKey.replace(/^\s+|\s+$/g, '').replace(/[^\w가-힣0-9]/g, '');
+    console.log(`🔄 변환: "${rawKey}" → "${cleanKey}"`);
 
-    // 3단계: 표준 필드명으로 매핑
-    const fieldMapping = {
+    // 2단계: 표준 필드명 강제 매핑 (완전 일치)
+    const standardMapping = {
       '접수일시': '접수일시',
       '이름': '이름',
       '연락처': '연락처',
@@ -43,9 +55,17 @@ function cleanFieldNames(fields = {}) {
       'IP': 'IP'
     };
 
-    const finalKey = fieldMapping[cleanKey] || cleanKey;
-    cleaned[finalKey] = fields[rawKey];
+    // 정확한 매핑 찾기
+    const mappedKey = standardMapping[cleanKey] || cleanKey;
+
+    // 값이 존재할 때만 추가
+    if (fields[rawKey] !== undefined && fields[rawKey] !== null && fields[rawKey] !== '') {
+      cleaned[mappedKey] = fields[rawKey];
+      console.log(`✅ 매핑 성공: "${mappedKey}" = "${fields[rawKey]}"`);
+    }
   }
+
+  console.log('🎯 최종 정리된 필드들:', Object.keys(cleaned));
   return cleaned;
 }
 
@@ -117,29 +137,41 @@ module.exports = async function handler(req, res) {
     // GET: 데이터 조회
     if (req.method === 'GET') {
       const rawRecords = await fetchAllAirtableRecords({ apiKey, baseId, tableName });
+      console.log(`[PROXY] 원본 레코드 수: ${rawRecords.length}`);
 
       // 1) 빈 레코드 제거
       const nonEmpty = rawRecords.filter(r => isNonEmptyFields(r.fields));
+      console.log(`[PROXY] 빈 레코드 제거 후: ${nonEmpty.length}`);
 
-      // 2) 필드 키 클린업(이모지/특수문자 제거)
-      const cleanedRecords = nonEmpty.map(r => ({
-        id: r.id,
-        createdTime: r.createdTime,
-        fields: cleanFieldNames(r.fields),
-      }));
+      // 2) 필드 키 클린업(이모지/특수문자 제거) - 강화된 로그
+      const cleanedRecords = nonEmpty.map(r => {
+        console.log(`[PROXY] 레코드 ${r.id} 처리 중...`);
+        const cleanedFields = cleanFieldNames(r.fields);
+        return {
+          id: r.id,
+          createdTime: r.createdTime,
+          fields: cleanedFields,
+        };
+      });
 
       // 3) 최신순 정렬 (createdTime 내림차순)
       const sorted = sortByCreatedTimeDesc(cleanedRecords);
 
       console.log(`[PROXY v2.0] GET 처리 완료: ${sorted.length}개 유효 레코드`);
+
+      // 디버깅: 첫 번째 레코드 상세 정보
+      if (sorted.length > 0) {
+        console.log(`[PROXY] 첫 번째 레코드 필드:`, sorted[0].fields);
+      }
+
       return res.status(200).json({
         success: true,
-        version: "2.0-UPDATED",
+        version: "2.0-EMOJI-KILLER",
         timestamp: new Date().toISOString(),
         totalRecords: rawRecords.length,
         validRecords: sorted.length,
         records: sorted,
-        message: "v2.0 프록시에서 정제된 데이터"
+        message: "🔥 초강력 이모지 무시 시스템 적용"
       });
     }
 
