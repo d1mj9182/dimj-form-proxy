@@ -532,10 +532,8 @@ function updateStepIndicator() {
 function startRealTimeUpdates() {
     console.log('✅ 실시간 업데이트 타이머 시작됨'); // 디버깅 로그
 
-    // Update statistics every 5 seconds
-    setInterval(() => {
-        updateStatistics();
-    }, 5000);
+    // ✅ 임의 숫자 변동 제거: updateStatistics() 자동 호출 제거
+    // setInterval로 updateStatistics() 호출하지 않음
 
     // Update consultation list every 8 seconds
     setInterval(() => {
@@ -1259,10 +1257,8 @@ function safeElementUpdate(elementId, updateFunction) {
 // Enhanced error handling for all functions
 function updateStatistics() {
     try {
-        realTimeData.todayApplications += Math.floor(Math.random() * 3);
-        realTimeData.cashReward += Math.floor(Math.random() * 100);
-        realTimeData.installationsCompleted += Math.floor(Math.random() * 2);
-        realTimeData.onlineConsultants = 8 + Math.floor(Math.random() * 8);
+        // ✅ 임의 숫자 생성 완전 제거 - 에어테이블 데이터만 사용
+        // Math.random() 코드 모두 제거됨
         
         // Update main status board
         safeElementUpdate('todayApplications', (el) => el.textContent = realTimeData.todayApplications);
