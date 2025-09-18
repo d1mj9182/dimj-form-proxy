@@ -596,11 +596,11 @@ async function updateStatistics() {
                 const reservedRecords = data.records.filter(record => record.fields['상태'] === '설치예약');
                 const installedRecords = data.records.filter(record => record.fields['상태'] === '설치완료');
 
-                // 사은품 총액 계산 (만원 단위)
-                const totalGiftAmount = Math.floor(data.records.reduce((sum, record) => {
+                // 🔥 사은품 총액 계산 - 에어테이블 값이 이미 만원 단위
+                const totalGiftAmount = data.records.reduce((sum, record) => {
                     const giftAmount = parseInt(record.fields['사은품금액'] || 0);
                     return sum + giftAmount;
-                }, 0) / 10000);
+                }, 0);
 
                 // realTimeData 업데이트
                 realTimeData.todayApplications = todayRecords.length;
@@ -703,7 +703,7 @@ async function updateConsultationList() {
 
                 // 실제 데이터로 업데이트
                 realTimeData.todayApplications = todayRecords.length; // 오늘 접수
-                realTimeData.cashReward = Math.floor(data.records.reduce((sum, record) => sum + (getFieldValue(record, '사은품금액') || 0), 0) / 10000); // 만원 단위
+                realTimeData.cashReward = data.records.reduce((sum, record) => sum + (getFieldValue(record, '사은품금액') || 0), 0); // 에어테이블 값 그대로 사용
                 realTimeData.installationsCompleted = installedRecords.length; // 설치완료
                 realTimeData.onlineConsultants = installedRecords.length; // 설치완료를 onlineConsultants ID에 표시
                 realTimeData.waitingConsultation = waitingRecords.length; // 상담 대기
@@ -946,7 +946,7 @@ async function submitToAirtable(data) {
             '상담희망시간': data.preference || '빠른 시간에 연락드립니다',
             '개인정보동의': 'Y',
             '상태': '상담 대기',
-            '사은품금액': 0,
+            '사은품금액': 70, // 기본 사은품 70만원
             'IP주소': antiSpam.userIP || 'Unknown',
             'IP': antiSpam.userIP || 'Unknown'
         };
