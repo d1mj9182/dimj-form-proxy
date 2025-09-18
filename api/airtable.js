@@ -1,152 +1,124 @@
-export default async function handler(req, res) {
-  // CORS 설정 - DIMJ-form 전용
-  const allowedOrigins = [
-    "https://dimj-form.vercel.app",         // 메인 배포 도메인
-    "https://dimj9182.github.io",           // GitHub Pages
-    "https://dimj9182.github.io/DIMJ-form", // GitHub Pages
-    "https://d1mj9182.github.io",          // GitHub Pages (루트)
-    "http://localhost:3000",               // 로컬 개발용
-    "http://127.0.0.1:5500",              // Live Server 개발용
-    "http://localhost:5500"                // Live Server 로컬
-  ];
+/**
+ * DIMJ-form Proxy Server v2.0 - UPDATED 2025-09-18
+ * 완전 새로운 버전 - 4가지 핵심 문제 해결
+ * - 이모지/특수문자 제거(필드키 정규화)
+ * - 빈 레코드 필터링 (fields: {} 제거)
+ * - createdTime 기준 최신순(내림차순) 정렬
+ * - 캐시 무효화 헤더로 Vercel/CDN 캐시 영향 제거
+ *
+ * 필요 ENV (Vercel → Project Settings → Environment Variables)
+ *  - AIRTABLE_API_KEY
+ *  - AIRTABLE_BASE_ID
+ *  - AIRTABLE_TABLE_NAME
+ */
 
-  const requestOrigin = req.headers.origin;
-  if (allowedOrigins.includes(requestOrigin)) {
-    res.setHeader("Access-Control-Allow-Origin", requestOrigin);
-  } else {
-    res.setHeader("Access-Control-Allow-Origin", allowedOrigins[0]); // fallback
+const ALLOWED_METHODS = ['GET', 'OPTIONS'];
+
+// 한글/영문/숫자만 남기고, 이모지·기타 특수문자 제거
+// (공백 제거: UI에서 "접수일시", "주요서비스" 등은 공백 없이도 키 매칭됨)
+function cleanFieldNames(fields = {}) {
+  const cleaned = {};
+  for (const rawKey in fields) {
+    if (!Object.prototype.hasOwnProperty.call(fields, rawKey)) continue;
+    const newKey = rawKey.replace(/[^\w가-힣0-9]/g, ''); // 이모지/특수문자/공백 제거
+    cleaned[newKey] = fields[rawKey];
   }
-
-  res.setHeader("Vary", "Origin");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  // 환경변수에서 에어테이블 설정 가져오기
-  const API_KEY = process.env.AIRTABLE_API_KEY;
-  const BASE_ID = process.env.AIRTABLE_BASE_ID;
-  const TABLE_NAME = process.env.AIRTABLE_TABLE_NAME;
-
-  if (!API_KEY || !BASE_ID || !TABLE_NAME) {
-    return res.status(500).json({
-      error: "Airtable 환경변수 설정 필요 (AIRTABLE_API_KEY, AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME)",
-      code: "NO_ENV",
-    });
-  }
-
-  const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`;
-
-  // POST 요청 - 데이터 생성
-  if (req.method === "POST") {
-    try {
-      // DIMJ-form에서 사용하는 필드명들
-      const allowedFields = [
-        "이름",
-        "연락처",
-        "주요서비스",
-        "통신사",
-        "기타서비스",
-        "상담희망시간",
-        "접수일시",
-        "IP주소",
-        "상태",
-        "사은품금액",
-        "ID",
-        "개인정보동의"
-      ];
-
-      const body = req.body;
-      let fieldsToSend = {};
-
-      // 프록시 서버를 통한 요청인지 확인
-      if (body.baseId && body.tableName && body.apiKey && body.data) {
-        // 클라이언트에서 보낸 프록시 요청 형태
-        fieldsToSend = body.data.fields;
-      } else {
-        // 직접 필드 데이터가 온 경우
-        for (const key of allowedFields) {
-          if (body[key] !== undefined) {
-            fieldsToSend[key] = body[key];
-          }
-        }
-      }
-
-      const airtableRes = await fetch(AIRTABLE_API_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ fields: fieldsToSend })
-      });
-
-      const data = await airtableRes.json();
-
-      if (!airtableRes.ok) {
-        throw {
-          message: data.error?.message || "에어테이블 API 오류",
-          code: data.error?.type || "AIRTABLE_ERROR",
-          status: airtableRes.status
-        };
-      }
-
-      return res.status(200).json({
-        success: true,
-        data: data,
-        message: "데이터가 성공적으로 저장되었습니다."
-      });
-
-    } catch (error) {
-      console.error("POST /api/airtable 오류:", error);
-      return res.status(500).json({
-        success: false,
-        error: error.message || "알 수 없는 오류가 발생했습니다.",
-        code: error.code || "INTERNAL_ERROR"
-      });
-    }
-  }
-
-  // GET 요청 - 데이터 조회 (사은품 금액 합계용)
-  if (req.method === "GET") {
-    try {
-      const airtableRes = await fetch(AIRTABLE_API_URL, {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        },
-      });
-
-      const data = await airtableRes.json();
-
-      if (!airtableRes.ok) {
-        throw {
-          message: data.error?.message || "에어테이블 조회 오류",
-          code: data.error?.type || "AIRTABLE_ERROR",
-          status: airtableRes.status
-        };
-      }
-
-      return res.status(200).json({
-        success: true,
-        records: data.records || [],
-        message: "데이터 조회 성공"
-      });
-
-    } catch (error) {
-      console.error("GET /api/airtable 오류:", error);
-      return res.status(500).json({
-        success: false,
-        error: error.message || "데이터 조회 중 오류가 발생했습니다.",
-        code: error.code || "INTERNAL_ERROR"
-      });
-    }
-  }
-
-  return res.status(405).json({
-    success: false,
-    error: "허용되지 않는 HTTP 메서드입니다.",
-    code: "METHOD_NOT_ALLOWED"
-  });
+  return cleaned;
 }
+
+function isNonEmptyFields(fields) {
+  return fields && typeof fields === 'object' && Object.keys(fields).length > 0;
+}
+
+function sortByCreatedTimeDesc(records) {
+  return records.slice().sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+}
+
+async function fetchAirtablePage({ apiKey, baseId, tableName, offset = undefined }) {
+  const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`);
+  // 필요시 select, filterByFormula 등을 추가 가능. 지금은 풀페치 + 백엔드에서 정제
+  if (offset) url.searchParams.set('offset', offset);
+
+  const resp = await fetch(url.toString(), {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => '');
+    throw new Error(`Airtable API ${resp.status}: ${text || 'Unknown error'}`);
+  }
+
+  return resp.json();
+}
+
+async function fetchAllAirtableRecords({ apiKey, baseId, tableName }) {
+  let all = [];
+  let offset;
+  // Airtable pagination 대응
+  do {
+    const page = await fetchAirtablePage({ apiKey, baseId, tableName, offset });
+    all = all.concat(page.records || []);
+    offset = page.offset;
+  } while (offset);
+  return all;
+}
+
+module.exports = async function handler(req, res) {
+  // CORS(필요시 도메인 제한)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', ALLOWED_METHODS.join(', '));
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // CDN/브라우저 캐시 무효화 (임의 숫자 변동 제거에 중요)
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0');
+
+  if (req.method === 'OPTIONS') return res.status(204).end();
+  if (!ALLOWED_METHODS.includes(req.method)) return res.status(405).json({ success: false, error: 'Method Not Allowed' });
+
+  try {
+    const apiKey = process.env.AIRTABLE_API_KEY;
+    const baseId = process.env.AIRTABLE_BASE_ID;
+    const tableName = process.env.AIRTABLE_TABLE_NAME;
+
+    if (!apiKey || !baseId || !tableName) {
+      return res.status(500).json({
+        success: false,
+        error: 'Missing environment variables: AIRTABLE_API_KEY, AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME',
+      });
+    }
+
+    const rawRecords = await fetchAllAirtableRecords({ apiKey, baseId, tableName });
+
+    // 1) 빈 레코드 제거
+    const nonEmpty = rawRecords.filter(r => isNonEmptyFields(r.fields));
+
+    // 2) 필드 키 클린업(이모지/특수문자 제거)
+    const cleanedRecords = nonEmpty.map(r => ({
+      id: r.id,
+      createdTime: r.createdTime,
+      fields: cleanFieldNames(r.fields),
+    }));
+
+    // 3) 최신순 정렬 (createdTime 내림차순)
+    const sorted = sortByCreatedTimeDesc(cleanedRecords);
+
+    // v2.0 응답 형식 - 디버깅 정보 포함
+    console.log(`[PROXY v2.0] 처리 완료: ${sorted.length}개 유효 레코드`);
+    return res.status(200).json({
+      success: true,
+      version: "2.0-UPDATED",
+      timestamp: new Date().toISOString(),
+      totalRecords: rawRecords.length,
+      validRecords: sorted.length,
+      records: sorted,
+      message: "v2.0 프록시에서 정제된 데이터"
+    });
+  } catch (err) {
+    console.error('[Airtable Proxy Error]', err);
+    return res.status(500).json({ success: false, error: err.message || 'Unknown error' });
+  }
+};// Force redeploy 1758153367
