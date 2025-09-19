@@ -868,10 +868,14 @@ function validateForm() {
     formData.name = nameInput.value.trim();
     formData.phone = phoneInput.value.trim();
     
-    // 🔥 폼 검증 강화 - 디버깅 로그 추가
+    // 🔥 폼 검증 완전 간소화 - 이름과 전화번호만 필수
     const nameValue = document.getElementById('name')?.value?.trim();
     const phoneValue = document.getElementById('phone')?.value?.trim();
     const privacyChecked = document.getElementById('privacyAgree')?.checked;
+
+    // 기본값 자동 설정
+    if (!formData.service) formData.service = '인터넷+IPTV';
+    if (!formData.provider) formData.provider = 'SK';
 
     console.log('폼 검증:', {
         name: nameValue,
