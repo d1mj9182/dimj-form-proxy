@@ -467,7 +467,7 @@ function setupEventListeners() {
         applicationForm.addEventListener('submit', handleFormSubmit);
     }
 
-    // 🔥 강제 버튼 활성화 - 3초 후 실행
+    // 🔥 강제 버튼 활성화 + 클릭 이벤트 직접 추가
     setTimeout(() => {
         const submitButton = document.getElementById('submitButton');
         if (submitButton) {
@@ -476,7 +476,40 @@ function setupEventListeners() {
             submitButton.classList.remove('disabled');
             submitButton.style.opacity = '1';
             submitButton.style.pointerEvents = 'auto';
-            console.log('✅ 버튼 강제 활성화 완료', submitButton);
+
+            // 🔥 직접 클릭 이벤트 추가
+            submitButton.addEventListener('click', function(e) {
+                console.log('🔥🔥🔥 버튼 클릭됨!', e);
+                e.preventDefault();
+
+                // 폼 데이터 수집
+                const nameInput = document.getElementById('name');
+                const phoneInput = document.getElementById('phone');
+                const privacyAgree = document.getElementById('privacyAgree');
+
+                if (nameInput?.value && phoneInput?.value && privacyAgree?.checked) {
+                    console.log('✅ 폼 검증 통과 - 즉시 다음 페이지로!');
+
+                    // 폼 데이터 설정
+                    formData.name = nameInput.value.trim();
+                    formData.phone = phoneInput.value.trim();
+                    formData.service = '인터넷+IPTV';
+                    formData.provider = 'SK';
+
+                    // 즉시 다음 페이지로
+                    nextStep();
+                    displaySubmittedInfo();
+
+                    // 백그라운드에서 에어테이블 전송
+                    submitToAirtable(formData).catch(err => {
+                        console.error('백그라운드 전송 실패:', err);
+                    });
+                } else {
+                    alert('이름, 연락처, 개인정보 동의가 필요합니다.');
+                }
+            });
+
+            console.log('✅ 버튼 강제 활성화 + 클릭 이벤트 추가 완료');
         } else {
             console.error('❌ submitButton을 찾을 수 없음');
         }
