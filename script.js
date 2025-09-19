@@ -466,6 +466,21 @@ function setupEventListeners() {
     if (applicationForm) {
         applicationForm.addEventListener('submit', handleFormSubmit);
     }
+
+    // 🔥 강제 버튼 활성화 - 3초 후 실행
+    setTimeout(() => {
+        const submitButton = document.getElementById('submitButton');
+        if (submitButton) {
+            console.log('🔥 강제 버튼 활성화 시도');
+            submitButton.disabled = false;
+            submitButton.classList.remove('disabled');
+            submitButton.style.opacity = '1';
+            submitButton.style.pointerEvents = 'auto';
+            console.log('✅ 버튼 강제 활성화 완료', submitButton);
+        } else {
+            console.error('❌ submitButton을 찾을 수 없음');
+        }
+    }, 3000);
 }
 
 // Step Navigation (main nextStep function is defined at the top)
@@ -862,8 +877,17 @@ function validateForm() {
     const nameInput = document.getElementById('name');
     const phoneInput = document.getElementById('phone');
     const submitButton = document.getElementById('submitButton');
-    
-    if (!nameInput || !phoneInput || !submitButton) return;
+
+    console.log('🔍 validateForm 호출됨', {
+        nameInput: !!nameInput,
+        phoneInput: !!phoneInput,
+        submitButton: !!submitButton
+    });
+
+    if (!nameInput || !phoneInput || !submitButton) {
+        console.error('❌ 필수 요소를 찾을 수 없음!');
+        return;
+    }
     
     formData.name = nameInput.value.trim();
     formData.phone = phoneInput.value.trim();
@@ -891,9 +915,17 @@ function validateForm() {
     
     if (isValid) {
         submitButton.classList.remove('disabled');
+        console.log('✅ 버튼 활성화됨');
     } else {
         submitButton.classList.add('disabled');
+        console.log('❌ 버튼 비활성화됨');
     }
+
+    console.log('🎯 버튼 상태:', {
+        disabled: submitButton.disabled,
+        className: submitButton.className,
+        isValid: isValid
+    });
 }
 
 function handleFormSubmit(e) {
