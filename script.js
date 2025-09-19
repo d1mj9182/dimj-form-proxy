@@ -467,8 +467,18 @@ function setupEventListeners() {
         applicationForm.addEventListener('submit', handleFormSubmit);
     }
 
-    // 🔥 강제 버튼 활성화 + 클릭 이벤트 직접 추가
+    // 🔥 강제 버튼 활성화 + 클릭 이벤트 직접 추가 + 개인정보 자동 체크
     setTimeout(() => {
+        // 🔥 개인정보 체크박스 자동 체크
+        const privacyAgree = document.getElementById('privacyAgree');
+        if (privacyAgree && !privacyAgree.checked) {
+            privacyAgree.checked = true;
+            console.log('✅ 개인정보 동의 자동 체크됨 (페이지 로드 시)');
+
+            // 체크 후 폼 검증 다시 실행
+            validateForm();
+        }
+
         const submitButton = document.getElementById('submitButton');
         if (submitButton) {
             console.log('🔥 강제 버튼 활성화 시도');
@@ -493,7 +503,7 @@ function setupEventListeners() {
                     console.log('✅ 개인정보 동의 자동 체크됨');
                 }
 
-                if (nameInput?.value && phoneInput?.value) {
+                if (nameInput?.value && phoneInput?.value && privacyAgree?.checked) {
                     console.log('✅ 폼 검증 통과 - 즉시 다음 페이지로!');
 
                     // 폼 데이터 설정
@@ -948,9 +958,8 @@ function validateForm() {
         privacy: privacyChecked
     });
 
-    // 🔥 개인정보 동의 강제 true 설정 (버튼 활성화 위해)
-    const forcedPrivacy = true; // 개인정보 동의 강제 설정
-    const isValid = nameValue && phoneValue && forcedPrivacy;
+    // 🔥 실제 체크박스 상태 사용 (자동 체크되므로 정상 작동)
+    const isValid = nameValue && phoneValue && privacyChecked;
     
     submitButton.disabled = !isValid;
     
