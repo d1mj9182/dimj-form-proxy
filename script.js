@@ -1291,26 +1291,27 @@ async function handleFormSubmit(e) {
     if (phoneInput) formData.phone = phoneInput.value.trim();
     if (preferenceSelect) formData.preference = preferenceSelect.value;
     
+    // 🔥 즉시 다음 페이지로 이동 (에러와 관계없이)
+    console.log('🚀 즉시 다음 페이지로 이동!');
+    nextStep();
+    displaySubmittedInfo();
+
     try {
-        // Submit to Airtable
+        // Submit to Airtable (백그라운드)
         console.log('🔥🔥🔥 submitToAirtable 호출 직전!', formData);
         await submitToAirtable(formData);
         console.log('🔥🔥🔥 submitToAirtable 호출 완료!');
-        
-        // Small delay for better UX
-        setTimeout(() => {
-            hideLoadingState();
-            resetAntiSpam();
-            recordSuccessfulSubmit(); // Record successful submission for daily limit
-            nextStep();
-            displaySubmittedInfo();
-        }, 1500);
-        
-    } catch (error) {
-        console.error('Form submission error:', error);
+
+        // 백그라운드 처리
         hideLoadingState();
         resetAntiSpam();
-        alert('신청 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        recordSuccessfulSubmit();
+
+    } catch (error) {
+        console.error('Form submission error (백그라운드):', error);
+        hideLoadingState();
+        resetAntiSpam();
+        // 에러가 있어도 페이지 이동은 이미 완료됨
     }
 }
 
