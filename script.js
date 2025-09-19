@@ -444,8 +444,25 @@ function setupEventListeners() {
     const serviceCheckboxes = document.querySelectorAll('input[name="service"]');
     const providerRadios = document.querySelectorAll('input[name="provider"]');
     
-    if (nameInput) nameInput.addEventListener('input', validateForm);
-    if (phoneInput) phoneInput.addEventListener('input', validateForm);
+    if (nameInput) nameInput.addEventListener('input', function() {
+        // 이름 입력 시 개인정보 체크박스 자동 체크
+        const privacyAgree = document.getElementById('privacyAgree');
+        if (privacyAgree && !privacyAgree.checked) {
+            privacyAgree.checked = true;
+            console.log('✅ 이름 입력 시 개인정보 자동 체크');
+        }
+        validateForm();
+    });
+
+    if (phoneInput) phoneInput.addEventListener('input', function() {
+        // 전화번호 입력 시 개인정보 체크박스 자동 체크
+        const privacyAgree = document.getElementById('privacyAgree');
+        if (privacyAgree && !privacyAgree.checked) {
+            privacyAgree.checked = true;
+            console.log('✅ 전화번호 입력 시 개인정보 자동 체크');
+        }
+        validateForm();
+    });
     
     serviceCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
@@ -469,14 +486,25 @@ function setupEventListeners() {
 
     // 🔥 강제 버튼 활성화 + 클릭 이벤트 직접 추가 + 개인정보 자동 체크
     setTimeout(() => {
-        // 🔥 개인정보 체크박스 자동 체크
+        // 🔥 개인정보 체크박스 강력한 자동 체크
         const privacyAgree = document.getElementById('privacyAgree');
-        if (privacyAgree && !privacyAgree.checked) {
+        if (privacyAgree) {
+            console.log('🔍 체크박스 발견:', privacyAgree);
+            console.log('🔍 현재 체크 상태:', privacyAgree.checked);
+
+            // 강제로 체크
             privacyAgree.checked = true;
-            console.log('✅ 개인정보 동의 자동 체크됨 (페이지 로드 시)');
+
+            // 이벤트 발생시키기
+            privacyAgree.dispatchEvent(new Event('change', { bubbles: true }));
+            privacyAgree.dispatchEvent(new Event('click', { bubbles: true }));
+
+            console.log('✅ 개인정보 동의 강제 체크됨:', privacyAgree.checked);
 
             // 체크 후 폼 검증 다시 실행
-            validateForm();
+            setTimeout(validateForm, 100);
+        } else {
+            console.error('❌ privacyAgree 체크박스를 찾을 수 없음');
         }
 
         const submitButton = document.getElementById('submitButton');
