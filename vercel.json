@@ -1,9 +1,7 @@
 {
   "functions": {
-    "api/airtable.js": {
+    "api/supabase.js": {
       "maxDuration": 10
     }
-  },
-  "buildCommand": "echo No build required",
-  "outputDirectory": "."
+  }
 }
