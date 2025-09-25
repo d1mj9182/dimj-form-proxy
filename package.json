@@ -1,22 +1,24 @@
 {
   "name": "dimj-form-proxy",
-  "version": "1.0.0",
-  "description": "DIMJ Form Airtable Proxy Server",
-  "main": "api/airtable.js",
+  "version": "2.0.0",
+  "description": "DIMJ Form Supabase Proxy Server",
+  "main": "api/supabase.js",
   "scripts": {
     "dev": "vercel dev",
     "build": "echo 'Build not needed'",
     "deploy": "vercel --prod"
   },
   "keywords": [
-    "airtable",
+    "supabase",
     "proxy",
     "vercel",
     "serverless"
   ],
   "author": "DIMJ",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0"
+  },
   "devDependencies": {},
   "engines": {
     "node": ">=18.0.0"
