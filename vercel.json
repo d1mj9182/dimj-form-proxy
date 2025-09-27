@@ -1,6 +1,6 @@
 {
     "functions": {
-      "api/airtable.js": {
+      "api/supabase.js": {
         "runtime": "nodejs18.x"
       }
     }
