@@ -43,11 +43,11 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       console.log('GET 요청 처리 중...');
 
-      // 먼저 단순 조회부터 시도
+      // created_at 기준으로 최신순 정렬하여 조회
       const { data, error } = await supabase
         .from('consultations')
         .select('*')
-        .limit(10);
+        .order('created_at', { ascending: false });
 
       console.log('GET 결과:', { data, error });
 
@@ -58,28 +58,11 @@ export default async function handler(req, res) {
           details: error.details,
           hint: error.hint
         });
-        throw error;
+        return res.status(400).json({ success: false, error: error.message });
       }
 
-      // 성공한 경우 created_at 또는 접수일시로 정렬 시도
-      let sortedData = data;
-      if (data && data.length > 0) {
-        // 첫 번째 레코드의 컬럼명 확인
-        console.log('테이블 컬럼들:', Object.keys(data[0]));
-
-        // 시간순 정렬 (created_at 또는 접수일시 컬럼이 있는 경우)
-        if (data[0].hasOwnProperty('created_at')) {
-          sortedData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        } else if (data[0].hasOwnProperty('접수일시')) {
-          sortedData = data.sort((a, b) => new Date(b.접수일시) - new Date(a.접수일시));
-        }
-      }
-
-      return res.status(200).json({
-        success: true,
-        data: sortedData,
-        count: sortedData.length
-      });
+      // 직접 배열로 반환 (어드민 페이지 호환성)
+      return res.status(200).json(data || []);
     }
 
     if (req.method === 'POST') {
