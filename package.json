@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "DIMJ Form Supabase Proxy Server",
   "main": "api/supabase.js",
+  "type": "module",
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod"
