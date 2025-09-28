@@ -1,11 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
+  // 완전한 CORS 설정
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Max-Age', '3600');
 
-  if (req.method === 'OPTIONS') return res.status(204).end();
+  // OPTIONS 요청 완전 처리
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    return res.status(204).end();
+  }
 
   // 환경변수 확인
   const supabaseUrl = process.env.SUPABASE_URL;
