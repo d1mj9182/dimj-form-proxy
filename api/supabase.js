@@ -69,25 +69,35 @@ export default async function handler(req, res) {
       console.log('POST 요청 처리 중...');
       console.log('받은 원본 데이터:', JSON.stringify(req.body, null, 2));
 
+      // table 파라미터 지원 (유연성 확장)
+      const tableName = req.body.table || 'consultations';
+      const requestData = req.body.data || req.body;
+
       // 한글 -> 영문 컬럼명 매핑
       const insertData = {
-        name: req.body.이름 || req.body.name,
-        phone: req.body.연락처 || req.body.phone,
-        carrier: req.body.통신사 || req.body.carrier,
-        main_service: req.body.주요서비스 || req.body.main_service,
-        other_service: req.body.기타서비스 || req.body.other_service || '',
-        preferred_time: req.body.상담희망시간 || req.body.preferred_time,
-        privacy_agreed: req.body.개인정보동의 || req.body.privacy_agreed || false,
-        status: req.body.상태 || req.body.status || '신규',
-        gift_amount: req.body.사은품금액 || req.body.gift_amount || 0,
+        name: requestData.이름 || requestData.name,
+        phone: requestData.연락처 || requestData.phone,
+        carrier: requestData.통신사 || requestData.carrier,
+        main_service: requestData.주요서비스 || requestData.main_service,
+        other_service: requestData.기타서비스 || requestData.other_service || '',
+        preferred_time: requestData.상담희망시간 || requestData.preferred_time,
+        privacy_agreed: requestData.개인정보동의 || requestData.privacy_agreed || false,
+        status: requestData.상태 || requestData.status || '접수완료', // 기본값 변경
+        gift_amount: requestData.사은품금액 || requestData.gift_amount || 0,
         ip_address: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
         created_at: new Date().toISOString()
       };
 
+      // status 기본값 추가 로직 (명시적 처리)
+      if (!insertData.status) {
+        insertData.status = '접수완료';
+      }
+
       console.log('영문 컬럼명으로 변환된 데이터:', JSON.stringify(insertData, null, 2));
+      console.log('사용할 테이블:', tableName);
 
       const { data, error } = await supabase
-        .from('consultations')
+        .from(tableName)
         .insert([insertData])
         .select();
 
