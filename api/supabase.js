@@ -1,38 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
-  // 완전한 CORS 설정
+  // CORS 헤더
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  res.setHeader('Access-Control-Max-Age', '3600');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key, cache-control');
 
-  // OPTIONS 요청 완전 처리
+  // OPTIONS 요청 처리 (CORS preflight)
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-    return res.status(204).end();
+    return res.status(200).end();
   }
 
-  // 환경변수 확인
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    return res.status(500).json({ error: '환경변수 누락' });
-  }
-
-  // 중요: service_role_key 사용 시 옵션 추가
-  const supabase = createClient(supabaseUrl, supabaseKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    },
-    db: {
-      schema: 'public'  // 명시적으로 public 스키마 지정
-    }
-  });
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY
+  );
 
   try {
     console.log('=== API 호출 시작 ===');
