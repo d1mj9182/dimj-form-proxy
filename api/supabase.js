@@ -110,6 +110,54 @@ export default async function handler(req, res) {
       });
     }
 
+    if (req.method === 'DELETE') {
+      console.log('DELETE 요청 처리 중...');
+      console.log('삭제 요청 데이터:', JSON.stringify(req.body, null, 2));
+
+      const { id } = req.body;
+
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          error: '삭제할 레코드의 ID가 필요합니다.'
+        });
+      }
+
+      const { data, error } = await supabase
+        .from('consultations')
+        .delete()
+        .eq('id', id)
+        .select(); // 삭제된 레코드 정보 반환
+
+      console.log('DELETE 결과:', { data, error });
+
+      if (error) {
+        console.error('Supabase DELETE 에러 상세:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        return res.status(400).json({
+          success: false,
+          error: error.message
+        });
+      }
+
+      if (!data || data.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: '삭제할 레코드를 찾을 수 없습니다.'
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: '삭제 완료',
+        deletedRecord: data[0]
+      });
+    }
+
     return res.status(405).json({ error: 'Method not allowed' });
 
   } catch (error) {
