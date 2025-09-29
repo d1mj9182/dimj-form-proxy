@@ -158,6 +158,75 @@ export default async function handler(req, res) {
       });
     }
 
+    if (req.method === 'PATCH') {
+      console.log('PATCH 요청 처리 중...');
+      console.log('업데이트 요청 데이터:', JSON.stringify(req.body, null, 2));
+
+      const { id, status, gift_amount, ...otherFields } = req.body;
+
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          error: '업데이트할 레코드의 ID가 필요합니다.'
+        });
+      }
+
+      // 업데이트할 필드들 구성
+      const updateFields = {};
+      if (status !== undefined) updateFields.status = status;
+      if (gift_amount !== undefined) updateFields.gift_amount = gift_amount;
+
+      // 다른 필드들도 추가 가능
+      Object.keys(otherFields).forEach(key => {
+        if (otherFields[key] !== undefined) {
+          updateFields[key] = otherFields[key];
+        }
+      });
+
+      if (Object.keys(updateFields).length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: '업데이트할 필드가 없습니다.'
+        });
+      }
+
+      console.log('업데이트할 필드들:', updateFields);
+
+      const { data, error } = await supabase
+        .from('consultations')
+        .update(updateFields)
+        .eq('id', id)
+        .select(); // 업데이트된 레코드 반환
+
+      console.log('PATCH 결과:', { data, error });
+
+      if (error) {
+        console.error('Supabase UPDATE 에러 상세:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        return res.status(400).json({
+          success: false,
+          error: error.message
+        });
+      }
+
+      if (!data || data.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: '업데이트할 레코드를 찾을 수 없습니다.'
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: '업데이트 완료',
+        updatedRecord: data[0]
+      });
+    }
+
     return res.status(405).json({ error: 'Method not allowed' });
 
   } catch (error) {
