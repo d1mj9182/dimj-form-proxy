@@ -69,9 +69,11 @@ export default async function handler(req, res) {
       console.log('POST 요청 처리 중...');
       console.log('받은 원본 데이터:', JSON.stringify(req.body, null, 2));
 
+      const { table, data } = req.body;
+
       // table 파라미터 지원 (유연성 확장)
-      const tableName = req.body.table || 'consultations';
-      const requestData = req.body.data || req.body;
+      const tableName = table || 'consultations';
+      const requestData = data || req.body;
 
       // 한글 -> 영문 컬럼명 매핑
       const insertData = {
@@ -82,26 +84,26 @@ export default async function handler(req, res) {
         other_service: requestData.기타서비스 || requestData.other_service || '',
         preferred_time: requestData.상담희망시간 || requestData.preferred_time,
         privacy_agreed: requestData.개인정보동의 || requestData.privacy_agreed || false,
-        status: requestData.상태 || requestData.status || '접수완료', // 기본값 변경
+        status: requestData.상태 || requestData.status,
         gift_amount: requestData.사은품금액 || requestData.gift_amount || 0,
         ip_address: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
         created_at: new Date().toISOString()
       };
 
-      // status 기본값 추가 로직 (명시적 처리)
+      // 신규 접수는 무조건 상담대기
       if (!insertData.status) {
-        insertData.status = '접수완료';
+        insertData.status = '상담대기';
       }
 
       console.log('영문 컬럼명으로 변환된 데이터:', JSON.stringify(insertData, null, 2));
       console.log('사용할 테이블:', tableName);
 
-      const { data, error } = await supabase
+      const { data: result, error } = await supabase
         .from(tableName)
         .insert([insertData])
         .select();
 
-      console.log('POST 결과:', { data, error });
+      console.log('POST 결과:', { data: result, error });
 
       if (error) {
         console.error('Supabase INSERT 에러 상세:', {
@@ -113,11 +115,7 @@ export default async function handler(req, res) {
         throw error;
       }
 
-      return res.status(200).json({
-        success: true,
-        data: data,
-        message: '상담 신청이 접수되었습니다.'
-      });
+      return res.json({ success: !error, data: result });
     }
 
     if (req.method === 'DELETE') {
@@ -172,7 +170,7 @@ export default async function handler(req, res) {
       console.log('PATCH 요청 처리 중...');
       console.log('업데이트 요청 데이터:', JSON.stringify(req.body, null, 2));
 
-      const { id, status, gift_amount, ...otherFields } = req.body;
+      const { id, status, gift_amount, table } = req.body;
 
       if (!id) {
         return res.status(400).json({
@@ -181,30 +179,22 @@ export default async function handler(req, res) {
         });
       }
 
-      // 업데이트할 필드들 구성
-      const updateFields = {};
-      if (status !== undefined) updateFields.status = status;
-      if (gift_amount !== undefined) updateFields.gift_amount = gift_amount;
+      const updateData = {};
+      if (status) updateData.status = status;
+      if (gift_amount !== undefined) updateData.gift_amount = gift_amount;
 
-      // 다른 필드들도 추가 가능
-      Object.keys(otherFields).forEach(key => {
-        if (otherFields[key] !== undefined) {
-          updateFields[key] = otherFields[key];
-        }
-      });
-
-      if (Object.keys(updateFields).length === 0) {
+      if (Object.keys(updateData).length === 0) {
         return res.status(400).json({
           success: false,
           error: '업데이트할 필드가 없습니다.'
         });
       }
 
-      console.log('업데이트할 필드들:', updateFields);
+      console.log('업데이트할 필드들:', updateData);
 
       const { data, error } = await supabase
-        .from('consultations')
-        .update(updateFields)
+        .from(table || 'consultations')
+        .update(updateData)
         .eq('id', id)
         .select(); // 업데이트된 레코드 반환
 
@@ -230,11 +220,7 @@ export default async function handler(req, res) {
         });
       }
 
-      return res.status(200).json({
-        success: true,
-        message: '업데이트 완료',
-        updatedRecord: data[0]
-      });
+      return res.json({ success: !error, data });
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
