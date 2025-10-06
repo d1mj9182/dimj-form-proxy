@@ -79,10 +79,12 @@ export default async function handler(req, res) {
 
       // 테이블별 한글 -> 영문 컬럼명 매핑
       if (tableName === 'admin_settings') {
+        console.log('🔍 requestData 키들:', Object.keys(requestData));
+        console.log('🔍 설정키 값:', requestData['설정키'], requestData.설정키);
         insertData = {
-          setting_key: requestData.설정키 || requestData.setting_key,
-          setting_value: requestData.설정값 || requestData.setting_value,
-          setting_type: requestData.설정타입 || requestData.setting_type || 'image',
+          setting_key: requestData['설정키'] || requestData.설정키 || requestData.setting_key,
+          setting_value: requestData['설정값'] || requestData.설정값 || requestData.setting_value,
+          setting_type: requestData['설정타입'] || requestData.설정타입 || requestData.setting_type || 'image',
           created_at: new Date().toISOString()
         };
       } else if (tableName === 'consultations') {
