@@ -7,7 +7,8 @@
       "Bash(npm run deploy:*)",
       "Bash(npx vercel:*)",
       "Bash(vercel:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(code --version)"
     ],
     "deny": [],
     "ask": []
