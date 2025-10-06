@@ -27,13 +27,22 @@ export default async function handler(req, res) {
 
       // table 쿼리 파라미터 지원 (기본값: consultations)
       const tableName = req.query.table || 'consultations';
+      const key = req.query.key;
       console.log('테이블:', tableName);
+      console.log('키 필터:', key);
+
+      // 쿼리 빌더 시작
+      let query = supabase.from(tableName).select('*');
+
+      // admin_settings에서 특정 키 조회
+      if (tableName === 'admin_settings' && key) {
+        query = query.eq('setting_key', key);
+      }
 
       // created_at 기준으로 최신순 정렬하여 조회
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .order('created_at', { ascending: false });
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error } = await query;
 
       console.log('Supabase 응답:', data);
       console.log('GET 결과:', { data, error });
@@ -59,30 +68,44 @@ export default async function handler(req, res) {
       const { table, data } = req.body;
 
       // table 파라미터 지원 (유연성 확장)
-      const tableName = table || 'consultations';
+      const tableName = table || req.query.table || 'consultations';
       const requestData = data || req.body;
 
       console.log('테이블:', tableName);
       console.log('처리할 데이터:', requestData);
 
-      // 한글 -> 영문 컬럼명 매핑
-      const insertData = {
-        name: requestData.이름 || requestData.name,
-        phone: requestData.연락처 || requestData.phone,
-        carrier: requestData.통신사 || requestData.carrier,
-        main_service: requestData.주요서비스 || requestData.main_service,
-        other_service: requestData.기타서비스 || requestData.other_service || '',
-        preferred_time: requestData.상담희망시간 || requestData.preferred_time,
-        privacy_agreed: requestData.개인정보동의 || requestData.privacy_agreed || false,
-        status: requestData.상태 || requestData.status,
-        gift_amount: requestData.사은품금액 || requestData.gift_amount || 0,
-        ip_address: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
-        created_at: new Date().toISOString()
-      };
+      let insertData;
 
-      // 신규 접수는 무조건 상담대기
-      if (!insertData.status) {
-        insertData.status = '상담대기';
+      // 테이블별 한글 -> 영문 컬럼명 매핑
+      if (tableName === 'admin_settings') {
+        insertData = {
+          setting_key: requestData.설정키 || requestData.setting_key,
+          setting_value: requestData.설정값 || requestData.setting_value,
+          setting_type: requestData.설정타입 || requestData.setting_type || 'image',
+          created_at: new Date().toISOString()
+        };
+      } else if (tableName === 'consultations') {
+        insertData = {
+          name: requestData.이름 || requestData.name,
+          phone: requestData.연락처 || requestData.phone,
+          carrier: requestData.통신사 || requestData.carrier,
+          main_service: requestData.주요서비스 || requestData.main_service,
+          other_service: requestData.기타서비스 || requestData.other_service || '',
+          preferred_time: requestData.상담희망시간 || requestData.preferred_time,
+          privacy_agreed: requestData.개인정보동의 || requestData.privacy_agreed || false,
+          status: requestData.상태 || requestData.status,
+          gift_amount: requestData.사은품금액 || requestData.gift_amount || 0,
+          ip_address: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
+          created_at: new Date().toISOString()
+        };
+
+        // 신규 접수는 무조건 상담대기
+        if (!insertData.status) {
+          insertData.status = '상담대기';
+        }
+      } else {
+        // 기타 테이블은 그대로 전달
+        insertData = requestData;
       }
 
       console.log('영문 컬럼명으로 변환된 데이터:', JSON.stringify(insertData, null, 2));
