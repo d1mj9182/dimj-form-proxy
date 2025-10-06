@@ -65,11 +65,12 @@ export default async function handler(req, res) {
       console.log('POST 요청 처리 중...');
       console.log('받은 원본 데이터:', JSON.stringify(req.body, null, 2));
 
-      const { table, data } = req.body;
+      const { table, data, ...otherFields } = req.body;
 
       // table 파라미터 지원 (유연성 확장)
       const tableName = table || req.query.table || 'consultations';
-      const requestData = data || req.body;
+      // data가 있으면 data 사용, 없으면 table 제외한 나머지 필드 사용
+      const requestData = data || (table ? otherFields : req.body);
 
       console.log('테이블:', tableName);
       console.log('처리할 데이터:', requestData);
