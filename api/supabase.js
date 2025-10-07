@@ -36,11 +36,13 @@ export default async function handler(req, res) {
 
       // admin_settings에서 특정 키 조회
       if (tableName === 'admin_settings' && key) {
-        query = query.eq('setting_key', key);
+        query = query.eq('setting_key', key)
+                     .order('created_at', { ascending: false })
+                     .limit(1);  // 최신 1개만 반환
+      } else {
+        // created_at 기준으로 최신순 정렬하여 조회
+        query = query.order('created_at', { ascending: false });
       }
-
-      // created_at 기준으로 최신순 정렬하여 조회
-      query = query.order('created_at', { ascending: false });
 
       const { data, error } = await query;
 
