@@ -187,7 +187,7 @@ export default async function handler(req, res) {
       console.log('PATCH 요청 처리 중...');
       console.log('업데이트 요청 데이터:', JSON.stringify(req.body, null, 2));
 
-      const { id, status, gift_amount, table } = req.body;
+      const { id, status, gift_amount, created_at, table } = req.body;
 
       if (!id) {
         return res.status(400).json({
@@ -199,6 +199,7 @@ export default async function handler(req, res) {
       const updateData = {};
       if (status) updateData.status = status;
       if (gift_amount !== undefined) updateData.gift_amount = gift_amount;
+      if (created_at) updateData.created_at = created_at;  // created_at 업데이트 지원
 
       if (Object.keys(updateData).length === 0) {
         return res.status(400).json({
