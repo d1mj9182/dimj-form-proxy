@@ -187,8 +187,59 @@ export default async function handler(req, res) {
       console.log('PATCH 요청 처리 중...');
       console.log('업데이트 요청 데이터:', JSON.stringify(req.body, null, 2));
 
-      const { id, status, gift_amount, created_at, table } = req.body;
+      const { id, status, gift_amount, created_at, table, setting_key, setting_value } = req.body;
+      const tableName = table || 'consultations';
 
+      // admin_settings 테이블 처리
+      if (tableName === 'admin_settings') {
+        if (!setting_key) {
+          return res.status(400).json({
+            success: false,
+            error: 'admin_settings 업데이트에는 setting_key가 필요합니다.'
+          });
+        }
+
+        if (!setting_value) {
+          return res.status(400).json({
+            success: false,
+            error: '업데이트할 setting_value가 필요합니다.'
+          });
+        }
+
+        console.log('admin_settings 업데이트:', { setting_key, setting_value });
+
+        const { data, error } = await supabase
+          .from('admin_settings')
+          .update({ setting_value })
+          .eq('setting_key', setting_key)
+          .select();
+
+        console.log('PATCH 결과:', { data, error });
+
+        if (error) {
+          console.error('Supabase UPDATE 에러 상세:', {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+          });
+          return res.status(400).json({
+            success: false,
+            error: error.message
+          });
+        }
+
+        if (!data || data.length === 0) {
+          return res.status(404).json({
+            success: false,
+            error: 'setting_key를 찾을 수 없습니다.'
+          });
+        }
+
+        return res.json({ success: true, data });
+      }
+
+      // consultations 테이블 처리 (기존 로직)
       if (!id) {
         return res.status(400).json({
           success: false,
@@ -199,7 +250,7 @@ export default async function handler(req, res) {
       const updateData = {};
       if (status) updateData.status = status;
       if (gift_amount !== undefined) updateData.gift_amount = gift_amount;
-      if (created_at) updateData.created_at = created_at;  // created_at 업데이트 지원
+      if (created_at) updateData.created_at = created_at;
 
       if (Object.keys(updateData).length === 0) {
         return res.status(400).json({
@@ -211,10 +262,10 @@ export default async function handler(req, res) {
       console.log('업데이트할 필드들:', updateData);
 
       const { data, error } = await supabase
-        .from(table || 'consultations')
+        .from(tableName)
         .update(updateData)
         .eq('id', id)
-        .select(); // 업데이트된 레코드 반환
+        .select();
 
       console.log('PATCH 결과:', { data, error });
 
