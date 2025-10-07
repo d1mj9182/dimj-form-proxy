@@ -210,10 +210,22 @@ export default async function handler(req, res) {
 
         console.log('admin_settings 업데이트:', { setting_key, setting_value });
 
+        // 방법 1: 기존 데이터 삭제 후 새로 INSERT
+        // 먼저 기존 setting_key 삭제
+        await supabase
+          .from('admin_settings')
+          .delete()
+          .eq('setting_key', setting_key);
+
+        // 새 값으로 INSERT
         const { data, error } = await supabase
           .from('admin_settings')
-          .update({ setting_value })
-          .eq('setting_key', setting_key)
+          .insert({
+            setting_key,
+            setting_value,
+            setting_type: 'text',
+            created_at: new Date().toISOString()
+          })
           .select();
 
         console.log('PATCH 결과:', { data, error });
