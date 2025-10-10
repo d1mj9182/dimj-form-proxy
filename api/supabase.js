@@ -1,4 +1,70 @@
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
+
+// SMS 발송 함수
+async function sendSMS(formData) {
+  const timestamp = Date.now().toString();
+  const accessKey = process.env.NCLOUD_ACCESS_KEY;
+  const secretKey = process.env.NCLOUD_SECRET_KEY;
+  const serviceId = process.env.NCLOUD_SERVICE_ID;
+  const space = " ";
+  const newLine = "\n";
+  const method = "POST";
+  const url = `/sms/v2/services/${serviceId}/messages`;
+
+  // HMAC 서명 생성
+  const hmac = crypto.createHmac('sha256', secretKey);
+  hmac.update(method);
+  hmac.update(space);
+  hmac.update(url);
+  hmac.update(newLine);
+  hmac.update(timestamp);
+  hmac.update(newLine);
+  hmac.update(accessKey);
+  const signature = hmac.digest('base64');
+
+  // SMS 메시지 내용
+  const message = `[당일민족] 신규 상담신청
+고객: ${formData.name}
+연락처: ${formData.phone}
+통신사: ${formData.carrier}
+서비스: ${formData.main_service}
+추가: ${formData.other_service || '없음'}`;
+
+  // SENS API 호출
+  try {
+    const response = await fetch(
+      `https://sens.apigw.ntruss.com/sms/v2/services/${serviceId}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'x-ncp-apigw-timestamp': timestamp,
+          'x-ncp-iam-access-key': accessKey,
+          'x-ncp-apigw-signature-v2': signature
+        },
+        body: JSON.stringify({
+          type: 'SMS',
+          contentType: 'COMM',
+          countryCode: '82',
+          from: process.env.NCLOUD_FROM_PHONE,
+          content: message,
+          messages: [{
+            to: process.env.ADMIN_PHONE
+          }]
+        })
+      }
+    );
+
+    if (!response.ok) {
+      console.error('SMS 발송 실패:', await response.text());
+    } else {
+      console.log('SMS 발송 성공');
+    }
+  } catch (error) {
+    console.error('SMS 발송 에러:', error);
+  }
+}
 
 export default async function handler(req, res) {
   // CORS 헤더
@@ -132,6 +198,17 @@ export default async function handler(req, res) {
           hint: error.hint
         });
         throw error;
+      }
+
+      // SMS 발송 (consultations 테이블만)
+      if (tableName === 'consultations') {
+        try {
+          console.log('SMS 발송 시도:', insertData.name);
+          await sendSMS(insertData);
+        } catch (smsError) {
+          console.error('SMS 알림 실패:', smsError);
+          // SMS 실패해도 계속 진행
+        }
       }
 
       return res.json({ success: !error, data: result });
