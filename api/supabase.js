@@ -152,9 +152,44 @@ export default async function handler(req, res) {
         insertData = {
           setting_key: requestData['설정키'] || requestData.설정키 || requestData.setting_key,
           setting_value: requestData['설정값'] || requestData.설정값 || requestData.setting_value,
-          setting_type: requestData['설정타입'] || requestData.설정타입 || requestData.setting_type || 'image',
+          setting_type: requestData['설정타입'] || requestData.설정타입 || requestData.setting_type || 'text',
           created_at: new Date().toISOString()
         };
+
+        // admin_settings는 UPSERT 처리 (같은 setting_key가 있으면 UPDATE, 없으면 INSERT)
+        console.log('admin_settings UPSERT 처리 시작:', insertData.setting_key);
+
+        // 기존 데이터 삭제
+        await supabase
+          .from('admin_settings')
+          .delete()
+          .eq('setting_key', insertData.setting_key);
+
+        console.log('기존 데이터 삭제 완료, 새 데이터 INSERT 진행');
+
+        // 새 데이터 INSERT
+        const { data: result, error } = await supabase
+          .from('admin_settings')
+          .insert([insertData])
+          .select();
+
+        console.log('admin_settings UPSERT 결과:', { data: result, error });
+
+        if (error) {
+          console.error('admin_settings UPSERT 에러:', {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+          });
+          throw error;
+        }
+
+        return res.json({
+          success: true,
+          message: '저장 완료',
+          data: result
+        });
       } else if (tableName === 'consultations') {
         insertData = {
           name: requestData.이름 || requestData.name,
