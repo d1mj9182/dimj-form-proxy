@@ -322,7 +322,7 @@ export default async function handler(req, res) {
           });
         }
 
-        if (!setting_value) {
+        if (setting_value === undefined || setting_value === null) {
           return res.status(400).json({
             success: false,
             error: '업데이트할 setting_value가 필요합니다.'
