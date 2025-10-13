@@ -262,8 +262,56 @@ export default async function handler(req, res) {
       console.log('DELETE 요청 처리 중...');
       console.log('삭제 요청 데이터:', JSON.stringify(req.body, null, 2));
 
-      const { id } = req.body;
+      const { id, table, setting_key } = req.body;
+      const tableName = table || 'consultations';
 
+      // admin_settings 테이블 처리
+      if (tableName === 'admin_settings') {
+        if (!setting_key) {
+          return res.status(400).json({
+            success: false,
+            error: 'admin_settings 삭제에는 setting_key가 필요합니다.'
+          });
+        }
+
+        console.log('admin_settings 삭제:', { setting_key });
+
+        const { data, error } = await supabase
+          .from('admin_settings')
+          .delete()
+          .eq('setting_key', setting_key)
+          .select();
+
+        console.log('DELETE 결과:', { data, error });
+
+        if (error) {
+          console.error('Supabase DELETE 에러 상세:', {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+          });
+          return res.status(400).json({
+            success: false,
+            error: error.message
+          });
+        }
+
+        if (!data || data.length === 0) {
+          return res.status(404).json({
+            success: false,
+            error: '삭제할 레코드를 찾을 수 없습니다.'
+          });
+        }
+
+        return res.status(200).json({
+          success: true,
+          message: '삭제 완료',
+          deletedRecord: data[0]
+        });
+      }
+
+      // consultations 테이블 처리 (기존 로직)
       if (!id) {
         return res.status(400).json({
           success: false,
