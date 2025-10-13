@@ -66,6 +66,15 @@ async function sendSMS(formData) {
   }
 }
 
+// Vercel에서 body parser 비활성화 (수동으로 처리)
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb', // Base64 이미지를 위해 10MB로 증가
+    },
+  },
+};
+
 export default async function handler(req, res) {
   // CORS 헤더
   res.setHeader('Access-Control-Allow-Origin', '*');
