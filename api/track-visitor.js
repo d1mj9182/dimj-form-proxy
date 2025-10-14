@@ -70,21 +70,122 @@ export default async function handler(req, res) {
       });
     }
 
-    // GET: 오늘 방문자 수 조회
+    // GET: 방문자 조회
     if (req.method === 'GET') {
-      console.log('=== 오늘 방문자 수 조회 ===');
+      const { list, period = 'today', sort = 'recent', suspicious } = req.query;
 
-      // 오늘 날짜 (한국 시간 기준)
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayStart = today.toISOString();
+      // 날짜 범위 계산
+      const now = new Date();
+      let startDate = new Date();
 
-      console.log('조회 시작 시간:', todayStart);
+      switch (period) {
+        case 'yesterday':
+          startDate.setDate(now.getDate() - 1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'week':
+          startDate.setDate(now.getDate() - 7);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'month':
+          startDate.setDate(now.getDate() - 30);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'today':
+        default:
+          startDate.setHours(0, 0, 0, 0);
+          break;
+      }
 
+      const startDateISO = startDate.toISOString();
+      console.log('=== 방문자 조회 ===');
+      console.log('기간:', period, '시작:', startDateISO);
+
+      // IP 목록 조회 (상세)
+      if (list === 'true') {
+        console.log('IP 목록 상세 조회');
+
+        // 모든 방문 기록 조회
+        const { data: visitors, error } = await supabase
+          .from('visitors')
+          .select('*')
+          .gte('visited_at', startDateISO)
+          .order('visited_at', { ascending: false });
+
+        if (error) {
+          console.error('조회 실패:', error);
+          return res.status(400).json({
+            success: false,
+            error: error.message
+          });
+        }
+
+        // IP별로 그룹화 및 통계 계산
+        const ipStats = {};
+
+        visitors.forEach(visit => {
+          const ip = visit.ip_address;
+
+          if (!ipStats[ip]) {
+            ipStats[ip] = {
+              ip_address: ip,
+              visit_count: 0,
+              first_visit: visit.visited_at,
+              last_visit: visit.visited_at,
+              referrer: visit.referrer || '',
+              user_agent: visit.user_agent || '',
+              page_urls: []
+            };
+          }
+
+          ipStats[ip].visit_count += 1;
+
+          // 최초 방문 시간 업데이트
+          if (new Date(visit.visited_at) < new Date(ipStats[ip].first_visit)) {
+            ipStats[ip].first_visit = visit.visited_at;
+          }
+
+          // 최근 방문 시간 업데이트
+          if (new Date(visit.visited_at) > new Date(ipStats[ip].last_visit)) {
+            ipStats[ip].last_visit = visit.visited_at;
+          }
+
+          // 방문한 페이지 추가
+          if (visit.page_url && !ipStats[ip].page_urls.includes(visit.page_url)) {
+            ipStats[ip].page_urls.push(visit.page_url);
+          }
+        });
+
+        // 배열로 변환
+        let result = Object.values(ipStats);
+
+        // 부정클릭 의심 IP 필터링 (5회 이상)
+        if (suspicious === 'true') {
+          result = result.filter(stat => stat.visit_count >= 5);
+        }
+
+        // 정렬
+        if (sort === 'count') {
+          result.sort((a, b) => b.visit_count - a.visit_count);
+        } else {
+          result.sort((a, b) => new Date(b.last_visit) - new Date(a.last_visit));
+        }
+
+        console.log('조회 완료, IP 개수:', result.length);
+
+        return res.status(200).json({
+          success: true,
+          period,
+          count: result.length,
+          data: result
+        });
+      }
+
+      // 단순 방문자 수만 조회
       const { data, error, count } = await supabase
         .from('visitors')
         .select('*', { count: 'exact', head: false })
-        .gte('visited_at', todayStart);
+        .gte('visited_at', startDateISO);
 
       if (error) {
         console.error('조회 실패:', error);
@@ -94,10 +195,11 @@ export default async function handler(req, res) {
         });
       }
 
-      console.log('오늘 방문자 수:', count);
+      console.log('방문자 수:', count);
 
       return res.status(200).json({
         success: true,
+        period,
         count: count || 0,
         data: data || []
       });
