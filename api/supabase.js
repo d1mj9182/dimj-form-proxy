@@ -146,14 +146,18 @@ export default async function handler(req, res) {
       }
 
       // 최종 반환 데이터
-      const result = data || [];
+      const result = {
+        success: true,
+        data: data || []
+      };
+
       console.log('📤 클라이언트로 반환:', {
-        resultType: Array.isArray(result) ? 'array' : typeof result,
-        resultLength: result?.length,
+        resultType: 'object',
+        dataLength: result.data?.length,
         result: result
       });
 
-      // 직접 배열로 반환 (어드민 페이지 호환성)
+      // success와 data 포함한 객체로 반환
       return res.status(200).json(result);
     }
 
