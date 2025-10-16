@@ -103,29 +103,40 @@ export default async function handler(req, res) {
       // table 쿼리 파라미터 지원 (기본값: consultations)
       const tableName = req.query.table || 'consultations';
       const key = req.query.key;
-      console.log('테이블:', tableName);
-      console.log('키 필터:', key);
+
+      console.log('📥 받은 요청:', {
+        table: tableName,
+        key,
+        fullQuery: req.query
+      });
 
       // 쿼리 빌더 시작
       let query = supabase.from(tableName).select('*');
 
       // admin_settings에서 특정 키 조회
       if (tableName === 'admin_settings' && key) {
+        console.log('🔍 admin_settings 특정 키 조회 모드');
         query = query.eq('setting_key', key)
                      .order('created_at', { ascending: false })
                      .limit(1);  // 최신 1개만 반환
       } else {
+        console.log('🔍 전체 조회 모드 (최신순 정렬)');
         // created_at 기준으로 최신순 정렬하여 조회
         query = query.order('created_at', { ascending: false });
       }
 
+      console.log('🔍 Supabase 쿼리 실행 중...');
       const { data, error } = await query;
 
-      console.log('Supabase 응답:', data);
-      console.log('GET 결과:', { data, error });
+      console.log('📦 Supabase 응답 상세:', {
+        dataType: Array.isArray(data) ? 'array' : typeof data,
+        dataLength: data?.length,
+        data: data,
+        error: error
+      });
 
       if (error) {
-        console.error('GET 에러 상세:', {
+        console.error('❌ GET 에러 상세:', {
           message: error.message,
           code: error.code,
           details: error.details,
@@ -134,8 +145,16 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: error.message });
       }
 
+      // 최종 반환 데이터
+      const result = data || [];
+      console.log('📤 클라이언트로 반환:', {
+        resultType: Array.isArray(result) ? 'array' : typeof result,
+        resultLength: result?.length,
+        result: result
+      });
+
       // 직접 배열로 반환 (어드민 페이지 호환성)
-      return res.status(200).json(data || []);
+      return res.status(200).json(result);
     }
 
     if (req.method === 'POST') {
