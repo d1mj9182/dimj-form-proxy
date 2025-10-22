@@ -29,7 +29,8 @@ async function sendSMS(formData) {
 연락처: ${formData.phone}
 통신사: ${formData.carrier}
 서비스: ${formData.main_service}
-추가: ${formData.other_service || '없음'}`;
+추가: ${formData.other_service || '없음'}
+상담희망시간: ${formData.preferred_time || '미지정'}`;
 
   // SENS API 호출
   try {
@@ -230,6 +231,7 @@ export default async function handler(req, res) {
           main_service: requestData.주요서비스 || requestData.main_service,
           other_service: requestData.기타서비스 || requestData.other_service || '',
           preferred_time: requestData.상담희망시간 || requestData.preferred_time,
+          preference: requestData.선호사항 || requestData.preference || '',
           privacy_agreed: requestData.개인정보동의 || requestData.privacy_agreed || false,
           status: requestData.상태 || requestData.status,
           gift_amount: requestData.사은품금액 || requestData.gift_amount || 0,
