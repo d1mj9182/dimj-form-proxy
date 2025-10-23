@@ -224,6 +224,13 @@ export default async function handler(req, res) {
           data: result
         });
       } else if (tableName === 'consultations') {
+        // 디버깅: preferred_time 확인
+        console.log('🔍 preferred_time 디버깅:', {
+          '상담희망시간': requestData.상담희망시간,
+          'preferred_time': requestData.preferred_time,
+          'preference': requestData.preference
+        });
+
         insertData = {
           name: requestData.이름 || requestData.name,
           phone: requestData.연락처 || requestData.phone,
@@ -235,8 +242,13 @@ export default async function handler(req, res) {
           status: requestData.상태 || requestData.status,
           gift_amount: requestData.사은품금액 || requestData.gift_amount || 0,
           ip_address: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
-          created_at: new Date().toISOString()
+          created_at: requestData.created_at || new Date().toISOString()  // 기존폼 값 우선 사용
         };
+
+        console.log('📤 Supabase로 전송할 데이터:', {
+          preferred_time: insertData.preferred_time,
+          created_at: insertData.created_at
+        });
 
         // 신규 접수는 무조건 상담대기
         if (!insertData.status) {
