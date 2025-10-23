@@ -48,11 +48,12 @@ async function sendSMS(formData) {
           'x-ncp-apigw-signature-v2': signature
         },
         body: JSON.stringify({
-          type: 'SMS',
+          type: 'LMS',  // SMS → LMS로 변경 (최대 2000바이트)
           contentType: 'COMM',
           countryCode: '82',
           from: process.env.NCLOUD_FROM_PHONE,
           content: message,
+          subject: '[당일민족] 신규 상담신청',  // LMS 제목 추가
           messages: [{
             to: process.env.ADMIN_PHONE
           }]
