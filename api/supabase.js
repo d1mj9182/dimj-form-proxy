@@ -32,6 +32,9 @@ async function sendSMS(formData) {
 추가: ${formData.other_service || '없음'}
 상담희망시간: ${formData.preferred_time || '미지정'}`;
 
+  console.log('📱 SMS 메시지 내용:', message);
+  console.log('📱 formData.preferred_time:', formData.preferred_time);
+
   // SENS API 호출
   try {
     const response = await fetch(
@@ -283,7 +286,10 @@ export default async function handler(req, res) {
       // SMS 발송 (consultations 테이블만)
       if (tableName === 'consultations') {
         try {
-          console.log('SMS 발송 시도:', insertData.name);
+          console.log('📱 SMS 발송 시도:', {
+            name: insertData.name,
+            preferred_time: insertData.preferred_time
+          });
           await sendSMS(insertData);
         } catch (smsError) {
           console.error('SMS 알림 실패:', smsError);
